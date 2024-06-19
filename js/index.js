@@ -86,7 +86,7 @@ const regionTop = () => {
   }
   let top = 0.5 - regionEdgeLength() / vh / 2;
   const regionWidthInPixel = vw - (regionLeft() * 2 * vw) / 100;
-  const regionHeightInPixel = regionWidthInPixel / 4; // 6.73 is the aspect ratio of 'passportf frame.svg' // todo
+  const regionHeightInPixel = regionWidthInPixel / 4;
   top = ((vh - regionHeightInPixel) / 2 / vh) * 100;
   top = Math.round(top);
   return top;
