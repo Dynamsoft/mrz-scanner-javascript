@@ -55,6 +55,7 @@ async function initDCE() {
     cameraListDiv.appendChild(cameraItem);
   }
   cameraView.setVideoFit("cover");
+  await cameraEnhancer.setResolution({ width: 1920, height: 1080 });
 }
 
 /**
