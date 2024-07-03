@@ -7,7 +7,7 @@ async function startCapturing() {
       homePage.style.display = "none";
       scannerContainer.style.display = "block";
 
-      // After the model and wasm are loaded, turn on the camera
+      // Open the camera after the model and .wasm files have loaded 
       await cvrReady;
       await pDataLoad.promise;
 
@@ -21,11 +21,6 @@ async function startCapturing() {
       }
       passportFrame.style.display = "inline-block";
       cameraEnhancer.setScanRegion(region());
-      // cameraView.setScanRegionMaskStyle({
-      //   lineWidth: 2,
-      //   strokeStyle: "rgb(254,142,20)",
-      //   fillStyle: "rgba(0,0,0,0.5)",
-      // });
       cameraView.setScanRegionMaskVisible(false);
       await cvRouter.startCapturing("ReadPassport");
     })());
@@ -36,7 +31,7 @@ async function startCapturing() {
   }
 }
 
-// -----------Logic code for calculating scan region ↓------------
+// -----------Logic for calculating scan region ↓------------
 const regionEdgeLength = () => {
   if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
   const visibleRegionInPixels = getVisibleRegionOfVideo();
@@ -102,7 +97,7 @@ const region = () => {
   };
   return region;
 }
-// -----------Logic code for calculating scan region ↑------------
+// -----------Logic for calculating scan region ↑------------
 
 const restartVideo = async () => {
   resultContainer.style.display = "none";
@@ -126,7 +121,7 @@ window.addEventListener("resize", () => {
   }, 500);
 })
 
-// Add click events to some buttons
+// Add click events to buttons
 startScaningBtn.addEventListener("click", startCapturing);
 restartVideoBtn.addEventListener("click", restartVideo);
 resultRestartBtn.addEventListener("click", restartVideo);

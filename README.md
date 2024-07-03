@@ -4,7 +4,7 @@ Passport MRZ Scanner enables camera to scan the MRZ code of a passport. It will 
 
 ## Web demo
 
-The web demo is at [...]() (nothing is uploaded)
+The web demo is available at [https://Dynamsoft.github.io/passport-MRZ-scanner-javascript/index.html](https://Dynamsoft.github.io/passport-MRZ-scanner-javascript/index.html) (nothing is uploaded).
 
 ## Run this Solution
 
@@ -14,7 +14,7 @@ The web demo is at [...]() (nothing is uploaded)
 git clone https://github.com/Dynamsoft/passport-MRZ-scanner-javascript
 ```
 
-2. CD to the folder and run a https server
+2. CD to the folder and run an https server
 
 ```sh
 cd passport-MRZ-scanner-javascript
@@ -60,46 +60,42 @@ Passport MRZ Scanner
    * `init.js` : This file is used for initialization purposes, such as initializing license, load resources, etc.
    * `util.js` : This file contains utility functions that are used across the project.
  * `index.html` : This is the main HTML file that represents the homepage of the project.
- * `template.json` : This file contains a predefined templates used in the project.
+ * `template.json` : This file contains predefined templates used in the project.
 
-# System Requirements
+## System Requirements
 
 This project requires the following features to work:
 
-* Secure context (HTTPS deployment)
+- Secure context (HTTPS deployment)
 
   When deploying your application / website for production, make sure to serve it via a secure HTTPS connection. This is required for two reasons
   
-  * Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
+  - Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
   > Some browsers like Chrome may grant the access for `http://127.0.0.1` and `http://localhost` or even for pages opened directly from the local disk (`file:///...`). This can be helpful for temporary development and test.
   
-  * Dynamsoft License requires a secure context to work.
+  - Dynamsoft License requires a secure context to work.
 
-* `WebAssembly`, `Blob`, `URL`/`createObjectURL`, `Web Workers`
+- `WebAssembly`, `Blob`, `URL`/`createObjectURL`, `Web Workers`
 
   The above four features are required for the SDK to work.
 
-* `MediaDevices`/`getUserMedia`
+- `MediaDevices`/`getUserMedia`
 
-  This API is only required for in-browser video streaming.
+  This API is required for in-browser video streaming.
 
-* `getSettings`
+- `getSettings`
 
   This API inspects the video input which is a `MediaStreamTrack` object about its constrainable properties.
 
 The following table is a list of supported browsers based on the above requirements:
 
-  Browser Name | Version
-  :-: | :-:
-  Chrome | v61+<sup>1</sup>
-  Firefox | v52+ (v55+ on Android/iOS<sup>1</sup>)
-  Edge<sup>2</sup> | v16+
-  Safari | v13+
+  | Browser Name |     Version      |
+  | :----------: | :--------------: |
+  |    Chrome    | v78+<sup>1</sup> |
+  |   Firefox    | v63+<sup>1</sup> |
+  |     Edge     |       v79+       |
+  |    Safari    |       v14+       |
 
-  <sup>1</sup> iOS 14.3+ is required for camera video streaming in Chrome and Firefox or Apps using webviews.
-
-  <sup>2</sup> On Edge, due to strict Same-origin policy, you must host the SDK files on the same domain as your web page.
-
-  > Note: iOS 12 is currently not compatible with Dynamsoft Label Recognizer v 2.2.30+, due to certain technical limitations.
+  <sup>1</sup> devices running iOS needs to be on iOS 14.3+ for camera video streaming to work in Chrome, Firefox or other Apps using webviews.
 
 Apart from the browsers, the operating systems may impose some limitations of their own that could restrict the use of the SDK. Browser compatibility ultimately depends on whether the browser on that particular operating system supports the features listed above.

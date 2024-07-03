@@ -1,4 +1,4 @@
-// Define some global variables that need to be used
+// Define some global variables that will be used
 let cameraList = [];
 let cameraView = null;
 let cvRouter = null;
@@ -7,7 +7,7 @@ let promiseCVRReady = null;
 let isPlaySound = true;
 let timer = null;
 
-// Get the ui element
+// Get the UI element
 const homePage = document.querySelector(".home-page");
 const scannerContainer = document.querySelector(".scanner-container");
 const startScaningBtn = document.querySelector(".start-btn");
