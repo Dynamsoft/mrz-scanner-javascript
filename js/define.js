@@ -1,11 +1,11 @@
 // Define some global variables that need to be used
-let cameraView;
+let cameraList = [];
+let cameraView = null;
 let cvRouter = null;
 let cameraEnhancer = null;
-let cameraList = [];
 let promiseCVRReady = null;
 let isPlaySound = true;
-let timer;
+let timer = null;
 
 // Get the ui element
 const homePage = document.querySelector(".home-page");
