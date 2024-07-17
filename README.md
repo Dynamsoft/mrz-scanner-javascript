@@ -4,7 +4,7 @@ Passport MRZ Scanner enables camera to scan the MRZ code of a passport. It will 
 
 ## Web demo
 
-The web demo is available at [https://Dynamsoft.github.io/passport-MRZ-scanner-javascript/index.html](https://Dynamsoft.github.io/passport-MRZ-scanner-javascript/index.html) (nothing will be uploaded).
+The web demo is available at [https://demo.dynamsoft.com/solutions/passport-scanner/index.html](https://demo.dynamsoft.com/solutions/passport-scanner/index.html) (nothing will be uploaded).
 
 ## Run this Solution
 
