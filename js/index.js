@@ -16,7 +16,7 @@ async function startCapturing() {
         // Starts streaming the video
         await cameraEnhancer.open();
         const currentCamera = cameraEnhancer.getSelectedCamera();
-        for (let child of cameraListDiv.childNodes) {
+        for (let child of cameraListContainer.childNodes) {
           if (currentCamera.deviceId === child.deviceId) {
             child.className = "camera-item camera-selected";
           }
@@ -101,7 +101,7 @@ const restartVideo = async () => {
 };
 
 window.addEventListener("click", () => {
-  cameraListDiv.style.display = "none";
+  cameraListContainer.style.display = "none";
   up.style.display = "none";
   down.style.display = "inline-block";
 });
@@ -124,8 +124,8 @@ resultRestartBtn.addEventListener("click", restartVideo);
 
 cameraSelector.addEventListener("click", (e) => {
   e.stopPropagation();
-  const isShow = cameraListDiv.style.display === "block";
-  cameraListDiv.style.display = isShow ? "none" : "block";
+  const isShow = cameraListContainer.style.display === "block";
+  cameraListContainer.style.display = isShow ? "none" : "block";
   up.style.display = !isShow ? "inline-block" : "none";
   down.style.display = isShow ? "inline-block" : "none";
 });
