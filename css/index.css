@@ -31,6 +31,7 @@ body {
 button {
   cursor: pointer;
   color: #ffffff;
+  border: 0;
 }
 
 img {
