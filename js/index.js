@@ -1,29 +1,34 @@
-import { pDataLoad, cvrReady } from "./init.js";
-import { checkOrientation, getVisibleRegionOfVideo } from "./util.js"
+import { pDataLoad, init } from "./init.js";
+import { checkOrientation, getVisibleRegionOfVideo } from "./util.js";
 
 async function startCapturing() {
   try {
-    await (promiseCVRReady = promiseCVRReady || (async () => {
-      homePage.style.display = "none";
-      scannerContainer.style.display = "block";
+    await (pInit =
+      pInit ||
+      (async () => {
+        homePage.style.display = "none";
+        scannerContainer.style.display = "block";
 
-      // Open the camera after the model and .wasm files have loaded 
-      await cvrReady;
-      await pDataLoad.promise;
+        // Open the camera after the model and .wasm files have loaded
+        await init;
+        await pDataLoad.promise;
 
-      // Starts streaming the video
-      await cameraEnhancer.open();
-      const currentCamera = cameraEnhancer.getSelectedCamera();
-      for (let child of cameraListDiv.childNodes) {
-        if (currentCamera.deviceId === child.deviceId) {
-          child.className = "camera-item camera-selected";
+        // Starts streaming the video
+        await cameraEnhancer.open();
+        const currentCamera = cameraEnhancer.getSelectedCamera();
+        for (let child of cameraListDiv.childNodes) {
+          if (currentCamera.deviceId === child.deviceId) {
+            child.className = "camera-item camera-selected";
+          }
         }
-      }
-      passportFrame.style.display = "inline-block";
-      cameraEnhancer.setScanRegion(region());
-      cameraView.setScanRegionMaskVisible(false);
-      await cvRouter.startCapturing("ReadPassport");
-    })());
+        cameraEnhancer.setScanRegion(region());
+        cameraView.setScanRegionMaskVisible(false);
+
+        // Show Passport guide frame
+        passportFrame.style.display = "inline-block";
+
+        await cvRouter.startCapturing(CVR_TEMPLATE);
+      })());
   } catch (ex) {
     let errMsg = ex.message || ex;
     console.error(errMsg);
@@ -32,59 +37,50 @@ async function startCapturing() {
 }
 
 // -----------Logic for calculating scan region ↓------------
-const regionEdgeLength = () => {
-  if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
-  const visibleRegionInPixels = getVisibleRegionOfVideo();
-  const visibleRegionWidth = visibleRegionInPixels.width;
-  const visibleRegionHeight = visibleRegionInPixels.height;
-  const regionEdgeLength = 0.4 * Math.min(visibleRegionWidth, visibleRegionHeight);
-  return Math.round(regionEdgeLength);
-};
-
 const regionLeft = () => {
   if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
   const visibleRegionInPixels = getVisibleRegionOfVideo();
   const currentResolution = cameraEnhancer.getResolution();
-  let vw = currentResolution.width;
-  if (checkOrientation() === "portrait") {
-    vw = Math.min(currentResolution.width, currentResolution.height);
-  } else {
-    vw = Math.max(currentResolution.width, currentResolution.height);
-  }
+
+  const vw =
+    checkOrientation() === "portrait"
+      ? Math.min(currentResolution.width, currentResolution.height)
+      : Math.max(currentResolution.width, currentResolution.height);
   const visibleRegionWidth = visibleRegionInPixels.width;
-  let left = 0.5 - regionEdgeLength() / vw / 2;
+
   let regionCssW;
-  if (document.body.clientWidth > document.body.clientHeight * 6.73) {
+  if (document.body.clientWidth > document.body.clientHeight * PASSPORT_GUIDEBOX_ASPECT_RATIO) {
     let regionCssH = document.body.clientHeight * 0.75;
-    regionCssW = regionCssH * 6.73;
+    regionCssW = regionCssH * PASSPORT_GUIDEBOX_ASPECT_RATIO;
   } else {
     regionCssW = document.body.clientWidth * 0.9;
   }
   regionCssW = Math.min(regionCssW, 600);
+
   const regionWidthInPixel = (visibleRegionWidth / document.body.clientWidth) * regionCssW;
-  left = ((vw - regionWidthInPixel) / 2 / vw) * 100;
-  left = Math.round(left);
-  return left;
+  const left = ((vw - regionWidthInPixel) / 2 / vw) * 100;
+
+  return Math.round(left);
 };
 
 const regionTop = () => {
   if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
+
   const currentResolution = cameraEnhancer.getResolution();
-  let vw = currentResolution.width;
-  let vh = currentResolution.height;
-  if (checkOrientation() === "portrait") {
-    vw = Math.min(currentResolution.width, currentResolution.height);
-    vh = Math.max(currentResolution.width, currentResolution.height);
-  } else {
-    vw = Math.max(currentResolution.width, currentResolution.height);
-    vh = Math.min(currentResolution.width, currentResolution.height);
-  }
-  let top = 0.5 - regionEdgeLength() / vh / 2;
+
+  const vw =
+    checkOrientation() === "portrait"
+      ? Math.min(currentResolution.width, currentResolution.height)
+      : Math.max(currentResolution.width, currentResolution.height);
+  const vh =
+    checkOrientation() === "portrait"
+      ? Math.max(currentResolution.width, currentResolution.height)
+      : Math.min(currentResolution.width, currentResolution.height);
+
   const regionWidthInPixel = vw - (regionLeft() * 2 * vw) / 100;
   const regionHeightInPixel = regionWidthInPixel / 4;
-  top = ((vh - regionHeightInPixel) / 2 / vh) * 100;
-  top = Math.round(top);
-  return top;
+  const top = ((vh - regionHeightInPixel) / 2 / vh) * 100;
+  return Math.round(top);
 };
 
 const region = () => {
@@ -96,19 +92,19 @@ const region = () => {
     isMeasuredInPercentage: true,
   };
   return region;
-}
+};
 // -----------Logic for calculating scan region ↑------------
 
 const restartVideo = async () => {
   resultContainer.style.display = "none";
-  await cvRouter.startCapturing("ReadPassport");
-}
+  await cvRouter.startCapturing(CVR_TEMPLATE);
+};
 
 window.addEventListener("click", () => {
   cameraListDiv.style.display = "none";
   up.style.display = "none";
   down.style.display = "inline-block";
-})
+});
 
 // Recalculate the scan region when the window size changes
 window.addEventListener("resize", () => {
@@ -119,7 +115,7 @@ window.addEventListener("resize", () => {
     cameraEnhancer.setScanRegion(region());
     cameraView.setScanRegionMaskVisible(false);
   }, 500);
-})
+});
 
 // Add click events to buttons
 startScaningBtn.addEventListener("click", startCapturing);
@@ -132,16 +128,16 @@ cameraSelector.addEventListener("click", (e) => {
   cameraListDiv.style.display = isShow ? "none" : "block";
   up.style.display = !isShow ? "inline-block" : "none";
   down.style.display = isShow ? "inline-block" : "none";
-})
+});
 
 playSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "none";
   closeSoundBtn.style.display = "block";
   isPlaySound = false;
-})
+});
 
 closeSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "block";
   closeSoundBtn.style.display = "none";
   isPlaySound = true;
-})
+});

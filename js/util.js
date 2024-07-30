@@ -1,3 +1,8 @@
+/**
+ * Creates a pending promise. Used to keep track of library loading progress
+ *
+ * @returns {Object} An object containing the promise, resolve, and reject functions.
+ */
 export function createPendingPromise() {
   let resolve, reject;
   const promise = new Promise((res, rej) => {
@@ -8,101 +13,75 @@ export function createPendingPromise() {
   return { promise, resolve, reject };
 }
 
-export function getNeedShowFields(result) {
+/* Extracts and returns document fields from the parsed MRZ result
+ *
+ * @param {Object} result - The parsed result object containing document fields.
+ * @returns {Object} An object with key-value pairs of the extracted fields.
+ */
+export function extractDocumentFields(result) {
   const parseResultInfo = {};
   if (!result.exception) {
-    let name = result.getFieldValue("name");
-    parseResultInfo['Name'] = name;
+    const birthYear = result.getFieldValue("birthYear");
+    const birthYearBase = parseInt(birthYear) > new Date().getFullYear() % 100 ? "19" : "20";
+    const fullBirthYear = `${birthYearBase}${birthYear}`;
+    const age = isNaN(parseInt(fullBirthYear)) ? undefined : new Date().getUTCFullYear() - parseInt(fullBirthYear);
 
-    let gender = result.getFieldValue("sex");
-    parseResultInfo["Gender"] = gender;
+    const expiryYear = result.getFieldValue("expiryYear");
+    const expiryYearBase = parseInt(expiryYear) >= 60 ? "19" : "20";
+    const fullExpiryYear = `${expiryYearBase}${expiryYear}`;
 
-    let birthYear = result.getFieldValue("birthYear");
-    let birthMonth = result.getFieldValue("birthMonth");
-    let birthDay = result.getFieldValue("birthDay");
-    if (parseInt(birthYear) > (new Date().getFullYear() % 100)) {
-      birthYear = "19" + birthYear;
-    } else {
-      birthYear = "20" + birthYear;
-    }
-    if(isNaN(parseInt(birthYear))) {
-      parseResultInfo["Age"] = undefined;
-    } else {
-      let age = new Date().getUTCFullYear() - parseInt(birthYear);
-      parseResultInfo["Age"] = age;
-    }
-    let documentNumber = result.getFieldValue("passportNumber");
-    parseResultInfo['Document Number'] = documentNumber;
-
-    let issuingState = result.getFieldValue("issuingState");
-    parseResultInfo['Issuing State'] = issuingState;
-
-    let nationality = result.getFieldValue("nationality");
-    parseResultInfo['Nationality'] = nationality;
-
-    parseResultInfo['Date of Birth (YYYY-MM-DD)'] = birthYear + "-" + birthMonth + "-" + birthDay;
-
-    let expiryYear = result.getFieldValue("expiryYear");
-    let expiryMonth = result.getFieldValue("expiryMonth");
-    let expiryDay = result.getFieldValue("expiryDay");
-    if (parseInt(expiryYear) >= 60) {
-      expiryYear = "19" + expiryYear;
-    } else {
-      expiryYear = "20" + expiryYear;
-    }
-    parseResultInfo["Date of Expiry (YYYY-MM-DD)"] = expiryYear + "-" + expiryMonth + "-" + expiryDay;
-
-    let personalNumber = result.getFieldValue("personalNumber");
-    parseResultInfo["Personal Number"] = personalNumber;
-
-    let primaryIdentifier = result.getFieldValue("primaryIdentifier");
-    parseResultInfo["Primary Identifier(s)"] = primaryIdentifier;
-
-    let secondaryIdentifier = result.getFieldValue("secondaryIdentifier");
-    parseResultInfo["Secondary Identifier(s)"] = secondaryIdentifier;
+    parseResultInfo["Name"] = result.getFieldValue("name");
+    parseResultInfo["Sex"] = result.getFieldValue("sex");
+    parseResultInfo["Age"] = age;
+    parseResultInfo["Document Number"] = result.getFieldValue("passportNumber");
+    parseResultInfo["Issuing State"] = result.getFieldValue("issuingState");
+    parseResultInfo["Nationality"] = result.getFieldValue("nationality");
+    parseResultInfo["Date of Birth (YYYY-MM-DD)"] =
+      fullBirthYear + "-" + result.getFieldValue("birthMonth") + "-" + result.getFieldValue("birthDay");
+    parseResultInfo["Date of Expiry (YYYY-MM-DD)"] =
+      fullExpiryYear + "-" + result.getFieldValue("expiryMonth") + "-" + result.getFieldValue("expiryDay");
+    parseResultInfo["Personal Number"] = result.getFieldValue("personalNumber");
+    parseResultInfo["Primary Identifier(s)"] = result.getFieldValue("primaryIdentifier");
+    parseResultInfo["Secondary Identifier(s)"] = result.getFieldValue("secondaryIdentifier");
   }
   return parseResultInfo;
 }
 
+/**
+ * Checks and returns the current screen orientation.
+ *
+ * @returns {string} The current screen orientation ('portrait' or 'landscape').
+ */
 export function checkOrientation() {
   if (window.matchMedia("(orientation: portrait)").matches) {
-    return 'portrait';
+    return "portrait";
   } else if (window.matchMedia("(orientation: landscape)").matches) {
-    return 'landscape';
+    return "landscape";
   }
 }
 
 export function getVisibleRegionOfVideo() {
-  if(!cameraView || !cameraView.getVideoElement()) return;
+  if (!cameraView || !cameraView.getVideoElement()) return;
   const video = cameraView.getVideoElement();
-  let width = video.videoWidth;
-  let height = video.videoHeight;
-  let objectFit = cameraView.getVideoFit();
+  const { videoWidth, videoHeight } = video;
+  const objectFit = cameraView.getVideoFit();
 
+  // Adjust dimensions based on orientation
   const isPortrait = checkOrientation() === "portrait";
-  let _width = width;
-  let _height = height;
-  if (isPortrait) {
-    _width = Math.min(width, height);
-    _height = Math.max(width, height);
-  } else {
-    _width = Math.max(width, height);
-    _height = Math.min(width, height);
-  }
-  width = _width;
-  height = _height;
+  const width = isPortrait ? Math.min(videoWidth, videoHeight) : Math.max(videoWidth, videoHeight);
+  const height = isPortrait ? Math.max(videoWidth, videoHeight) : Math.min(videoWidth, videoHeight);
 
-  const { width: videoCSSWidth, height: videoCSSHeight } =
-    cameraView._innerComponent.getBoundingClientRect();
+  // Get the CSS dimensions of the video element
+  const { width: videoCSSWidth, height: videoCSSHeight } = cameraView._innerComponent.getBoundingClientRect();
   if (videoCSSWidth <= 0 || videoCSSHeight <= 0) {
-    throw new Error(
-      `Unable to get video dimensions. Video may not be rendered on the page.`
-    );
+    throw new Error(`Unable to get video dimensions. Video may not be rendered on the page.`);
   }
 
   const videoCSSWHRatio = videoCSSWidth / videoCSSHeight,
     videoWHRatio = width / height;
   let cssScaleRatio;
+
+  // Set visible region in pixels
   const regionInPixels = {
     x: 0,
     y: 0,
@@ -115,9 +94,7 @@ export function getVisibleRegionOfVideo() {
     if (videoCSSWHRatio < videoWHRatio) {
       // a part of length is invisible
       cssScaleRatio = videoCSSHeight / height;
-      regionInPixels.x = Math.floor(
-        (width - videoCSSWidth / cssScaleRatio) / 2
-      );
+      regionInPixels.x = Math.floor((width - videoCSSWidth / cssScaleRatio) / 2);
       regionInPixels.y = 0;
       regionInPixels.width = Math.ceil(videoCSSWidth / cssScaleRatio);
       regionInPixels.height = height;
@@ -125,9 +102,7 @@ export function getVisibleRegionOfVideo() {
       // a part of height is invisible
       cssScaleRatio = videoCSSWidth / width;
       regionInPixels.x = 0;
-      regionInPixels.y = Math.floor(
-        (height - videoCSSHeight / cssScaleRatio) / 2
-      );
+      regionInPixels.y = Math.floor((height - videoCSSHeight / cssScaleRatio) / 2);
       regionInPixels.width = width;
       regionInPixels.height = Math.ceil(videoCSSHeight / cssScaleRatio);
     }
