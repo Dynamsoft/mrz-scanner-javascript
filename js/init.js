@@ -71,7 +71,10 @@ let init = (async function initCVR() {
     const recognizedResults = result.textLineResultItems;
     const parsedResults = result.parsedResultItems;
 
-    if (recognizedResults) {
+    if (recognizedResults?.length) {
+      // Play sound feedback if enabled
+      isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
+
       parsedResultName.innerText = "";
       parsedResultSexAndAge.innerText = "";
       parsedResultMain.innerText = "";
@@ -94,10 +97,8 @@ let init = (async function initCVR() {
       }
       // Add MRZ Text to Result
       const mrzElement = resultToHTMLElement("MRZ String", recognizedResults[0]?.text);
+      mrzElement.classList.add("code");
       parsedResultMain.appendChild(mrzElement);
-
-      // Play sound feedback if enabled
-      isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
 
       resultContainer.style.display = "flex";
       cameraListContainer.style.display = "none";

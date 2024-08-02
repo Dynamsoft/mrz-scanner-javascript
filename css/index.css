@@ -50,7 +50,7 @@ img {
   justify-content: space-between;
   align-items: center;
   color: #ffffff;
-  background-color: #323234;
+  background-color: #2b2b2b;
   padding: 30px 0;
 }
 
@@ -62,6 +62,10 @@ img {
 .home-page .description {
   width: 50%;
   text-align: center;
+  background-color: #323234;
+  margin: 0 auto;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .home-page .description .title {
@@ -88,6 +92,7 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .home-page .description .start-btn:hover {
@@ -147,6 +152,7 @@ img {
   background-color: #000000;
   z-index: 1;
   display: none;
+  border-right: #aaaaaa;
 }
 
 .scanner-container .header .camera-list .camera-item {
@@ -155,7 +161,7 @@ img {
   color: #aaaaaa;
   border-bottom: 1px solid rgb(50, 50, 52);
   font-size: 12px;
-  font-family: "OpenSans-Regular";
+  font-family: OpenSans-Regular;
   line-height: 40px;
   padding: 0 10px;
   overflow: hidden;
@@ -177,9 +183,11 @@ img {
 }
 
 .scanner-container .header .music-container {
-  width: 30px;
-  height: 30px;
-  margin-top: 5px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
 }
 
@@ -188,12 +196,12 @@ img {
 }
 
 .scanner-container .header .music {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
 .scanner-container .header .no-music {
-  width: 23px;
+  width: 24px;
   height: 24px;
   display: none;
 }
@@ -258,6 +266,9 @@ img {
 .result-container .parsed-result-area .parsed-filed .field-value {
   word-wrap: break-word;
 }
+.result-container .parsed-result-area .code .field-value {
+  font-family: monospace;
+}
 
 .result-container .restart-video {
   width: 100%;
@@ -267,6 +278,7 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .result-container .restart-video .btn-restart-video {
@@ -300,8 +312,17 @@ img {
 }
 
 @media screen and (max-width: 800px) {
+  .home-page {
+    background-color: #323234;
+  }
+
   .home-page .description {
     width: 80%;
+    box-shadow: none;
+  }
+
+  .home-page .description .start-btn {
+    font-size: 20px;
   }
 }
 

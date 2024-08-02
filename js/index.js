@@ -133,11 +133,11 @@ cameraSelector.addEventListener("click", (e) => {
 playSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "none";
   closeSoundBtn.style.display = "block";
-  isPlaySound = false;
+  isSoundOn = false;
 });
 
 closeSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "block";
   closeSoundBtn.style.display = "none";
-  isPlaySound = true;
+  isSoundOn = true;
 });
