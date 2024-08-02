@@ -7,8 +7,9 @@ let pDataLoad = createPendingPromise();
  * To use the library, you need to first specify a license key using the API "initLicense" as shown below.
  */
 Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
-/**
- * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=cvs&utm_source=docs&package=js to get your own trial license good for 30 days.
+
+/** 
+ * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=passport&utm_source=docs&package=js to get your own trial license good for 30 days. 
  * Note that if you downloaded this sample from Dynamsoft while logged in, the above license key may already be your own 30-day trial license.
  * For more information, see https://www.dynamsoft.com/label-recognition/programming/javascript/user-guide.html?ver=latest#specify-the-license or contact support@dynamsoft.com.
  * LICENSE ALERT - THE END
@@ -109,22 +110,4 @@ let init = (async function initCVR() {
   await cvRouter.addResultReceiver(resultReceiver);
 })();
 
-// Helper function to create HTML element that holds the parsed results
-function resultToHTMLElement(field, value) {
-  const p = document.createElement("p");
-  p.className = "parsed-filed";
-  const spanFieldName = document.createElement("span");
-  spanFieldName.className = "field-name";
-  const spanValue = document.createElement("span");
-  spanValue.className = "field-value";
-
-  spanFieldName.innerText = `${field} : `;
-  spanValue.innerText = `${value || "Not detected"}`;
-
-  p.appendChild(spanFieldName);
-  p.appendChild(spanValue);
-
-  return p;
-}
-
-export { pDataLoad, init };
+export { pDataLoad, cvrReady }
