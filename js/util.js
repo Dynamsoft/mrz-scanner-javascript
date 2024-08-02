@@ -109,3 +109,27 @@ export function getVisibleRegionOfVideo() {
   }
   return regionInPixels;
 }
+
+/**
+ * Create an HTML paragraph element containing the document field name and value.
+ *
+ * @param {string} field - The document field name.
+ * @param {string} value - The document field value.
+ * @returns {HTMLElement} The paragraph element containing the formatted document field name and value.
+ */
+export function resultToHTMLElement(field, value) {
+  const p = document.createElement("p");
+  p.className = "parsed-filed";
+  const spanFieldName = document.createElement("span");
+  spanFieldName.className = "field-name";
+  const spanValue = document.createElement("span");
+  spanValue.className = "field-value";
+
+  spanFieldName.innerText = `${field} : `;
+  spanValue.innerText = `${value || "Not detected"}`;
+
+  p.appendChild(spanFieldName);
+  p.appendChild(spanValue);
+
+  return p;
+}

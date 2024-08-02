@@ -1,4 +1,4 @@
-import { createPendingPromise, extractDocumentFields } from "./util.js";
+import { createPendingPromise, extractDocumentFields, resultToHTMLElement } from "./util.js";
 
 // Promise variable used to control model loading state
 let pDataLoad = createPendingPromise();
@@ -108,23 +108,5 @@ let init = (async function initCVR() {
   };
   await cvRouter.addResultReceiver(resultReceiver);
 })();
-
-// Helper function to create HTML element that holds the parsed results
-function resultToHTMLElement(field, value) {
-  const p = document.createElement("p");
-  p.className = "parsed-filed";
-  const spanFieldName = document.createElement("span");
-  spanFieldName.className = "field-name";
-  const spanValue = document.createElement("span");
-  spanValue.className = "field-value";
-
-  spanFieldName.innerText = `${field} : `;
-  spanValue.innerText = `${value || "Not detected"}`;
-
-  p.appendChild(spanFieldName);
-  p.appendChild(spanValue);
-
-  return p;
-}
 
 export { pDataLoad, init };
