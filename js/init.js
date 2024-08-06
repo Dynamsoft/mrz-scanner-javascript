@@ -49,6 +49,7 @@ async function initDCE() {
       }
       cameraItem.className = "camera-item camera-selected";
       cameraEnhancer.selectCamera(camera);
+      cameraSelector.click();
     });
     cameraListContainer.appendChild(cameraItem);
   }
