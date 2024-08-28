@@ -31,10 +31,10 @@ function startCapturing(mode) {
       cameraEnhancer.setScanRegion(region());
       cameraView.setScanRegionMaskVisible(false);
 
+      await cvRouter.startCapturing(SCAN_TEMPLATES[mode]);
+
       // Show MRZ guide frame
       mrzGuideFrame.style.display = "inline-block";
-
-      await cvRouter.startCapturing(SCAN_TEMPLATES[mode]);
 
       // Update button styles to show selected scan mode
       document.querySelectorAll(".scan-option-btn").forEach((button) => {
