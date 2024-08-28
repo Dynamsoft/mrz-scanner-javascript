@@ -1,6 +1,6 @@
 # About the solution
 
-Passport MRZ Scanner enables camera to scan the MRZ code of a passport. It will extract all data like firstname, lastname, passport number, nationality, date of birth, expiration date and personal number from the MRZ string, and converts the encoded string into human-readable fields. Welcome to visit dynamsoft's [official website](https://dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/passport-mrz-scanner.html) to learn more about this solution.
+General MRZ Scanner enables camera to scan the MRZ code of ID-cards, passports, and visas. Currently, the General MRZ Scanner supports TD-1, TD-2, TD-3, MRV-A, and MRV-B standards. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
 
 ## Web demo
 
@@ -30,12 +30,12 @@ cd passport-MRZ-scanner-javascript
 
 ## Request a Trial License
 
-The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=passport&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
+The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (in the file `js/init.js`) serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=passport&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
 
 ## Project Structure
 
 ```text
-Passport MRZ Scanner
+General MRZ Scanner
 ├── assets
 │   ├── ...
 │   ├── ...
@@ -103,7 +103,3 @@ The following table is a list of supported browsers based on the above requireme
   <sup>1</sup> devices running iOS needs to be on iOS 14.3+ for camera video streaming to work in Chrome, Firefox or other Apps using webviews.
 
 Apart from the browsers, the operating systems may impose some limitations of their own that could restrict the use of the SDK. Browser compatibility ultimately depends on whether the browser on that particular operating system supports the features listed above.
-
-## Support
-
-If you have any questions, feel free to [contact Dynamsoft support](https://www.dynamsoft.com/company/contact?utm_source=docs&package=js).

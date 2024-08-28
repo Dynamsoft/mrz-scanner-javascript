@@ -1,12 +1,14 @@
-import { createPendingPromise, extractDocumentFields, resultToHTMLElement } from "./util.js";
+import { judgeCurResolution } from "./util.js";
+import { createPendingPromise, extractDocumentFields, resultToHTMLElement, formatMRZ } from "./util.js";
 
 // Promise variable used to control model loading state
-let pDataLoad = createPendingPromise();
+const pDataLoad = createPendingPromise();
 
 /** LICENSE ALERT - README
  * To use the library, you need to first specify a license key using the API "initLicense" as shown below.
  */
 Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
+
 /**
  * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=cvs&utm_source=docs&package=js to get your own trial license good for 30 days.
  * Note that if you downloaded this sample from Dynamsoft while logged in, the above license key may already be your own 30-day trial license.
@@ -37,21 +39,41 @@ async function initDCE() {
   // Get the camera information of the device and render the camera list
   cameraList = await cameraEnhancer.getAllCameras();
   for (let camera of cameraList) {
-    const cameraItem = document.createElement("div");
-    cameraItem.className = "camera-item";
-    cameraItem.innerText = camera.label;
-    cameraItem.deviceId = camera.deviceId;
+    for (let res of Object.keys(resolutions)) {
+      const cameraItem = document.createElement("div");
+      cameraItem.className = "camera-item";
+      cameraItem.innerText = `${camera.label} (${res})`;
+      cameraItem.deviceId = camera.deviceId;
+      cameraItem.resolution = res;
 
-    cameraItem.addEventListener("click", (e) => {
-      e.stopPropagation();
-      for (let child of cameraListContainer.childNodes) {
-        child.className = "camera-item";
-      }
-      cameraItem.className = "camera-item camera-selected";
-      cameraEnhancer.selectCamera(camera);
-      cameraSelector.click();
-    });
-    cameraListContainer.appendChild(cameraItem);
+      cameraItem.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        for (let child of cameraListContainer.childNodes) {
+          child.className = "camera-item";
+        }
+        cameraItem.className = "camera-item camera-selected";
+        await cameraEnhancer.selectCamera(camera);
+        await cameraEnhancer.setResolution({
+          width: resolutions[res][0],
+          height: resolutions[res][1],
+        });
+
+        const currentCamera = await cameraEnhancer.getSelectedCamera();
+        const currentResolution = judgeCurResolution(await cameraEnhancer.getResolution());
+        if (judgeCurResolution(currentResolution) !== res) {
+          // Update resolution to the current resolution that is supported
+          for (let child of cameraListContainer.childNodes) {
+            child.className = "camera-item";
+            if (currentCamera.deviceId === child.deviceId && currentResolution === child.resolution) {
+              child.className = "camera-item camera-selected";
+            }
+          }
+        }
+        // Hide options after user clicks an option
+        cameraSelector.click();
+      });
+      cameraListContainer.appendChild(cameraItem);
+    }
   }
   cameraView.setVideoFit("cover");
   await cameraEnhancer.setResolution({ width: 1920, height: 1080 });
@@ -60,7 +82,7 @@ async function initDCE() {
 /**
  * Initialize CaptureVisionRouter, CameraEnhancer, and CameraView instance
  */
-let init = (async function initCVR() {
+let init = (async () => {
   await initDCE();
   cvRouter = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
   await cvRouter.initSettings("./template.json");
@@ -76,33 +98,28 @@ let init = (async function initCVR() {
       // Play sound feedback if enabled
       isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
 
-      parsedResultName.innerText = "";
-      parsedResultSexAndAge.innerText = "";
-      parsedResultMain.innerText = "";
+      parsedResultArea.innerText = "";
+
+      // Add MRZ Text to Result
+      const mrzElement = resultToHTMLElement("MRZ String", formatMRZ(recognizedResults[0]?.text));
+      mrzElement.classList.add("code");
+      parsedResultArea.appendChild(mrzElement);
+
       // If a parsed result is obtained, use it to render the result page
       if (parsedResults) {
         const parseResultInfo = extractDocumentFields(parsedResults[0]);
-        parsedResultName.innerText = parseResultInfo["Name"] || "Name not detected";
-        const sex = parseResultInfo["Sex"] || "Sex not detected";
-        const age = parseResultInfo["Age"] || "Age not detected";
-        parsedResultSexAndAge.innerText = sex + ", Age: " + age;
-
-        for (let field in parseResultInfo) {
-          if (["Name", "Sex", "Age"].includes(field)) continue;
-          const resultElement = resultToHTMLElement(field, parseResultInfo[field]);
-          parsedResultMain.appendChild(resultElement);
-        }
+        Object.entries(parseResultInfo).map(([field, value]) => {
+          const resultElement = resultToHTMLElement(field, value);
+          parsedResultArea.appendChild(resultElement);
+        });
       } else {
         alert(`Failed to parse the content.`);
         parsedResultArea.style.justifyContent = "flex-start";
       }
-      // Add MRZ Text to Result
-      const mrzElement = resultToHTMLElement("MRZ String", recognizedResults[0]?.text);
-      mrzElement.classList.add("code");
-      parsedResultMain.appendChild(mrzElement);
-
       resultContainer.style.display = "flex";
       cameraListContainer.style.display = "none";
+      scanModeContainer.style.display = "none";
+
       cvRouter.stopCapturing();
       cameraView.clearAllInnerDrawingItems();
     }

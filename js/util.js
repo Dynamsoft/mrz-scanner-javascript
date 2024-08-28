@@ -13,7 +13,8 @@ export function createPendingPromise() {
   return { promise, resolve, reject };
 }
 
-/* Extracts and returns document fields from the parsed MRZ result
+/**
+ * Extracts and returns document fields from the parsed MRZ result
  *
  * @param {Object} result - The parsed result object containing document fields.
  * @returns {Object} An object with key-value pairs of the extracted fields.
@@ -21,28 +22,28 @@ export function createPendingPromise() {
 export function extractDocumentFields(result) {
   const parseResultInfo = {};
   if (!result.exception) {
+    const type = result.getFieldValue("documentCode");
+    const documentType = JSON.parse(result.jsonString).CodeType;
     const birthYear = result.getFieldValue("birthYear");
     const birthYearBase = parseInt(birthYear) > new Date().getFullYear() % 100 ? "19" : "20";
     const fullBirthYear = `${birthYearBase}${birthYear}`;
-    const age = isNaN(parseInt(fullBirthYear)) ? undefined : new Date().getUTCFullYear() - parseInt(fullBirthYear);
 
     const expiryYear = result.getFieldValue("expiryYear");
     const expiryYearBase = parseInt(expiryYear) >= 60 ? "19" : "20";
     const fullExpiryYear = `${expiryYearBase}${expiryYear}`;
 
-    parseResultInfo["Name"] = result.getFieldValue("name");
-    parseResultInfo["Sex"] = result.getFieldValue("sex");
-    parseResultInfo["Age"] = age;
-    parseResultInfo["Document Number"] = result.getFieldValue("passportNumber");
+    parseResultInfo["Document Type"] = documentType;
     parseResultInfo["Issuing State"] = result.getFieldValue("issuingState");
+    parseResultInfo["Surname"] = result.getFieldValue("primaryIdentifier");
+    parseResultInfo["Given Name"] = result.getFieldValue("secondaryIdentifier");
+    parseResultInfo["Document Number"] =
+      type === "P" ? result.getFieldValue("passportNumber") : result.getFieldValue("documentNumber");
     parseResultInfo["Nationality"] = result.getFieldValue("nationality");
+    parseResultInfo["Sex"] = result.getFieldValue("sex");
     parseResultInfo["Date of Birth (YYYY-MM-DD)"] =
       fullBirthYear + "-" + result.getFieldValue("birthMonth") + "-" + result.getFieldValue("birthDay");
     parseResultInfo["Date of Expiry (YYYY-MM-DD)"] =
       fullExpiryYear + "-" + result.getFieldValue("expiryMonth") + "-" + result.getFieldValue("expiryDay");
-    parseResultInfo["Personal Number"] = result.getFieldValue("personalNumber");
-    parseResultInfo["Primary Identifier(s)"] = result.getFieldValue("primaryIdentifier");
-    parseResultInfo["Secondary Identifier(s)"] = result.getFieldValue("secondaryIdentifier");
   }
   return parseResultInfo;
 }
@@ -132,4 +133,54 @@ export function resultToHTMLElement(field, value) {
   p.appendChild(spanValue);
 
   return p;
+}
+
+/**
+ * Formats a Machine Readable Zone (MRZ) string by adding line breaks based on its length.
+ *
+ * @param {string} [mrzString=""] - The MRZ string to format.
+ * @returns {string} The formatted MRZ string with appropriate line breaks or the original string
+ */
+export function formatMRZ(mrzString = "") {
+  let formattedMRZ = mrzString;
+
+  // Check if the length matches any known MRZ format
+  if (mrzString.length === 88) {
+    // Passport (TD3 format)
+    formattedMRZ = mrzString.slice(0, 44) + "\n" + mrzString.slice(44);
+  } else if (mrzString.length === 90) {
+    // ID card (TD1 format)
+    formattedMRZ = mrzString.slice(0, 30) + "\n" + mrzString.slice(30, 60) + "\n" + mrzString.slice(60);
+  } else if (mrzString.length === 72) {
+    // Visa (TD2 format)
+    formattedMRZ = mrzString.slice(0, 36) + "\n" + mrzString.slice(36);
+  }
+
+  return formattedMRZ;
+}
+
+/** Check if current resolution is Full HD or HD
+ * @params {Object} currentResolution - an object with `width` and `height` to represent the current resolution of the camera
+ * @returns {string} Either "HD" or "Full HD" depending of the resolution of the screen
+ */
+export const judgeCurResolution = (currentResolution) => {
+  const { width, height } = currentResolution;
+  const minValue = Math.min(width, height);
+  const maxValue = Math.max(width, height);
+
+  if (minValue > 480 && minValue < 960 && maxValue > 960 && maxValue < 1440) {
+    return "HD";
+  } else if (minValue > 900 && minValue < 1440 && maxValue > 1400 && maxValue < 2160) {
+    return "Full HD";
+  }
+};
+
+/**
+ * Checks if we should show the switch scan mode buttons
+ * @returns true if cameraEnhancer is open, false otherwise
+ */
+export function shouldShowScanModeContainer() {
+  const isHomepageClosed = homePage.style.display === "none";
+  const isResultClosed = resultContainer.style.display === "none" || resultContainer.style.display === "";
+  scanModeContainer.style.display = isHomepageClosed && isResultClosed ? "flex" : "none";
 }
