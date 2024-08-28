@@ -1,6 +1,6 @@
 # About the solution
 
-Passport MRZ Scanner enables camera to scan the MRZ code of a passport. It will extract all data like firstname, lastname, passport number, nationality, date of birth, expiration date and personal number from the MRZ string, and converts the encoded string into human-readable fields. Welcome to visit dynamsoft's [official website](https://dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/passport-mrz-scanner.html) to learn more about this solution.
+General MRZ Scanner enables camera to scan the MRZ code of ID-cards, passports, and visas. Currently, the General MRZ Scanner supports TD-1, TD-2, TD-3, MRV-A, and MRV-B standards. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
 
 ## Web demo
 
@@ -30,12 +30,12 @@ cd passport-MRZ-scanner-javascript
 
 ## Request a Trial License
 
-The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=passport&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
+The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (in the file `js/init.js`) serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=passport&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
 
 ## Project Structure
 
 ```text
-Passport MRZ Scanner
+General MRZ Scanner
 ├── assets
 │   ├── ...
 │   ├── ...
@@ -47,7 +47,7 @@ Passport MRZ Scanner
 │   ├── ...
 │   └── ...
 ├── js
-│   ├── define.js
+│   ├── const.js
 │   ├── index.js
 │   ├── init.js
 │   └── util.js
@@ -59,7 +59,7 @@ Passport MRZ Scanner
  * `/css` : This directory contains the CSS file(s) used for styling the project.
  * `/font` : This directory contains the font files used in the project.
  * `/js` : This directory contains all the JavaScript files used in the project.
-   * `define.js` : This file contains definitions of certain constants or variables used across the project.
+   * `const.js` : This file contains definitions of certain constants or variables used across the project.
    * `index.js`: This is the main JavaScript file where the core logic of the project is implemented.
    * `init.js` : This file is used for initialization purposes, such as initializing license, load resources, etc.
    * `util.js` : This file contains utility functions that are used across the project.

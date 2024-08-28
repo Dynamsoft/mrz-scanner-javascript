@@ -1,29 +1,50 @@
-import { pDataLoad, cvrReady } from "./init.js";
-import { checkOrientation, getVisibleRegionOfVideo } from "./util.js"
+import { init, pDataLoad } from "./init.js";
+import { judgeCurResolution, shouldShowScanModeContainer } from "./util.js";
+import { checkOrientation, getVisibleRegionOfVideo } from "./util.js";
 
-async function startCapturing() {
+function startCapturing(mode) {
   try {
-    await (promiseCVRReady = promiseCVRReady || (async () => {
+    (async () => {
       homePage.style.display = "none";
       scannerContainer.style.display = "block";
 
-      // Open the camera after the model and .wasm files have loaded 
-      await cvrReady;
+      // Open the camera after the model and .wasm files have loaded
+      pInit = pInit || (await init);
       await pDataLoad.promise;
 
       // Starts streaming the video
-      await cameraEnhancer.open();
+      if (cameraEnhancer.isOpen()) {
+        await cvRouter.stopCapturing();
+        await cameraView.clearAllInnerDrawingItems();
+      } else {
+        await cameraEnhancer.open();
+      }
+
+      // Highlight the selected camera in the camera list container
       const currentCamera = cameraEnhancer.getSelectedCamera();
-      for (let child of cameraListDiv.childNodes) {
-        if (currentCamera.deviceId === child.deviceId) {
+      const currentResolution = judgeCurResolution(cameraEnhancer.getResolution());
+      cameraListContainer.childNodes.forEach((child) => {
+        if (currentCamera.deviceId === child.deviceId && currentResolution === child.resolution) {
           child.className = "camera-item camera-selected";
         }
-      }
-      passportFrame.style.display = "inline-block";
+      });
       cameraEnhancer.setScanRegion(region());
       cameraView.setScanRegionMaskVisible(false);
-      await cvRouter.startCapturing("ReadPassport");
-    })());
+
+      // Show MRZ guide frame
+      mrzGuideFrame.style.display = "inline-block";
+
+      await cvRouter.startCapturing(SCAN_TEMPLATES[mode]);
+
+      // Update button styles to show selected scan mode
+      document.querySelectorAll(".scan-option-btn").forEach((button) => {
+        button.classList.remove("selected");
+      });
+      document.querySelector(`#scan-${mode}-btn`).classList.add("selected");
+
+      currentMode = mode;
+      scanModeContainer.style.display = "flex";
+    })();
   } catch (ex) {
     let errMsg = ex.message || ex;
     console.error(errMsg);
@@ -31,60 +52,55 @@ async function startCapturing() {
   }
 }
 
-// -----------Logic for calculating scan region ↓------------
-const regionEdgeLength = () => {
-  if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
-  const visibleRegionInPixels = getVisibleRegionOfVideo();
-  const visibleRegionWidth = visibleRegionInPixels.width;
-  const visibleRegionHeight = visibleRegionInPixels.height;
-  const regionEdgeLength = 0.4 * Math.min(visibleRegionWidth, visibleRegionHeight);
-  return Math.round(regionEdgeLength);
-};
+SCAN_MODES.forEach((mode) =>
+  document.querySelector(`#scan-${mode}-btn`).addEventListener("click", () => startCapturing(mode))
+);
 
+// -----------Logic for calculating scan region ↓------------
 const regionLeft = () => {
   if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
   const visibleRegionInPixels = getVisibleRegionOfVideo();
   const currentResolution = cameraEnhancer.getResolution();
-  let vw = currentResolution.width;
-  if (checkOrientation() === "portrait") {
-    vw = Math.min(currentResolution.width, currentResolution.height);
-  } else {
-    vw = Math.max(currentResolution.width, currentResolution.height);
-  }
+
+  const vw =
+    checkOrientation() === "portrait"
+      ? Math.min(currentResolution.width, currentResolution.height)
+      : Math.max(currentResolution.width, currentResolution.height);
   const visibleRegionWidth = visibleRegionInPixels.width;
-  let left = 0.5 - regionEdgeLength() / vw / 2;
+
   let regionCssW;
-  if (document.body.clientWidth > document.body.clientHeight * 6.73) {
+  if (document.body.clientWidth > document.body.clientHeight * MRZ_GUIDEBOX_ASPECT_RATIO) {
     let regionCssH = document.body.clientHeight * 0.75;
-    regionCssW = regionCssH * 6.73;
+    regionCssW = regionCssH * MRZ_GUIDEBOX_ASPECT_RATIO;
   } else {
     regionCssW = document.body.clientWidth * 0.9;
   }
   regionCssW = Math.min(regionCssW, 600);
+
   const regionWidthInPixel = (visibleRegionWidth / document.body.clientWidth) * regionCssW;
-  left = ((vw - regionWidthInPixel) / 2 / vw) * 100;
-  left = Math.round(left);
-  return left;
+  const left = ((vw - regionWidthInPixel) / 2 / vw) * 100;
+
+  return Math.round(left);
 };
 
 const regionTop = () => {
   if (!cameraEnhancer || !cameraEnhancer.isOpen()) return 0;
+
   const currentResolution = cameraEnhancer.getResolution();
-  let vw = currentResolution.width;
-  let vh = currentResolution.height;
-  if (checkOrientation() === "portrait") {
-    vw = Math.min(currentResolution.width, currentResolution.height);
-    vh = Math.max(currentResolution.width, currentResolution.height);
-  } else {
-    vw = Math.max(currentResolution.width, currentResolution.height);
-    vh = Math.min(currentResolution.width, currentResolution.height);
-  }
-  let top = 0.5 - regionEdgeLength() / vh / 2;
+
+  const vw =
+    checkOrientation() === "portrait"
+      ? Math.min(currentResolution.width, currentResolution.height)
+      : Math.max(currentResolution.width, currentResolution.height);
+  const vh =
+    checkOrientation() === "portrait"
+      ? Math.max(currentResolution.width, currentResolution.height)
+      : Math.min(currentResolution.width, currentResolution.height);
+
   const regionWidthInPixel = vw - (regionLeft() * 2 * vw) / 100;
   const regionHeightInPixel = regionWidthInPixel / 4;
-  top = ((vh - regionHeightInPixel) / 2 / vh) * 100;
-  top = Math.round(top);
-  return top;
+  const top = ((vh - regionHeightInPixel) / 2 / vh) * 100;
+  return Math.round(top);
 };
 
 const region = () => {
@@ -96,52 +112,51 @@ const region = () => {
     isMeasuredInPercentage: true,
   };
   return region;
-}
+};
 // -----------Logic for calculating scan region ↑------------
 
-const restartVideo = async () => {
-  resultContainer.style.display = "none";
-  await cvRouter.startCapturing("ReadPassport");
-}
-
 window.addEventListener("click", () => {
-  cameraListDiv.style.display = "none";
+  cameraListContainer.style.display = "none";
   up.style.display = "none";
   down.style.display = "inline-block";
-})
+});
 
 // Recalculate the scan region when the window size changes
 window.addEventListener("resize", () => {
-  passportFrame.style.display = "none";
+  mrzGuideFrame.style.display = "none";
   timer && clearTimeout(timer);
   timer = setTimeout(() => {
-    passportFrame.style.display = "inline-block";
+    shouldShowScanModeContainer();
+    mrzGuideFrame.style.display = "inline-block";
     cameraEnhancer.setScanRegion(region());
     cameraView.setScanRegionMaskVisible(false);
   }, 500);
-})
+});
 
 // Add click events to buttons
-startScaningBtn.addEventListener("click", startCapturing);
+startScaningBtn.addEventListener("click", () => scanBothBtn.click());
+const restartVideo = async () => {
+  resultContainer.style.display = "none";
+  document.querySelector(`#scan-${currentMode}-btn`).click();
+};
 restartVideoBtn.addEventListener("click", restartVideo);
-resultRestartBtn.addEventListener("click", restartVideo);
 
 cameraSelector.addEventListener("click", (e) => {
   e.stopPropagation();
-  const isShow = cameraListDiv.style.display === "block";
-  cameraListDiv.style.display = isShow ? "none" : "block";
+  const isShow = cameraListContainer.style.display === "block";
+  cameraListContainer.style.display = isShow ? "none" : "block";
   up.style.display = !isShow ? "inline-block" : "none";
   down.style.display = isShow ? "inline-block" : "none";
-})
+});
 
 playSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "none";
   closeSoundBtn.style.display = "block";
-  isPlaySound = false;
-})
+  isSoundOn = false;
+});
 
 closeSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "block";
   closeSoundBtn.style.display = "none";
-  isPlaySound = true;
-})
+  isSoundOn = true;
+});
