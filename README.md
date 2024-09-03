@@ -103,3 +103,21 @@ The following table is a list of supported browsers based on the above requireme
   <sup>1</sup> devices running iOS needs to be on iOS 14.3+ for camera video streaming to work in Chrome, Firefox or other Apps using webviews.
 
 Apart from the browsers, the operating systems may impose some limitations of their own that could restrict the use of the SDK. Browser compatibility ultimately depends on whether the browser on that particular operating system supports the features listed above.
+
+
+## Test Setup
+
+To set up and run the tests for this project, follow these steps:
+
+1. Install the project dependencies:
+   ```
+   npm install
+   ```
+
+2. Run the tests:
+   ```
+   npm test
+   ```
+
+This will install all necessary dependencies, including Playwright for end-to-end testing, and then execute the test suite defined in the project.
+

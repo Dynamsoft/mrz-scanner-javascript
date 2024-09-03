@@ -1,0 +1,21 @@
+{
+  "name": "passport-mrz-scanner-javascript",
+  "version": "1.0.0",
+  "description": "General MRZ Scanner enables camera to scan the MRZ code of ID-cards, passports, and visas. Currently, the General MRZ Scanner supports TD-1, TD-2, TD-3, MRV-A, and MRV-B standards. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite --port 3000",
+    "test": "npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.47.1",
+    "@types/node": "^22.5.0"
+  },
+  "dependencies": {
+    "playwright": "^1.47.1",
+    "vite": "^5.4.2"
+  }
+}
