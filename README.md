@@ -1,24 +1,22 @@
 # About the solution
 
-Passport MRZ Scanner enables camera to scan the MRZ code of a passport. It will extract all data like firstname, lastname, passport number, nationality, date of birth, expiration date and personal number from the MRZ string, and converts the encoded string into human-readable fields. Welcome to visit dynamsoft's [official website](https://dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/passport-mrz-scanner.html) to learn more about this solution.
+The MRZ Scanner enables camera to scan the MRZ code of ID-cards and passports. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
 
 ## Web demo
 
-The web demo is available at [https://demo.dynamsoft.com/solutions/passport-scanner/index.html](https://demo.dynamsoft.com/solutions/passport-scanner/index.html) (nothing will be uploaded).
+The web demo is available at [https://demo.dynamsoft.com/solutions/mrz-scanner/index.html](https://demo.dynamsoft.com/solutions/mrz-scanner/index.html) (nothing will be uploaded).
 
 ## Run this Solution
 
-1. Clone the repo to a working directory
+1. Clone the repository to a working directory or download the code as a ZIP file:
 
 ```sh
-git clone https://github.com/Dynamsoft/passport-MRZ-scanner-javascript
+git clone https://github.com/Dynamsoft/MRZ-scanner-javascript
 ```
 
-2. CD to the folder and run an https server
+2. Deploy the files to a directory hosted on an HTTPS server.
 
-```sh
-cd passport-MRZ-scanner-javascript
-```
+3. Open the "index.html" file in your browser.
 
 > Basic Requirements
 >
@@ -30,12 +28,12 @@ cd passport-MRZ-scanner-javascript
 
 ## Request a Trial License
 
-The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=passport&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
+The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (found in the js/init.js file) is a test license valid for 24 hours for any newly authorized browser. If you wish to test the SDK further, you can request a 30-day free trial license through the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
 
 ## Project Structure
 
 ```text
-Passport MRZ Scanner
+MRZ Scanner
 ├── assets
 │   ├── ...
 │   ├── ...
@@ -47,7 +45,7 @@ Passport MRZ Scanner
 │   ├── ...
 │   └── ...
 ├── js
-│   ├── define.js
+│   ├── const.js
 │   ├── index.js
 │   ├── init.js
 │   └── util.js
@@ -59,7 +57,7 @@ Passport MRZ Scanner
  * `/css` : This directory contains the CSS file(s) used for styling the project.
  * `/font` : This directory contains the font files used in the project.
  * `/js` : This directory contains all the JavaScript files used in the project.
-   * `define.js` : This file contains definitions of certain constants or variables used across the project.
+   * `const.js` : This file contains definitions of certain constants or variables used across the project.
    * `index.js`: This is the main JavaScript file where the core logic of the project is implemented.
    * `init.js` : This file is used for initialization purposes, such as initializing license, load resources, etc.
    * `util.js` : This file contains utility functions that are used across the project.
