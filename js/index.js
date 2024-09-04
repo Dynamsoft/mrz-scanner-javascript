@@ -1,5 +1,5 @@
 import { init, pDataLoad } from "./init.js";
-import { judgeCurResolution, shouldShowScanModeContainer } from "./util.js";
+import { judgeCurResolution, shouldShowScanModeContainer, showNotification } from "./util.js";
 import { checkOrientation, getVisibleRegionOfVideo } from "./util.js";
 
 function startCapturing(mode) {
@@ -41,6 +41,7 @@ function startCapturing(mode) {
         button.classList.remove("selected");
       });
       document.querySelector(`#scan-${mode}-btn`).classList.add("selected");
+      showNotification(`Scan mode switched successfully`, "banner-success");
 
       currentMode = mode;
       scanModeContainer.style.display = "flex";
@@ -152,11 +153,13 @@ cameraSelector.addEventListener("click", (e) => {
 playSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "none";
   closeSoundBtn.style.display = "block";
+  showNotification("Sound feedback off", "banner-default");
   isSoundOn = false;
 });
 
 closeSoundBtn.addEventListener("click", () => {
   playSoundBtn.style.display = "block";
   closeSoundBtn.style.display = "none";
+  showNotification("Sound feedback on", "banner-default");
   isSoundOn = true;
 });

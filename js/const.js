@@ -49,3 +49,5 @@ const playSoundBtn = document.querySelector(".music");
 const closeSoundBtn = document.querySelector(".no-music");
 const down = document.querySelector(".down");
 const up = document.querySelector(".up");
+
+const notification = document.querySelector("#notification");
