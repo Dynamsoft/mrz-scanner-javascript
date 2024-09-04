@@ -35,7 +35,7 @@ The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (in the
 ## Project Structure
 
 ```text
-General MRZ Scanner
+MRZ Scanner
 ├── assets
 │   ├── ...
 │   ├── ...
