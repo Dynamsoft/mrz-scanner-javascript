@@ -266,6 +266,7 @@ img {
   height: 10%;
   min-height: 60px;
   max-height: 100px;
+  background-color: #2b2b2b;
   display: flex;
   justify-content: center;
   align-items: center;
