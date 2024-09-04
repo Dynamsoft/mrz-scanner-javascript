@@ -323,6 +323,41 @@ img {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+#notification {
+  text-align: center;
+  text-align: center;
+  padding: 0.5rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  position: absolute;
+  z-index: 3;
+  bottom: -200%;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: Oswald-Light;
+  color: #fff;
+
+  /* Fade in animation */
+  opacity: 0;
+  display: none;
+  transition: opacity 300ms;
+}
+
+.banner-default {
+  background-color: rgb(254, 142, 20, 0.4);
+  border: 1px solid #fe8e14;
+}
+.banner-error {
+  background-color: rgb(252, 2, 0, 0.4);
+  border: 1px solid #fc0200;
+}
+.banner-success {
+  background-color: rgb(124, 252, 0, 0.4);
+  border: 1px solid #00fc15;
+}
+
 @keyframes dce-rotate {
   from {
     transform: rotate(0turn);

@@ -184,3 +184,18 @@ export function shouldShowScanModeContainer() {
   const isResultClosed = resultContainer.style.display === "none" || resultContainer.style.display === "";
   scanModeContainer.style.display = isHomepageClosed && isResultClosed ? "flex" : "none";
 }
+
+/** Show notification banner to users
+ * @params {string} message - noficiation message
+ * @params {string} className - CSS class name to show notification status
+ */
+export function showNotification(message, className) {
+  notification.className = className;
+  notification.innerText = message;
+  notification.style.display = "block";
+  notification.style.opacity = 1;
+  setTimeout(() => {
+    notification.style.opacity = 0;
+    notification.style.display = "none";
+  }, 2000);
+}

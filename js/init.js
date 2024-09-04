@@ -1,4 +1,4 @@
-import { judgeCurResolution } from "./util.js";
+import { judgeCurResolution, showNotification } from "./util.js";
 import { createPendingPromise, extractDocumentFields, resultToHTMLElement, formatMRZ } from "./util.js";
 
 // Promise variable used to control model loading state
@@ -61,7 +61,11 @@ async function initDCE() {
 
         const currentCamera = await cameraEnhancer.getSelectedCamera();
         const currentResolution = judgeCurResolution(await cameraEnhancer.getResolution());
-        if (judgeCurResolution(currentResolution) !== res) {
+        if (currentCamera.deviceId === camera.deviceId && currentResolution === res) {
+          showNotification("Camera and resolution switched successfully!", "banner-success");
+        } else if (judgeCurResolution(currentResolution) !== res) {
+          showNotification(`Resolution switch failed! ${res} is not supported.`, "banner-default");
+
           // Update resolution to the current resolution that is supported
           for (let child of cameraListContainer.childNodes) {
             child.className = "camera-item";
@@ -69,7 +73,10 @@ async function initDCE() {
               child.className = "camera-item camera-selected";
             }
           }
+        } else {
+          showNotification(`Camera switch failed!`, "banner-error");
         }
+
         // Hide options after user clicks an option
         cameraSelector.click();
       });
