@@ -8,17 +8,15 @@ The web demo is available at [https://demo.dynamsoft.com/solutions/mrz-scanner/i
 
 ## Run this Solution
 
-1. Clone the repo to a working directory
+1. Clone the repository to a working directory or download the code as a ZIP file:
 
 ```sh
 git clone https://github.com/Dynamsoft/MRZ-scanner-javascript
 ```
 
-2. CD to the folder and run an https server
+2. Deploy the files to a directory hosted on an HTTPS server.
 
-```sh
-cd MRZ-scanner-javascript
-```
+3. Open the "index.html" file in your browser.
 
 > Basic Requirements
 >
@@ -30,7 +28,7 @@ cd MRZ-scanner-javascript
 
 ## Request a Trial License
 
-The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (in the file `js/init.js`) serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
+The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (found in the js/init.js file) is a test license valid for 24 hours for any newly authorized browser. If you wish to test the SDK further, you can request a 30-day free trial license through the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
 
 ## Project Structure
 
