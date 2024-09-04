@@ -152,7 +152,7 @@ img {
   top: 46px;
   left: 0;
   background-color: #000000;
-  z-index: 2;
+  z-index: 3;
   display: none;
   border-right: #aaaaaa;
 }
