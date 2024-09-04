@@ -164,13 +164,13 @@ export function formatMRZ(mrzString = "") {
  * @returns {string} Either "HD" or "Full HD" depending of the resolution of the screen
  */
 export const judgeCurResolution = (currentResolution) => {
-  const { width, height } = currentResolution;
+  const width = currentResolution?.width ?? 0;
+  const height = currentResolution?.height ?? 0;
   const minValue = Math.min(width, height);
   const maxValue = Math.max(width, height);
-
-  if (minValue > 480 && minValue < 960 && maxValue > 960 && maxValue < 1440) {
+  if (minValue >= 480 && minValue <= 960 && maxValue >= 960 && maxValue <= 1440) {
     return "HD";
-  } else if (minValue > 900 && minValue < 1440 && maxValue > 1400 && maxValue < 2160) {
+  } else if (minValue >= 900 && minValue <= 1440 && maxValue >= 1400 && maxValue <= 2160) {
     return "Full HD";
   }
 };
