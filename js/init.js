@@ -26,6 +26,8 @@ Dynamsoft.DLR.LabelRecognizerModule.onDataLoadProgressChanged = (modelPath, tag,
  */
 Dynamsoft.Core.CoreModule.loadWasm(["DLR", "DCP"]);
 Dynamsoft.DCP.CodeParserModule.loadSpec("MRTD_TD3_PASSPORT");
+Dynamsoft.DCP.CodeParserModule.loadSpec("MRTD_TD1_ID");
+Dynamsoft.DCP.CodeParserModule.loadSpec("MRTD_TD2_ID");
 Dynamsoft.DLR.LabelRecognizerModule.loadRecognitionData("MRZ");
 
 /**
