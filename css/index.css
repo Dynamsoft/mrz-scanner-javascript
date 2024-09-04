@@ -358,6 +358,24 @@ img {
   border: 1px solid #00fc15;
 }
 
+.get-demo-code {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffae38;
+  margin-left: auto;
+  margin-right: 1rem;
+  font-family: Oswald-Regular;
+  text-decoration: none;
+}
+
+.dbr-download-code-icon {
+  width: 16px;
+  height: 16px;
+  stroke: #ffae38;
+  margin-left: 5px;
+}
+
 @keyframes dce-rotate {
   from {
     transform: rotate(0turn);
