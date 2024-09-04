@@ -1,23 +1,23 @@
 # About the solution
 
-General MRZ Scanner enables camera to scan the MRZ code of ID-cards, passports, and visas. Currently, the General MRZ Scanner supports TD-1, TD-2, TD-3, MRV-A, and MRV-B standards. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
+The MRZ Scanner enables camera to scan the MRZ code of ID-cards and passports. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
 
 ## Web demo
 
-The web demo is available at [https://demo.dynamsoft.com/solutions/passport-scanner/index.html](https://demo.dynamsoft.com/solutions/passport-scanner/index.html) (nothing will be uploaded).
+The web demo is available at [https://demo.dynamsoft.com/solutions/mrz-scanner/index.html](https://demo.dynamsoft.com/solutions/mrz-scanner/index.html) (nothing will be uploaded).
 
 ## Run this Solution
 
 1. Clone the repo to a working directory
 
 ```sh
-git clone https://github.com/Dynamsoft/passport-MRZ-scanner-javascript
+git clone https://github.com/Dynamsoft/MRZ-scanner-javascript
 ```
 
 2. CD to the folder and run an https server
 
 ```sh
-cd passport-MRZ-scanner-javascript
+cd MRZ-scanner-javascript
 ```
 
 > Basic Requirements
@@ -30,7 +30,7 @@ cd passport-MRZ-scanner-javascript
 
 ## Request a Trial License
 
-The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (in the file `js/init.js`) serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=passport&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
+The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (in the file `js/init.js`) serves as a test license valid for 24 hours, applicable to any newly authorized browser. To test the SDK further, you can request a 30-day free trial license via the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&utm_source=docs&package=js" target="_blank">Request a Trial License</a> link.
 
 ## Project Structure
 
