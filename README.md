@@ -11,7 +11,7 @@ The web demo is available at [https://demo.dynamsoft.com/solutions/mrz-scanner/i
 1. Clone the repository to a working directory or download the code as a ZIP file:
 
 ```sh
-git clone https://github.com/Dynamsoft/MRZ-scanner-javascript
+git clone https://github.com/Dynamsoft/mrz-scanner-javascript
 ```
 
 2. Deploy the files to a directory hosted on an HTTPS server.
