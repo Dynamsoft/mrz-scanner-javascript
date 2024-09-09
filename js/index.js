@@ -3,11 +3,10 @@ import { judgeCurResolution, shouldShowScanModeContainer, showNotification } fro
 import { checkOrientation, getVisibleRegionOfVideo } from "./util.js";
 
 function startCapturing(mode) {
-  try {
-    (async () => {
-      homePage.style.display = "none";
-      scannerContainer.style.display = "block";
-
+  (async () => {
+    homePage.style.display = "none";
+    scannerContainer.style.display = "block";
+    try {
       // Open the camera after the model and .wasm files have loaded
       pInit = pInit || (await init);
       await pDataLoad.promise;
@@ -45,12 +44,12 @@ function startCapturing(mode) {
 
       currentMode = mode;
       scanModeContainer.style.display = "flex";
-    })();
-  } catch (ex) {
-    let errMsg = ex.message || ex;
-    console.error(errMsg);
-    alert(errMsg);
-  }
+    } catch (ex) {
+      let errMsg = ex.message || ex;
+      console.error(errMsg);
+      alert(errMsg);
+    }
+  })();
 }
 
 SCAN_MODES.forEach((mode) =>
