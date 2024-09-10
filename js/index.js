@@ -46,8 +46,8 @@ async function startCapturing(mode) {
     scanModeContainer.style.display = "flex";
   } catch (ex) {
     let errMsg = ex.message || ex;
-    console.error(`An error occured: ${errMsg}`);
-    alert(`An error occured: ${errMsg}`);
+    console.error(`An error occurred: ${errMsg}`);
+    alert(`An error occurred: ${errMsg}`);
   }
 }
 
