@@ -2,54 +2,52 @@ import { init, pDataLoad } from "./init.js";
 import { judgeCurResolution, shouldShowScanModeContainer, showNotification } from "./util.js";
 import { checkOrientation, getVisibleRegionOfVideo } from "./util.js";
 
-function startCapturing(mode) {
+async function startCapturing(mode) {
   try {
-    (async () => {
-      homePage.style.display = "none";
-      scannerContainer.style.display = "block";
+    homePage.style.display = "none";
+    scannerContainer.style.display = "block";
 
-      // Open the camera after the model and .wasm files have loaded
-      pInit = pInit || (await init);
-      await pDataLoad.promise;
+    // Open the camera after the model and .wasm files have loaded
+    pInit = pInit || (await init);
+    await pDataLoad.promise;
 
-      // Starts streaming the video
-      if (cameraEnhancer.isOpen()) {
-        await cvRouter.stopCapturing();
-        await cameraView.clearAllInnerDrawingItems();
-      } else {
-        await cameraEnhancer.open();
+    // Starts streaming the video
+    if (cameraEnhancer.isOpen()) {
+      await cvRouter.stopCapturing();
+      await cameraView.clearAllInnerDrawingItems();
+    } else {
+      await cameraEnhancer.open();
+    }
+
+    // Highlight the selected camera in the camera list container
+    const currentCamera = cameraEnhancer.getSelectedCamera();
+    const currentResolution = judgeCurResolution(cameraEnhancer.getResolution());
+    cameraListContainer.childNodes.forEach((child) => {
+      if (currentCamera.deviceId === child.deviceId && currentResolution === child.resolution) {
+        child.className = "camera-item camera-selected";
       }
+    });
+    cameraEnhancer.setScanRegion(region());
+    cameraView.setScanRegionMaskVisible(false);
 
-      // Highlight the selected camera in the camera list container
-      const currentCamera = cameraEnhancer.getSelectedCamera();
-      const currentResolution = judgeCurResolution(cameraEnhancer.getResolution());
-      cameraListContainer.childNodes.forEach((child) => {
-        if (currentCamera.deviceId === child.deviceId && currentResolution === child.resolution) {
-          child.className = "camera-item camera-selected";
-        }
-      });
-      cameraEnhancer.setScanRegion(region());
-      cameraView.setScanRegionMaskVisible(false);
+    await cvRouter.startCapturing(SCAN_TEMPLATES[mode]);
 
-      await cvRouter.startCapturing(SCAN_TEMPLATES[mode]);
+    // Show MRZ guide frame
+    mrzGuideFrame.style.display = "inline-block";
 
-      // Show MRZ guide frame
-      mrzGuideFrame.style.display = "inline-block";
+    // Update button styles to show selected scan mode
+    document.querySelectorAll(".scan-option-btn").forEach((button) => {
+      button.classList.remove("selected");
+    });
+    document.querySelector(`#scan-${mode}-btn`).classList.add("selected");
+    showNotification(`Scan mode switched successfully`, "banner-success");
 
-      // Update button styles to show selected scan mode
-      document.querySelectorAll(".scan-option-btn").forEach((button) => {
-        button.classList.remove("selected");
-      });
-      document.querySelector(`#scan-${mode}-btn`).classList.add("selected");
-      showNotification(`Scan mode switched successfully`, "banner-success");
-
-      currentMode = mode;
-      scanModeContainer.style.display = "flex";
-    })();
+    currentMode = mode;
+    scanModeContainer.style.display = "flex";
   } catch (ex) {
     let errMsg = ex.message || ex;
-    console.error(errMsg);
-    alert(errMsg);
+    console.error(`An error occurred: ${errMsg}`);
+    alert(`An error occurred: ${errMsg}`);
   }
 }
 
