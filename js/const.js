@@ -31,6 +31,9 @@ const cameraViewContainer = document.querySelector(".camera-view-container");
 const cameraListContainer = document.querySelector(".camera-list");
 const cameraSelector = document.querySelector(".camera-selector");
 
+const informationBtn = document.querySelectorAll(".information-btn");
+const informationListContainer = document.querySelector(".information-list");
+
 const scannerContainer = document.querySelector(".scanner-container");
 
 const mrzGuideFrame = document.querySelector(".mrz-frame");
