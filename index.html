@@ -65,45 +65,95 @@
           <img class="music" src="./assets/music-selected.svg" alt="music" />
           <img class="no-music" src="./assets/music-unselected.svg" alt="no-music" />
         </div>
-        <a class="get-demo-code" href="https://github.com/Dynamsoft/mrz-scanner-javascript" target="_blank">
-          GET DEMO CODE
-          <svg data-v-8dc7cce2="" viewBox="0 0 18 18" class="dbr-download-code-icon" data-v-20358a6b="">
-            <g data-v-8dc7cce2="" transform="translate(-519 -1339)" data-v-20358a6b="">
-              <g data-v-8dc7cce2="" transform="translate(520 1340)" data-v-20358a6b="">
-                <path
-                  data-v-8dc7cce2=""
-                  d="M528,1356a8,8,0,1,0-8-8A8,8,0,0,0,528,1356Z"
-                  transform="translate(-520 -1340)"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  data-v-20358a6b=""
-                ></path>
-                <path
-                  data-v-8dc7cce2=""
-                  d="M531,1352.274V1344.5"
-                  transform="translate(-523 -1340.387)"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  data-v-20358a6b=""
-                ></path>
-                <path
-                  data-v-8dc7cce2=""
-                  d="M533.554,1352l-4.027,5.027L525.5,1352"
-                  transform="translate(-521.527 -1344.02)"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  data-v-20358a6b=""
-                ></path>
-              </g>
-            </g>
+        <div class="information-btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon icon-tabler icon-tabler-info-circle"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="#aaaaaa"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+            <path d="M12 9h.01" />
+            <path d="M11 12h1v4h1" />
           </svg>
-        </a>
+        </div>
+        <div class="information-list">
+          <a
+            class="information-item"
+            href="https://www.dynamsoft.com/use-cases/mrz-scanner/?utm_source=mrzdemo&package=js"
+            target="_blank"
+          >
+            About
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-external-link"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#aaaaaa"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+              <path d="M11 13l9 -9" />
+              <path d="M15 4h5v5" />
+            </svg>
+          </a>
+          <a class="information-item" href="https://github.com/Dynamsoft/mrz-scanner-mobile/" target="_blank">
+            Github Projects
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-external-link"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#aaaaaa"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+              <path d="M11 13l9 -9" />
+              <path d="M15 4h5v5" />
+            </svg>
+          </a>
+          <a
+            class="information-item"
+            href="https://www.dynamsoft.com/contact/?utm_source=mrzdemo&package=js"
+            target="_blank"
+          >
+            Contact Us
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-external-link"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#aaaaaa"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+              <path d="M11 13l9 -9" />
+              <path d="M15 4h5v5" />
+            </svg>
+          </a>
+        </div>
         <span id="notification"></span>
       </div>
       <div
@@ -300,6 +350,26 @@
     <div class="result-container">
       <div class="result-header">
         <div class="result-title">Scan Results</div>
+        <!-- .information-btn opens the info list from the main scanner header-->
+        <div class="information-btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon icon-tabler icon-tabler-info-circle"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="#aaaaaa"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+            <path d="M12 9h.01" />
+            <path d="M11 12h1v4h1" />
+          </svg>
+        </div>
       </div>
       <div class="parsed-result-area"></div>
       <div class="restart-video">
