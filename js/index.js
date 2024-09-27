@@ -118,6 +118,7 @@ window.addEventListener("click", () => {
   cameraListContainer.style.display = "none";
   up.style.display = "none";
   down.style.display = "inline-block";
+  informationListContainer.style.display = "none";
 });
 
 // Recalculate the scan region when the window size changes
@@ -127,8 +128,8 @@ window.addEventListener("resize", () => {
   timer = setTimeout(() => {
     shouldShowScanModeContainer();
     mrzGuideFrame.style.display = "inline-block";
-    cameraEnhancer.setScanRegion(region());
-    cameraView.setScanRegionMaskVisible(false);
+    cameraEnhancer?.setScanRegion(region());
+    cameraView?.setScanRegionMaskVisible(false);
   }, 500);
 });
 
@@ -161,3 +162,11 @@ closeSoundBtn.addEventListener("click", () => {
   showNotification("Sound feedback on", "banner-default");
   isSoundOn = true;
 });
+
+informationBtn.forEach((infoBtn) =>
+  infoBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isShow = informationListContainer.style.display === "block";
+    informationListContainer.style.display = isShow ? "none" : "block";
+  })
+);
