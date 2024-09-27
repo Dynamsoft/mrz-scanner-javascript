@@ -128,7 +128,7 @@ window.addEventListener("resize", () => {
   timer = setTimeout(() => {
     shouldShowScanModeContainer();
     mrzGuideFrame.style.display = "inline-block";
-    cameraEnhancer.setScanRegion(region());
+    cameraEnhancer?.setScanRegion(region());
     cameraView.setScanRegionMaskVisible(false);
   }, 500);
 });
