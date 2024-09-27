@@ -129,7 +129,7 @@ window.addEventListener("resize", () => {
     shouldShowScanModeContainer();
     mrzGuideFrame.style.display = "inline-block";
     cameraEnhancer?.setScanRegion(region());
-    cameraView.setScanRegionMaskVisible(false);
+    cameraView?.setScanRegionMaskVisible(false);
   }, 500);
 });
 
