@@ -3,56 +3,44 @@
     {
       "Name": "ReadPassportAndId",
       "OutputOriginalImage": 0,
-      "ImageROIProcessingNameArray": [
-        "roi-passport-and-id"
-      ],
-      "SemanticProcessingNameArray":  ["sp-passport-and-id"],
+      "ImageROIProcessingNameArray": ["roi-passport-and-id"],
+      "SemanticProcessingNameArray": ["sp-passport-and-id"],
       "Timeout": 2000
     },
     {
       "Name": "ReadPassport",
       "OutputOriginalImage": 0,
-      "ImageROIProcessingNameArray": [
-        "roi-passport"
-      ],
-      "SemanticProcessingNameArray":  ["sp-passport"],
+      "ImageROIProcessingNameArray": ["roi-passport"],
+      "SemanticProcessingNameArray": ["sp-passport"],
       "Timeout": 2000
     },
     {
       "Name": "ReadId",
       "OutputOriginalImage": 0,
-      "ImageROIProcessingNameArray": [
-        "roi-id"
-      ],
-      "SemanticProcessingNameArray":  ["sp-id"],
+      "ImageROIProcessingNameArray": ["roi-id"],
+      "SemanticProcessingNameArray": ["sp-id"],
       "Timeout": 2000
     }
   ],
   "TargetROIDefOptions": [
     {
       "Name": "roi-passport-and-id",
-      "TaskSettingNameArray": [
-        "task-passport-and-id"
-      ]
+      "TaskSettingNameArray": ["task-passport-and-id"]
     },
     {
       "Name": "roi-passport",
-      "TaskSettingNameArray": [
-        "task-passport"
-      ]
+      "TaskSettingNameArray": ["task-passport"]
     },
     {
       "Name": "roi-id",
-      "TaskSettingNameArray": [
-        "task-id"
-      ]
+      "TaskSettingNameArray": ["task-id"]
     }
   ],
   "TextLineSpecificationOptions": [
     {
       "Name": "tls-mrz-passport",
       "BaseTextLineSpecificationName": "tls-base",
-      "StringLengthRange": [ 44, 44 ],
+      "StringLengthRange": [44, 44],
       "OutputResults": 1,
       "ExpectedGroupsCount": 1,
       "ConcatResults": 1,
@@ -60,12 +48,12 @@
       "SubGroups": [
         {
           "StringRegExPattern": "(P[A-Z<][A-Z<]{3}[A-Z<]{39}){(44)}",
-          "StringLengthRange": [ 44, 44 ],
+          "StringLengthRange": [44, 44],
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
           "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{14}[0-9<][0-9]){(44)}",
-          "StringLengthRange": [ 44, 44 ],
+          "StringLengthRange": [44, 44],
           "BaseTextLineSpecificationName": "tls-base"
         }
       ]
@@ -73,7 +61,7 @@
     {
       "Name": "tls-mrz-id-td2",
       "BaseTextLineSpecificationName": "tls-base",
-      "StringLengthRange": [ 36, 36 ],
+      "StringLengthRange": [36, 36],
       "OutputResults": 1,
       "ExpectedGroupsCount": 1,
       "ConcatResults": 1,
@@ -81,12 +69,12 @@
       "SubGroups": [
         {
           "StringRegExPattern": "([ACI][A-Z<][A-Z<]{3}[A-Z<]{31}){(36)}",
-          "StringLengthRange": [ 36, 36 ],
+          "StringLengthRange": [36, 36],
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
           "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{8}){(36)}",
-          "StringLengthRange": [ 36, 36 ],
+          "StringLengthRange": [36, 36],
           "BaseTextLineSpecificationName": "tls-base"
         }
       ]
@@ -94,25 +82,25 @@
     {
       "Name": "tls-mrz-id-td1",
       "BaseTextLineSpecificationName": "tls-base",
-      "StringLengthRange": [ 30, 30 ],
+      "StringLengthRange": [30, 30],
       "OutputResults": 1,
       "ExpectedGroupsCount": 1,
       "ConcatResults": 1,
       "ConcatSeparator": "",
       "SubGroups": [
         {
-          "StringRegExPattern": "([ACI][A-Z<][A-Z<]{3}[A-Z0-9<]{9}[0-9][A-Z0-9<]{15}){(30)}",
-          "StringLengthRange": [ 30, 30 ],
+          "StringRegExPattern": "([ACI][A-Z<][A-Z<]{3}[A-Z0-9<]{9}[0-9<][A-Z0-9<]{15}){(30)}",
+          "StringLengthRange": [30, 30],
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
           "StringRegExPattern": "([0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z<]{3}[A-Z0-9<]{11}[0-9]){(30)}",
-          "StringLengthRange": [ 30, 30 ],
+          "StringLengthRange": [30, 30],
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
           "StringRegExPattern": "([A-Z<]{30}){(30)}",
-          "StringLengthRange": [ 30, 30 ],
+          "StringLengthRange": [30, 30],
           "BaseTextLineSpecificationName": "tls-base"
         }
       ]
@@ -120,7 +108,7 @@
     {
       "Name": "tls-base",
       "CharacterModelName": "MRZ",
-      "CharHeightRange": [ 5, 1000, 1 ],
+      "CharHeightRange": [5, 1000, 1],
       "BinarizationModes": [
         {
           "BlockSizeX": 30,
@@ -132,11 +120,11 @@
       ],
       "ConfusableCharactersCorrection": {
         "ConfusableCharacters": [
-          [ "0", "O" ],
-          [ "1", "I" ],
-          [ "5", "S" ]
+          ["0", "O"],
+          ["1", "I"],
+          ["5", "S"]
         ],
-        "FontNameArray": [ "OCR_B" ]
+        "FontNameArray": ["OCR_B"]
       }
     }
   ],
@@ -223,7 +211,7 @@
       ],
       "TextDetectionMode": {
         "Mode": "TTDM_LINE",
-        "CharHeightRange": [ 5, 1000, 1 ],
+        "CharHeightRange": [5, 1000, 1],
         "Direction": "HORIZONTAL",
         "Sensitivity": 7
       }
@@ -233,49 +221,37 @@
     {
       "Name": "sp-passport-and-id",
       "ReferenceObjectFilter": {
-        "ReferenceTargetROIDefNameArray": [
-          "roi-passport-and-id"
-        ]
+        "ReferenceTargetROIDefNameArray": ["roi-passport-and-id"]
       },
-      "TaskSettingNameArray": [
-        "dcp-passport-and-id"
-      ]
+      "TaskSettingNameArray": ["dcp-passport-and-id"]
     },
     {
       "Name": "sp-passport",
       "ReferenceObjectFilter": {
-        "ReferenceTargetROIDefNameArray": [
-          "roi-passport"
-        ]
+        "ReferenceTargetROIDefNameArray": ["roi-passport"]
       },
-      "TaskSettingNameArray": [
-        "dcp-passport"
-      ]
+      "TaskSettingNameArray": ["dcp-passport"]
     },
     {
       "Name": "sp-id",
       "ReferenceObjectFilter": {
-        "ReferenceTargetROIDefNameArray": [
-          "roi-id"
-        ]
+        "ReferenceTargetROIDefNameArray": ["roi-id"]
       },
-      "TaskSettingNameArray": [
-        "dcp-id"
-      ]
+      "TaskSettingNameArray": ["dcp-id"]
     }
   ],
   "CodeParserTaskSettingOptions": [
     {
       "Name": "dcp-passport",
-      "CodeSpecifications": [ "MRTD_TD3_PASSPORT" ]
+      "CodeSpecifications": ["MRTD_TD3_PASSPORT"]
     },
     {
       "Name": "dcp-id",
-      "CodeSpecifications": [ "MRTD_TD1_ID", "MRTD_TD2_ID" ]
+      "CodeSpecifications": ["MRTD_TD1_ID", "MRTD_TD2_ID"]
     },
     {
       "Name": "dcp-passport-and-id",
-      "CodeSpecifications": [ "MRTD_TD3_PASSPORT", "MRTD_TD1_ID", "MRTD_TD2_ID" ]
+      "CodeSpecifications": ["MRTD_TD3_PASSPORT", "MRTD_TD1_ID", "MRTD_TD2_ID"]
     }
   ]
 }
