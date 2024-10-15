@@ -105,19 +105,39 @@ The following table is a list of supported browsers based on the above requireme
 Apart from the browsers, the operating systems may impose some limitations of their own that could restrict the use of the SDK. Browser compatibility ultimately depends on whether the browser on that particular operating system supports the features listed above.
 
 
-## Test Setup
+## End to End (E2E) testing with Playwright
 
-To set up and run the tests for this project, follow these steps:
+The end-to-end (E2E) tests for this project are located in the `/e2e` folder. 
+
+To set up and run the tests, follow the steps below:
 
 1. Install the project dependencies:
-   ```
-   npm install
-   ```
+
+```bash
+npm install
+npx playwright install --with-deps # installs Playwright and all required browsers and dependencies
+```
 
 2. Run the tests:
-   ```
-   npm test
-   ```
 
-This will install all necessary dependencies, including Playwright for end-to-end testing, and then execute the test suite defined in the project.
+```bash
+npm test
+```
 
+This command will trigger the Playwright test suite, executing all tests defined in the `/e2e` folder.
+
+### Additional Notes
+
+- **Playwright Configurations:** If you need to customize the Playwright settings (like browser options, timeouts, or environment variables), check the playwright.config.ts file in the root directory.
+
+- **Running Specific Tests:** To run a specific test file or group, use:
+
+```bash
+npx playwright test <test-file-name>
+```
+
+- **Generating Reports:** Playwright can generate test reports. You can view detailed results after the tests by running:
+
+```bash
+npx playwright show-report
+```
