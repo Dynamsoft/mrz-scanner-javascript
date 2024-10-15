@@ -1,10 +1,12 @@
-# About the solution
+# Dynamsoft MRZ Scanner for Web
 
-The MRZ Scanner enables camera to scan the MRZ code of ID-cards and passports. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
+The [Dynamsoft MRZ Scanner](https://www.dynamsoft.com/use-cases/mrz-scanner/?utm_source=mrzdemo&package=js) enables camera to scan the MRZ code of ID-cards and passports. It will extract all data like first name, last name, document number, nationality, date of birth, expiration date and more from the MRZ string, and converts the encoded string into human-readable fields.
 
 ## Web demo
 
-The web demo is available at [https://demo.dynamsoft.com/solutions/mrz-scanner/index.html](https://demo.dynamsoft.com/solutions/mrz-scanner/index.html) (nothing will be uploaded).
+You can scan the QR code below with your phone to visit our online demo, or use a desktop browser to access [https://demo.dynamsoft.com/solutions/mrz-scanner/index.html](https://demo.dynamsoft.com/solutions/mrz-scanner/index.html) (no personal data will be uploaded).
+
+<img src="https://www.dynamsoft.com/webres/wwwroot/images/usecases/mrz-scanner/mrz-scanner-demo-qr-code.svg" alt="mrz-scanner-demo-qr-code" width="200"/>
 
 ## Run this Solution
 
@@ -94,7 +96,7 @@ The following table is a list of supported browsers based on the above requireme
   | Browser Name |     Version      |
   | :----------: | :--------------: |
   |    Chrome    | v78+<sup>1</sup> |
-  |   Firefox    | v63+<sup>1</sup> |
+  |   Firefox    | v68+<sup>1</sup> |
   |     Edge     |       v79+       |
   |    Safari    |       v14+       |
 
