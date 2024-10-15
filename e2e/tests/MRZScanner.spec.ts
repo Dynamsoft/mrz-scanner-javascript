@@ -4,7 +4,7 @@ test.describe.configure({ mode: "serial" });
 
 test.describe("Verify the MRZ Scanner page title and verify user can select different settings", () => {
   test.beforeEach(async ({ mrzScannerPage }) => {
-    // Navigate to the VIN Scanner page
+    // Navigate to the MRZ Scanner page
     await mrzScannerPage.navigateTo();
   });
 
