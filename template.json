@@ -106,7 +106,7 @@
       ]
     },
     {
-      "Name": "tls-base",
+      "Name": "tls_base",
       "CharacterModelName": "MRZ",
       "CharHeightRange": [5, 1000, 1],
       "BinarizationModes": [
