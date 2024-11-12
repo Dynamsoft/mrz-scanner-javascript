@@ -134,7 +134,7 @@ window.addEventListener("resize", () => {
 });
 
 // Add click events to buttons
-startScaningBtn.addEventListener("click", () => scanBothBtn.click());
+startScaningBtn.forEach((btn) => btn.addEventListener("click", () => scanBothBtn.click()));
 const restartVideo = async () => {
   resultContainer.style.display = "none";
   document.querySelector(`#scan-${currentMode}-btn`).click();

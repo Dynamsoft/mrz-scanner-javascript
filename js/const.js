@@ -41,7 +41,7 @@ const mrzGuideFrame = document.querySelector(".mrz-frame");
 const resultContainer = document.querySelector(".result-container");
 const parsedResultArea = document.querySelector(".parsed-result-area");
 
-const startScaningBtn = document.querySelector(".start-btn");
+const startScaningBtn = document.querySelectorAll(".start-btn");
 
 const scanModeContainer = document.querySelector(".scan-mode-container");
 const scanBothBtn = document.querySelector("#scan-both-btn");
