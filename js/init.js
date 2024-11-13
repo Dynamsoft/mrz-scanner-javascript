@@ -1,5 +1,5 @@
 import { judgeCurResolution, showNotification } from "./util.js";
-import { createPendingPromise, extractDocumentFields, resultToHTMLElement, formatMRZ } from "./util.js";
+import { createPendingPromise, extractDocumentFields, resultToHTMLElement } from "./util.js";
 
 // Promise variable used to control model loading state
 const pDataLoad = createPendingPromise();
@@ -117,7 +117,7 @@ export const handleCapturedResult = (result, uploadedImage = null) => {
     parsedResultArea.innerText = "";
 
     // Add MRZ Text to Result
-    const mrzElement = resultToHTMLElement("MRZ String", formatMRZ(recognizedResults[0]?.text));
+    const mrzElement = resultToHTMLElement("MRZ String", recognizedResults[0]?.text);
     mrzElement.classList.add("code");
     parsedResultArea.appendChild(mrzElement);
 

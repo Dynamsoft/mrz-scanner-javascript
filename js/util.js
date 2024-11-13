@@ -135,30 +135,6 @@ export function resultToHTMLElement(field, value) {
   return p;
 }
 
-/**
- * Formats a Machine Readable Zone (MRZ) string by adding line breaks based on its length.
- *
- * @param {string} [mrzString=""] - The MRZ string to format.
- * @returns {string} The formatted MRZ string with appropriate line breaks or the original string
- */
-export function formatMRZ(mrzString = "") {
-  let formattedMRZ = mrzString;
-
-  // Check if the length matches any known MRZ format
-  if (mrzString.length === 88) {
-    // Passport (TD3 format)
-    formattedMRZ = mrzString.slice(0, 44) + "\n" + mrzString.slice(44);
-  } else if (mrzString.length === 90) {
-    // ID card (TD1 format)
-    formattedMRZ = mrzString.slice(0, 30) + "\n" + mrzString.slice(30, 60) + "\n" + mrzString.slice(60);
-  } else if (mrzString.length === 72) {
-    // Visa (TD2 format)
-    formattedMRZ = mrzString.slice(0, 36) + "\n" + mrzString.slice(36);
-  }
-
-  return formattedMRZ;
-}
-
 /** Check if current resolution is Full HD or HD
  * @params {Object} currentResolution - an object with `width` and `height` to represent the current resolution of the camera
  * @returns {string} Either "HD" or "Full HD" depending of the resolution of the screen
