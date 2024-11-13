@@ -174,7 +174,6 @@ takePhotoBtn.addEventListener("click", async (event) => {
 
     // Decode selected image with 'both' template.
     const result = await cvRouter.capture(imageCvs, SCAN_TEMPLATES.both);
-    console.log(result);
     handleCapturedResult(result, image);
   } catch (ex) {
     let errMsg = ex.message || ex;
