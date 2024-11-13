@@ -97,6 +97,10 @@
           <img class="up" src="./assets/arrow-up 1.svg" alt="up" />
         </div>
         <div class="camera-list"></div>
+        <input type="file" class="upload-image-input" style="display: none" />
+        <div class="upload-image-btn" onclick="document.querySelector('.upload-image-input').click()">
+          <img class="upload-image-icon" src="./assets/upload-image.svg" alt="upload-image" />
+        </div>
         <div class="music-container">
           <img class="music" src="./assets/music-selected.svg" alt="music" />
           <img class="no-music" src="./assets/music-unselected.svg" alt="no-music" />
@@ -213,8 +217,8 @@
             right: 0;
             bottom: 0;
             margin: auto;
-            width: 40%;
-            height: 40%;
+            width: 20%;
+            height: 20%;
             fill: #aaa;
             animation: 1s linear infinite dce-rotate;
           "
@@ -407,9 +411,10 @@
           </svg>
         </div>
       </div>
+      <div class="scanned-image"></div>
       <div class="parsed-result-area"></div>
-      <div class="restart-video">
-        <button class="btn-restart-video">Restart Video</button>
+      <div class="scan-again">
+        <button class="btn-scan-again">Scan Again</button>
       </div>
     </div>
     <div class="scan-mode-container">

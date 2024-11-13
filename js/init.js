@@ -100,42 +100,70 @@ let init = (async () => {
 
   /* Defines the result receiver for the solution.*/
   const resultReceiver = new Dynamsoft.CVR.CapturedResultReceiver();
-  resultReceiver.onCapturedResultReceived = (result) => {
-    const recognizedResults = result.textLineResultItems;
-    const parsedResults = result.parsedResultItems;
+  resultReceiver.onCapturedResultReceived = handleCapturedResult;
 
-    if (recognizedResults?.length) {
-      // Play sound feedback if enabled
-      isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
-
-      parsedResultArea.innerText = "";
-
-      // Add MRZ Text to Result
-      const mrzElement = resultToHTMLElement("MRZ String", formatMRZ(recognizedResults[0]?.text));
-      mrzElement.classList.add("code");
-      parsedResultArea.appendChild(mrzElement);
-
-      // If a parsed result is obtained, use it to render the result page
-      if (parsedResults) {
-        const parseResultInfo = extractDocumentFields(parsedResults[0]);
-        Object.entries(parseResultInfo).map(([field, value]) => {
-          const resultElement = resultToHTMLElement(field, value);
-          parsedResultArea.appendChild(resultElement);
-        });
-      } else {
-        alert(`Failed to parse the content.`);
-        parsedResultArea.style.justifyContent = "flex-start";
-      }
-      resultContainer.style.display = "flex";
-      cameraListContainer.style.display = "none";
-      informationListContainer.style.display = "none";
-      scanModeContainer.style.display = "none";
-
-      cvRouter.stopCapturing();
-      cameraView.clearAllInnerDrawingItems();
-    }
-  };
   await cvRouter.addResultReceiver(resultReceiver);
 })();
+
+export const handleCapturedResult = (result, uploadedImage = null) => {
+  const recognizedResults = result.textLineResultItems;
+  const parsedResults = result.parsedResultItems;
+  const originalImage = result.items?.[0]?.imageData;
+
+  if (recognizedResults?.length) {
+    // Play sound feedback if enabled
+    isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
+
+    parsedResultArea.innerText = "";
+
+    // Add MRZ Text to Result
+    const mrzElement = resultToHTMLElement("MRZ String", formatMRZ(recognizedResults[0]?.text));
+    mrzElement.classList.add("code");
+    parsedResultArea.appendChild(mrzElement);
+
+    // If a parsed result is obtained, use it to render the result page
+    if (parsedResults) {
+      const parseResultInfo = extractDocumentFields(parsedResults[0]);
+      Object.entries(parseResultInfo).map(([field, value]) => {
+        const resultElement = resultToHTMLElement(field, value);
+        parsedResultArea.appendChild(resultElement);
+      });
+
+      if (uploadedImage && uploadedImage.type.startsWith("image/")) {
+        handleUploadedImage(uploadedImage);
+      } else if (originalImage) {
+        scannedImage.innerHTML = "";
+        scannedImage.append(originalImage.toCanvas());
+      }
+    } else {
+      alert(`Failed to parse the content.`);
+      parsedResultArea.style.justifyContent = "flex-start";
+    }
+    resultContainer.style.display = "flex";
+    cameraListContainer.style.display = "none";
+    informationListContainer.style.display = "none";
+    scanModeContainer.style.display = "none";
+
+    cameraEnhancer.close();
+    cvRouter.stopCapturing();
+    cameraView.clearAllInnerDrawingItems();
+  }
+};
+
+function handleUploadedImage(file) {
+  const img = document.createElement("img");
+  const imageUrl = URL.createObjectURL(file);
+
+  img.src = imageUrl;
+  img.className = "uploaded-image";
+
+  // Append the image to the div
+  scannedImage.innerHTMl = "";
+  scannedImage.append(img);
+
+  img.onload = () => {
+    URL.revokeObjectURL(imageUrl);
+  };
+}
 
 export { pDataLoad, init };

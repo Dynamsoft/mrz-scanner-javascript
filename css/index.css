@@ -238,6 +238,24 @@ img {
   display: none;
 }
 
+.scanner-container .header .upload-image-btn {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.scanner-container .header .upload-image-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.scanner-container .header .upload-image-icon:hover {
+  opacity: 0.8;
+}
+
 .result-container {
   position: absolute;
   width: 100%;
@@ -269,6 +287,17 @@ img {
   color: #aaaaaa;
 }
 
+.result-container .scanned-image {
+  max-height: 200px;
+}
+
+.result-container .scanned-image img,
+.result-container .scanned-image canvas {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
 .result-container .parsed-result-area {
   width: 100%;
   height: 84%;
@@ -292,7 +321,7 @@ img {
   font-family: monospace;
 }
 
-.result-container .restart-video {
+.result-container .scan-again {
   width: 100%;
   height: 10%;
   min-height: 60px;
@@ -304,7 +333,7 @@ img {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.result-container .restart-video .btn-restart-video {
+.result-container .scan-again .btn-scan-again {
   width: 160px;
   height: 60%;
   border: 0;

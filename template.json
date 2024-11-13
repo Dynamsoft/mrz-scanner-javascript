@@ -2,21 +2,21 @@
   "CaptureVisionTemplates": [
     {
       "Name": "ReadPassportAndId",
-      "OutputOriginalImage": 0,
+      "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-passport-and-id"],
       "SemanticProcessingNameArray": ["sp-passport-and-id"],
       "Timeout": 2000
     },
     {
       "Name": "ReadPassport",
-      "OutputOriginalImage": 0,
+      "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-passport"],
       "SemanticProcessingNameArray": ["sp-passport"],
       "Timeout": 2000
     },
     {
       "Name": "ReadId",
-      "OutputOriginalImage": 0,
+      "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-id"],
       "SemanticProcessingNameArray": ["sp-id"],
       "Timeout": 2000

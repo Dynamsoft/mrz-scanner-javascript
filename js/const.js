@@ -28,6 +28,8 @@ const homePage = document.querySelector(".home-page");
 
 const cameraViewContainer = document.querySelector(".camera-view-container");
 
+const uploadImageInput = document.querySelector(".upload-image-input");
+
 const cameraListContainer = document.querySelector(".camera-list");
 const cameraSelector = document.querySelector(".camera-selector");
 
@@ -39,6 +41,7 @@ const scannerContainer = document.querySelector(".scanner-container");
 const mrzGuideFrame = document.querySelector(".mrz-frame");
 
 const resultContainer = document.querySelector(".result-container");
+const scannedImage = document.querySelector(".scanned-image");
 const parsedResultArea = document.querySelector(".parsed-result-area");
 
 const startScaningBtn = document.querySelectorAll(".start-btn");
@@ -46,7 +49,7 @@ const startScaningBtn = document.querySelectorAll(".start-btn");
 const scanModeContainer = document.querySelector(".scan-mode-container");
 const scanBothBtn = document.querySelector("#scan-both-btn");
 
-const restartVideoBtn = document.querySelector(".btn-restart-video");
+const scanAgainBtn = document.querySelector(".btn-scan-again");
 
 const playSoundBtn = document.querySelector(".music");
 const closeSoundBtn = document.querySelector(".no-music");

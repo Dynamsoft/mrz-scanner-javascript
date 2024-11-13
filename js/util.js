@@ -33,12 +33,12 @@ export function extractDocumentFields(result) {
     const fullExpiryYear = `${expiryYearBase}${expiryYear}`;
 
     parseResultInfo["Document Type"] = documentType;
-    parseResultInfo["Issuing State"] = result.getFieldValue("issuingState");
     parseResultInfo["Surname"] = result.getFieldValue("primaryIdentifier");
     parseResultInfo["Given Name"] = result.getFieldValue("secondaryIdentifier");
+    parseResultInfo["Nationality"] = result.getFieldValue("nationality");
     parseResultInfo["Document Number"] =
       type === "P" ? result.getFieldValue("passportNumber") : result.getFieldValue("documentNumber");
-    parseResultInfo["Nationality"] = result.getFieldValue("nationality");
+    parseResultInfo["Issuing State"] = result.getFieldValue("issuingState");
     parseResultInfo["Sex"] = result.getFieldValue("sex");
     parseResultInfo["Date of Birth (YYYY-MM-DD)"] =
       fullBirthYear + "-" + result.getFieldValue("birthMonth") + "-" + result.getFieldValue("birthDay");
