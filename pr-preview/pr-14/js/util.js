@@ -23,6 +23,7 @@ export function extractDocumentFields(result) {
   const parseResultInfo = {};
   if (!result.exception) {
     const type = result.getFieldValue("documentCode");
+    const documentNumber = type === "P" ? "passportNumber" : "documentNumber";
     const documentType = JSON.parse(result.jsonString).CodeType;
     const birthYear = result.getFieldValue("birthYear");
     const birthYearBase = parseInt(birthYear) > new Date().getFullYear() % 100 ? "19" : "20";
@@ -33,13 +34,30 @@ export function extractDocumentFields(result) {
     const fullExpiryYear = `${expiryYearBase}${expiryYear}`;
 
     parseResultInfo["Document Type"] = documentType;
-    parseResultInfo["Surname"] = result.getFieldValue("primaryIdentifier");
-    parseResultInfo["Given Name"] = result.getFieldValue("secondaryIdentifier");
-    parseResultInfo["Nationality"] = result.getFieldValue("nationality");
-    parseResultInfo["Document Number"] =
-      type === "P" ? result.getFieldValue("passportNumber") : result.getFieldValue("documentNumber");
-    parseResultInfo["Issuing State"] = result.getFieldValue("issuingState");
-    parseResultInfo["Sex"] = result.getFieldValue("sex");
+    parseResultInfo["Surname"] = {
+      text: result.getFieldValue("primaryIdentifier"),
+      status: result.getFieldValidationStatus("primaryIdentifier"),
+    };
+    parseResultInfo["Given Name"] = {
+      text: result.getFieldValue("secondaryIdentifier"),
+      status: result.getFieldValidationStatus("secondaryIdentifier"),
+    };
+    parseResultInfo["Nationality"] = {
+      text: result.getFieldValue("nationality"),
+      status: result.getFieldValidationStatus("nationality"),
+    };
+    parseResultInfo["Document Number"] = {
+      text: result.getFieldValue(documentNumber),
+      status: result.getFieldValidationStatus(documentNumber),
+    };
+    parseResultInfo["Issuing State"] = {
+      text: result.getFieldValue("issuingState"),
+      status: result.getFieldValidationStatus("issuingState"),
+    };
+    parseResultInfo["Sex"] = {
+      text: result.getFieldValue("sex"),
+      status: result.getFieldValidationStatus("sex"),
+    };
     parseResultInfo["Date of Birth (YYYY-MM-DD)"] =
       fullBirthYear + "-" + result.getFieldValue("birthMonth") + "-" + result.getFieldValue("birthDay");
     parseResultInfo["Date of Expiry (YYYY-MM-DD)"] =
@@ -125,9 +143,41 @@ export function resultToHTMLElement(field, value) {
   spanFieldName.className = "field-name";
   const spanValue = document.createElement("span");
   spanValue.className = "field-value";
+  const statusIcon = document.createElement("span");
+  statusIcon.className = "status-icon";
 
-  spanFieldName.innerText = `${field} : `;
-  spanValue.innerText = `${value || "Not detected"}`;
+  // Define success and failed icons
+  const icons = {
+    success: `<svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      </svg>`,
+    failed: `<svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>`,
+  };
+
+  // Handle validation status based on EnumValidationStatus
+  switch (value?.status) {
+    case Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED:
+      statusIcon.innerHTML = icons.success;
+      statusIcon.className += " status-success";
+      statusIcon.title = "Validation passed";
+      break;
+    case Dynamsoft.DCP.EnumValidationStatus.VS_FAILED:
+      statusIcon.innerHTML = icons.failed;
+      statusIcon.className += " status-failed";
+      statusIcon.title = "Validation failed";
+      break;
+    case Dynamsoft.DCP.EnumValidationStatus.VS_NONE:
+    default:
+      // Don't add any icon for VS_NONE
+      statusIcon.style.display = "none";
+      break;
+  }
+
+  spanFieldName.innerText = `${field}`;
+  spanFieldName.append(statusIcon);
+  spanValue.innerText = `${value?.text || value || "Not detected"}`;
 
   p.appendChild(spanFieldName);
   p.appendChild(spanValue);

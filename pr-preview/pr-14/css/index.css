@@ -313,12 +313,35 @@ img {
 
 .result-container .parsed-result-area .parsed-filed .field-name {
   color: #aaaaaa;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .result-container .parsed-result-area .parsed-filed .field-value {
   word-wrap: break-word;
 }
+
 .result-container .parsed-result-area .code .field-value {
   font-family: monospace;
+}
+
+.result-container .parsed-result-area .parsed-filed .status-icon {
+  display: inline-flex;
+  align-items: center;
+  cursor: help; /* Indicates there's a tooltip */
+}
+
+.result-container .parsed-result-area .parsed-filed .status-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.result-container .parsed-result-area .parsed-filed .status-success {
+  color: #22c55e; /* Green */
+}
+
+.result-container .parsed-result-area .parsed-filed .status-failed {
+  color: #ef4444; /* Red */
 }
 
 .result-container .scan-again {
