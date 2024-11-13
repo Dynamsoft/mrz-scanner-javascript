@@ -65,45 +65,24 @@
     <div class="scanner-container">
       <div class="header">
         <div class="camera-selector" title="Select Camera">
-          <svg data-v-10660718="" viewBox="0 0 29.308 17" class="camera-svg">
-            <g data-v-10660718="" transform="translate(-346.925 -627.702)">
-              <g data-v-10660718="" transform="translate(347.425 628.202)">
-                <g data-v-10660718="">
-                  <path
-                    data-v-10660718=""
-                    d="M365.791,644.2H348.656a1.231,1.231,0,0,1-1.231-1.231V629.433a1.231,1.231,0,0,1,1.231-1.231h16a1.231,1.231,0,0,1,1.231,1.231v14.733"
-                    transform="translate(-347.425 -628.202)"
-                    fill="none"
-                    stroke="#aaa"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                  ></path>
-                  <path
-                    data-v-10660718=""
-                    d="M371.81,640.606a1.23,1.23,0,0,1-1.781,1.1l-4.923-2.462a1.229,1.229,0,0,1-.681-1.1v-4.633a1.232,1.232,0,0,1,.681-1.1l4.923-2.462a1.231,1.231,0,0,1,1.781,1.1Z"
-                    transform="translate(-343.502 -627.828)"
-                    fill="none"
-                    stroke="#aaa"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                  ></path>
-                </g>
-              </g>
-            </g>
-          </svg>
-          <img class="down" src="./assets/arrow-down 1.svg" alt="down" />
-          <img class="up" src="./assets/arrow-up 1.svg" alt="up" />
+          <img class="camera-svg" src="./assets/video-camera.svg" alt="camera" />
+          <img class="down" src="./assets/arrow-down.svg" alt="down" />
+          <img class="up" src="./assets/arrow-up.svg" alt="up" />
         </div>
         <div class="camera-list"></div>
-        <input type="file" class="upload-image-input" style="display: none" />
-        <div
-          class="upload-image-btn"
-          onclick="document.querySelector('.upload-image-input').click()"
-          title="Upload Image"
-        >
-          <img class="upload-image-icon" src="./assets/upload-image.svg" alt="upload-image" />
+        <div class="upload-menu-btn">
+          <img class="upload-menu-icon" src="./assets/upload-menu.svg" alt="upload-menu" />
+        </div>
+        <div class="upload-menu-list">
+          <div class="menu-item take-photo-btn">
+            Take a photo
+            <img src="./assets/photo-camera.svg" alt="take-photo-icon" />
+          </div>
+          <div class="menu-item upload-image-btn" onclick="document.querySelector('.upload-image-input').click()">
+            Upload an image
+            <img src="./assets/upload.svg" alt="upload-icon" />
+          </div>
+          <input type="file" class="upload-image-input" style="display: none" />
         </div>
         <div class="music-container">
           <img class="music" src="./assets/music-selected.svg" alt="music" title="Turn sound off" />
@@ -135,43 +114,11 @@
             target="_blank"
           >
             About
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="icon icon-tabler icon-tabler-external-link"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="#aaaaaa"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
-              <path d="M11 13l9 -9" />
-              <path d="M15 4h5v5" />
-            </svg>
+            <img src="./assets/external-link.svg" alt="link-icon" />
           </a>
           <a class="information-item" href="https://github.com/Dynamsoft/mrz-scanner-javascript/" target="_blank">
             Github Projects
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="icon icon-tabler icon-tabler-external-link"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="#aaaaaa"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
-              <path d="M11 13l9 -9" />
-              <path d="M15 4h5v5" />
-            </svg>
+            <img src="./assets/external-link.svg" alt="link-icon" />
           </a>
           <a
             class="information-item"
@@ -179,23 +126,7 @@
             target="_blank"
           >
             Contact Us
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="icon icon-tabler icon-tabler-external-link"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="#aaaaaa"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
-              <path d="M11 13l9 -9" />
-              <path d="M15 4h5v5" />
-            </svg>
+            <img src="./assets/external-link.svg" alt="link-icon" />
           </a>
         </div>
         <span id="notification"></span>

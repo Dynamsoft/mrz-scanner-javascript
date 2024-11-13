@@ -121,49 +121,69 @@ export const handleCapturedResult = (result, uploadedImage = null) => {
     mrzElement.classList.add("code");
     parsedResultArea.appendChild(mrzElement);
 
-    // If a parsed result is obtained, use it to render the result page
-    if (parsedResults) {
-      const parseResultInfo = extractDocumentFields(parsedResults[0]);
-      Object.entries(parseResultInfo).map(([field, value]) => {
-        const resultElement = resultToHTMLElement(field, value);
-        parsedResultArea.appendChild(resultElement);
-      });
+    const parseSuccess = displayResults(recognizedResults[0]?.text, parsedResults?.[0]);
 
-      if (uploadedImage && uploadedImage.type.startsWith("image/")) {
-        handleUploadedImage(uploadedImage);
-      } else if (originalImage) {
-        scannedImage.innerHTML = "";
-        scannedImage.append(originalImage.toCanvas());
-      }
-    } else {
+    if (!parseSuccess) {
       alert(`Failed to parse the content.`);
       parsedResultArea.style.justifyContent = "flex-start";
     }
-    resultContainer.style.display = "flex";
-    cameraListContainer.style.display = "none";
-    informationListContainer.style.display = "none";
-    scanModeContainer.style.display = "none";
+    displayImage(uploadedImage || originalImage);
 
-    cameraEnhancer.close();
-    cvRouter.stopCapturing();
-    cameraView.clearAllInnerDrawingItems();
+    dispose();
+  } else if (uploadedImage) {
+    parsedResultArea.innerText = "No results found";
+    displayImage(uploadedImage);
+    dispose();
   }
 };
 
-function handleUploadedImage(file) {
-  const img = document.createElement("img");
-  const imageUrl = URL.createObjectURL(file);
+const displayResults = (recognizedText, parsedResult) => {
+  parsedResultArea.innerText = "";
 
-  img.src = imageUrl;
-  img.className = "uploaded-image";
+  // Display MRZ text
+  const mrzElement = resultToHTMLElement("MRZ String", recognizedText);
+  mrzElement.classList.add("code");
+  parsedResultArea.appendChild(mrzElement);
 
-  // Append the image to the div
-  scannedImage.innerHTMl = "";
-  scannedImage.append(img);
+  // Display parsed fields
+  if (parsedResult) {
+    const fields = extractDocumentFields(parsedResult);
+    Object.entries(fields).forEach(([field, value]) => {
+      parsedResultArea.appendChild(resultToHTMLElement(field, value));
+    });
+    return true;
+  }
 
-  img.onload = () => {
-    URL.revokeObjectURL(imageUrl);
-  };
+  return false;
+};
+
+function displayImage(image) {
+  scannedImage.textContent = "";
+
+  if (image.type?.startsWith("image/")) {
+    const img = document.createElement("img");
+    const imageUrl = URL.createObjectURL(image);
+
+    img.src = imageUrl;
+    img.className = "uploaded-image";
+    img.onload = () => URL.revokeObjectURL(imageUrl);
+
+    scannedImage.append(img);
+  } else if (image.toCanvas) {
+    scannedImage.append(image.toCanvas());
+  }
+}
+
+function dispose() {
+  resultContainer.style.display = "flex"; // Show result container
+  cameraListContainer.style.display = "none"; // hide header menu windows
+  informationListContainer.style.display = "none";
+  uploadMenuList.style.display = "none";
+  scanModeContainer.style.display = "none"; // hide scan mode buttons
+
+  cameraEnhancer.close();
+  cvRouter.stopCapturing();
+  cameraView.clearAllInnerDrawingItems();
 }
 
 export { pDataLoad, init };

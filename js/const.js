@@ -28,10 +28,14 @@ const homePage = document.querySelector(".home-page");
 
 const cameraViewContainer = document.querySelector(".camera-view-container");
 
-const uploadImageInput = document.querySelector(".upload-image-input");
-
 const cameraListContainer = document.querySelector(".camera-list");
 const cameraSelector = document.querySelector(".camera-selector");
+
+const uploadMenuBtn = document.querySelector(".upload-menu-btn");
+const uploadMenuList = document.querySelector(".upload-menu-list");
+const uploadImageBtn = document.querySelector(".upload-image-btn");
+const uploadImageInput = document.querySelector(".upload-image-input");
+const takePhotoBtn = document.querySelector(".take-photo-btn");
 
 const informationBtn = document.querySelectorAll(".information-btn");
 const informationListContainer = document.querySelector(".information-list");
