@@ -64,7 +64,7 @@
     </div>
     <div class="scanner-container">
       <div class="header">
-        <div class="camera-selector">
+        <div class="camera-selector" title="Select Camera">
           <svg data-v-10660718="" viewBox="0 0 29.308 17" class="camera-svg">
             <g data-v-10660718="" transform="translate(-346.925 -627.702)">
               <g data-v-10660718="" transform="translate(347.425 628.202)">
@@ -98,14 +98,18 @@
         </div>
         <div class="camera-list"></div>
         <input type="file" class="upload-image-input" style="display: none" />
-        <div class="upload-image-btn" onclick="document.querySelector('.upload-image-input').click()">
+        <div
+          class="upload-image-btn"
+          onclick="document.querySelector('.upload-image-input').click()"
+          title="Upload Image"
+        >
           <img class="upload-image-icon" src="./assets/upload-image.svg" alt="upload-image" />
         </div>
         <div class="music-container">
-          <img class="music" src="./assets/music-selected.svg" alt="music" />
-          <img class="no-music" src="./assets/music-unselected.svg" alt="no-music" />
+          <img class="music" src="./assets/music-selected.svg" alt="music" title="Turn sound off" />
+          <img class="no-music" src="./assets/music-unselected.svg" alt="no-music" title="Turn sound on" />
         </div>
-        <div class="information-btn">
+        <div class="information-btn" title="More Information">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="icon icon-tabler icon-tabler-info-circle"
