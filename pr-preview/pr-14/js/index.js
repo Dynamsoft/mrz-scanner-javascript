@@ -119,7 +119,6 @@ window.addEventListener("click", () => {
   up.style.display = "none";
   down.style.display = "inline-block";
   informationListContainer.style.display = "none"; // hide information menu
-  uploadMenuList.style.display = "none"; // hide upload image menu
 });
 
 // Recalculate the scan region when the window size changes
@@ -163,28 +162,9 @@ uploadImageInput.addEventListener("change", async (event) => {
     console.error(errMsg);
   }
 });
-takePhotoBtn.addEventListener("click", async (event) => {
-  try {
-    const image = cameraEnhancer.fetchImage();
-    const imageCvs = image.toCanvas();
-
-    // Open the camera after the model and .wasm files have loaded
-    pInit = pInit || (await init);
-    await pDataLoad.promise;
-
-    // Decode selected image with 'both' template.
-    const result = await cvRouter.capture(imageCvs, SCAN_TEMPLATES.both);
-    handleCapturedResult(result, image);
-  } catch (ex) {
-    let errMsg = ex.message || ex;
-    alert(errMsg);
-    console.error(errMsg);
-  }
-});
 
 cameraSelector.addEventListener("click", (e) => {
   informationListContainer.style.display = "none"; // hide information menu
-  uploadMenuList.style.display = "none"; // hide upload image menu
 
   e.stopPropagation();
   const isShow = cameraListContainer.style.display === "block";
@@ -209,7 +189,6 @@ closeSoundBtn.addEventListener("click", () => {
 
 informationBtn.forEach((infoBtn) =>
   infoBtn.addEventListener("click", (e) => {
-    uploadMenuList.style.display = "none"; // hide upload image menu
     cameraListContainer.style.display = "none"; // hide camera list
 
     e.stopPropagation();
@@ -217,12 +196,3 @@ informationBtn.forEach((infoBtn) =>
     informationListContainer.style.display = isShow ? "none" : "block";
   })
 );
-
-uploadMenuBtn.addEventListener("click", (e) => {
-  informationListContainer.style.display = "none"; // hide information menu
-  cameraListContainer.style.display = "none"; // hide camera list
-
-  e.stopPropagation();
-  const isShow = uploadMenuList.style.display === "block";
-  uploadMenuList.style.display = isShow ? "none" : "block";
-});
