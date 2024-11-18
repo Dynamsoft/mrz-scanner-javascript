@@ -167,35 +167,40 @@ function displayImage(image, points) {
 
     img.src = imageUrl;
     img.className = "uploaded-image";
+    // Crop image based on points
     img.onload = () => {
       URL.revokeObjectURL(imageUrl);
 
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      if (points) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
-      const width = points[1].x - points[0].x;
-      const height = points[2].y - points[1].y;
+        const width = points[1].x - points[0].x;
+        const height = points[2].y - points[1].y;
 
-      canvas.width = width;
-      canvas.height = height;
+        canvas.width = width;
+        canvas.height = height;
 
-      ctx.drawImage(
-        img,
-        points[0].x,
-        points[0].y,
-        width,
-        height, // Source coordinates
-        0,
-        0,
-        width,
-        height // Destination coordinates
-      );
+        ctx.drawImage(
+          img,
+          points[0].x,
+          points[0].y,
+          width,
+          height, // Source coordinates
+          0,
+          0,
+          width,
+          height // Destination coordinates
+        );
 
-      const croppedImage = new Image();
-      croppedImage.src = canvas.toDataURL();
-      croppedImage.className = "uploaded-image";
+        const croppedImage = new Image();
+        croppedImage.src = canvas.toDataURL();
+        croppedImage.className = "uploaded-image";
 
-      scannedImage.append(croppedImage);
+        scannedImage.append(croppedImage);
+      } else {
+        scannedImage.append(img);
+      }
     };
   } else if (image.toCanvas) {
     scannedImage.append(image.toCanvas());
