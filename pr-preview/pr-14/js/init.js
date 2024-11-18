@@ -104,7 +104,6 @@ let init = (async () => {
 })();
 
 export const handleCapturedResult = (result, uploadedImage = null) => {
-  console.log(result);
   const recognizedResults = result.textLineResultItems;
   const parsedResults = result.parsedResultItems;
   const originalImage = result.items?.[0]?.imageData;
