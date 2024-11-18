@@ -70,19 +70,13 @@
           <img class="up" src="./assets/arrow-up.svg" alt="up" />
         </div>
         <div class="camera-list"></div>
-        <div class="upload-menu-btn">
-          <img class="upload-menu-icon" src="./assets/upload-menu.svg" alt="upload-menu" />
-        </div>
-        <div class="upload-menu-list">
-          <div class="menu-item take-photo-btn">
-            Take a photo
-            <img src="./assets/photo-camera.svg" alt="take-photo-icon" />
-          </div>
-          <div class="menu-item upload-image-btn" onclick="document.querySelector('.upload-image-input').click()">
-            Upload an image
-            <img src="./assets/upload.svg" alt="upload-icon" />
-          </div>
-          <input type="file" class="upload-image-input" style="display: none" />
+        <input type="file" class="upload-image-input" style="display: none" />
+        <div
+          class="upload-img-btn"
+          title="Upload an Image"
+          onclick="document.querySelector('.upload-image-input').click()"
+        >
+          <img class="upload-img-icon" src="./assets/upload-menu.svg" alt="upload-menu" />
         </div>
         <div class="music-container">
           <img class="music" src="./assets/music-selected.svg" alt="music" title="Turn sound off" />

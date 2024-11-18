@@ -106,6 +106,7 @@ let init = (async () => {
 })();
 
 export const handleCapturedResult = (result, uploadedImage = null) => {
+  console.log(result);
   const recognizedResults = result.textLineResultItems;
   const parsedResults = result.parsedResultItems;
   const originalImage = result.items?.[0]?.imageData;
@@ -127,7 +128,7 @@ export const handleCapturedResult = (result, uploadedImage = null) => {
       alert(`Failed to parse the content.`);
       parsedResultArea.style.justifyContent = "flex-start";
     }
-    displayImage(uploadedImage || originalImage);
+    displayImage(uploadedImage || originalImage, recognizedResults[0].location.points);
 
     dispose();
   } else if (uploadedImage) {
@@ -157,7 +158,7 @@ const displayResults = (recognizedText, parsedResult) => {
   return false;
 };
 
-function displayImage(image) {
+function displayImage(image, points) {
   scannedImage.textContent = "";
 
   if (image.type?.startsWith("image/")) {
@@ -166,9 +167,36 @@ function displayImage(image) {
 
     img.src = imageUrl;
     img.className = "uploaded-image";
-    img.onload = () => URL.revokeObjectURL(imageUrl);
+    img.onload = () => {
+      URL.revokeObjectURL(imageUrl);
 
-    scannedImage.append(img);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const width = points[1].x - points[0].x;
+      const height = points[2].y - points[1].y;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.drawImage(
+        img,
+        points[0].x,
+        points[0].y,
+        width,
+        height, // Source coordinates
+        0,
+        0,
+        width,
+        height // Destination coordinates
+      );
+
+      const croppedImage = new Image();
+      croppedImage.src = canvas.toDataURL();
+      croppedImage.className = "uploaded-image";
+
+      scannedImage.append(croppedImage);
+    };
   } else if (image.toCanvas) {
     scannedImage.append(image.toCanvas());
   }
@@ -178,7 +206,6 @@ function dispose() {
   resultContainer.style.display = "flex"; // Show result container
   cameraListContainer.style.display = "none"; // hide header menu windows
   informationListContainer.style.display = "none";
-  uploadMenuList.style.display = "none";
   scanModeContainer.style.display = "none"; // hide scan mode buttons
 
   cameraEnhancer.close();
