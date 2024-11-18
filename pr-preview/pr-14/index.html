@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google Tag Manager  -->
+    <script>
+      if (!navigator.webdriver) {
+        setTimeout(() => {
+          (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0],
+              j = d.createElement(s),
+              dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "//www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+          })(window, document, "script", "dataLayer", "GTM-538F83");
+        }, 0);
+      }
+    </script>
+    <!-- End Google Tag Manager  -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner for Web</title>
@@ -83,7 +101,7 @@
             <path d="M11 12h1v4h1" />
           </svg>
         </div>
-        <div class="information-list">
+        <div class="information-list" style="display: none">
           <a
             class="information-item"
             href="https://www.dynamsoft.com/use-cases/mrz-scanner/?utm_source=mrzdemo&package=js"
@@ -338,6 +356,16 @@
     <script src="./js/const.js"></script>
     <script type="module" src="./js/init.js"></script>
     <script type="module" src="./js/index.js"></script>
+    <!-- Google Tag Manager -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-538F83"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe>
+    </noscript>
+    <!-- End Google Tag Manager -->
     <div style="background-repeat: no-repeat; background-position: 0px 0px; margin: 0; padding: 0px 0px 0px 0px">
       <!--Begin Comm100 Live Chat Code-->
       <div id="comm100-button-20242b05-3781-4d86-9b7f-fab63ddcdde3"></div>
