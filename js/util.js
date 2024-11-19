@@ -37,7 +37,9 @@ export function extractDocumentFields(result) {
 
     return {
       text: `${baseYear}${year}-${result.getFieldValue(monthField)}-${result.getFieldValue(dayField)}`,
-      status: [yearField, monthField, dayField].every((field) => result.getFieldValidationStatus(field))
+      status: [yearField, monthField, dayField].every(
+        (field) => result.getFieldValidationStatus(field) === Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED
+      )
         ? Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED
         : Dynamsoft.DCP.EnumValidationStatus.VS_FAILED,
     };
