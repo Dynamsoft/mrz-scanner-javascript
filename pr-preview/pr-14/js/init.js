@@ -7,11 +7,12 @@ const pDataLoad = createPendingPromise();
 /** LICENSE ALERT - README
  * To use the library, you need to first specify a license key using the API "initLicense" as shown below.
  */
-Dynamsoft.License.LicenseManager.initLicense("");
+Dynamsoft.License.LicenseManager.initLicense(
+  "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAwLTEwMzAwNjk2NyIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21sdHMuZHluYW1zb2Z0LmNvbS8iLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMCIsInNlc3Npb25QYXNzd29yZCI6IkVUSHZVNlNPV3F3ZiIsInN0YW5kYnlTZXJ2ZXJVUkwiOiJodHRwczovL3NsdHMuZHluYW1zb2Z0LmNvbS8iLCJjaGVja0NvZGUiOjM5OTMzODU2Nn0="
+);
 /**
- * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=docs&package=js to get your own trial license good for 30 days.
- * Note that if you downloaded this sample from Dynamsoft while logged in, the above license key may already be your own 30-day trial license.
- * For more information, see https://www.dynamsoft.com/label-recognition/programming/javascript/user-guide.html?ver=latest#specify-the-license or contact support@dynamsoft.com.
+ * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=github&package=js to get your own trial license good for 30 days.
+ * For more information, see https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/mrz-scanner.html#specify-the-license or contact support@dynamsoft.com.
  * LICENSE ALERT - THE END
  */
 
