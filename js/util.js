@@ -20,32 +20,99 @@ export function createPendingPromise() {
  * @returns {Object} An object with key-value pairs of the extracted fields.
  */
 export function extractDocumentFields(result) {
-  const parseResultInfo = {};
-  if (!result.exception) {
-    const type = result.getFieldValue("documentCode");
-    const documentType = JSON.parse(result.jsonString).CodeType;
-    const birthYear = result.getFieldValue("birthYear");
-    const birthYearBase = parseInt(birthYear) > new Date().getFullYear() % 100 ? "19" : "20";
-    const fullBirthYear = `${birthYearBase}${birthYear}`;
-
-    const expiryYear = result.getFieldValue("expiryYear");
-    const expiryYearBase = parseInt(expiryYear) >= 60 ? "19" : "20";
-    const fullExpiryYear = `${expiryYearBase}${expiryYear}`;
-
-    parseResultInfo["Document Type"] = documentType;
-    parseResultInfo["Issuing State"] = result.getFieldValue("issuingState");
-    parseResultInfo["Surname"] = result.getFieldValue("primaryIdentifier");
-    parseResultInfo["Given Name"] = result.getFieldValue("secondaryIdentifier");
-    parseResultInfo["Document Number"] =
-      type === "P" ? result.getFieldValue("passportNumber") : result.getFieldValue("documentNumber");
-    parseResultInfo["Nationality"] = result.getFieldValue("nationality");
-    parseResultInfo["Sex"] = result.getFieldValue("sex");
-    parseResultInfo["Date of Birth (YYYY-MM-DD)"] =
-      fullBirthYear + "-" + result.getFieldValue("birthMonth") + "-" + result.getFieldValue("birthDay");
-    parseResultInfo["Date of Expiry (YYYY-MM-DD)"] =
-      fullExpiryYear + "-" + result.getFieldValue("expiryMonth") + "-" + result.getFieldValue("expiryDay");
+  if (!result || result.exception) {
+    return {};
   }
-  return parseResultInfo;
+
+  const fieldWithStatus = (fieldName) => ({
+    text: result.getFieldValue(fieldName),
+    status: result.getFieldValidationStatus(fieldName),
+  });
+
+  const parseDate = (yearField, monthField, dayField) => {
+    const year = result.getFieldValue(yearField);
+    const currentYear = new Date().getFullYear() % 100;
+    const baseYear =
+      yearField === "expiryYear" ? (parseInt(year) >= 60 ? "19" : "20") : parseInt(year) > currentYear ? "19" : "20";
+
+    return {
+      text: `${baseYear}${year}-${result.getFieldValue(monthField)}-${result.getFieldValue(dayField)}`,
+      status: [yearField, monthField, dayField].every((field) => result.getFieldValidationStatus(field))
+        ? Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED
+        : Dynamsoft.DCP.EnumValidationStatus.VS_FAILED,
+    };
+  };
+
+  const documentType = result.getFieldValue("documentCode");
+  const documentNumberField = documentType === "P" ? "passportNumber" : "documentNumber";
+
+  return {
+    Surname: fieldWithStatus("primaryIdentifier"),
+    "Given Name": fieldWithStatus("secondaryIdentifier"),
+    Nationality: fieldWithStatus("nationality"),
+    "Document Number": fieldWithStatus(documentNumberField),
+    "Issuing State": fieldWithStatus("issuingState"),
+    Sex: fieldWithStatus("sex"),
+    "Date of Birth (YYYY-MM-DD)": parseDate("birthYear", "birthMonth", "birthDay"),
+    "Date of Expiry (YYYY-MM-DD)": parseDate("expiryYear", "expiryMonth", "expiryDay"),
+    "Document Type": JSON.parse(result.jsonString).CodeType,
+  };
+}
+
+/**
+ * Create an HTML paragraph element containing the document field name and value.
+ *
+ * @param {string} field - The document field name.
+ * @param {string} value - The document field value.
+ * @returns {HTMLElement} The paragraph element containing the formatted document field name and value.
+ */
+export function resultToHTMLElement(field, value) {
+  const p = document.createElement("p");
+  p.className = "parsed-filed";
+  const spanFieldName = document.createElement("span");
+  spanFieldName.className = "field-name";
+  const spanValue = document.createElement("span");
+  spanValue.className = "field-value";
+  const statusIcon = document.createElement("span");
+  statusIcon.className = "status-icon";
+
+  // Define success and failed icons
+  const icons = {
+    success: `<svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      </svg>`,
+    failed: `<svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      </svg>`,
+  };
+
+  // Handle validation status based on EnumValidationStatus
+  switch (value?.status) {
+    case Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED:
+      statusIcon.innerHTML = icons.success;
+      statusIcon.className += " status-success";
+      statusIcon.title = "Validation passed";
+      break;
+    case Dynamsoft.DCP.EnumValidationStatus.VS_FAILED:
+      statusIcon.innerHTML = icons.failed;
+      statusIcon.className += " status-failed";
+      statusIcon.title = "Validation failed";
+      break;
+    case Dynamsoft.DCP.EnumValidationStatus.VS_NONE:
+    default:
+      // Don't add any icon for VS_NONE
+      statusIcon.style.display = "none";
+      break;
+  }
+
+  spanFieldName.innerText = `${field}`;
+  spanFieldName.append(statusIcon);
+  spanValue.innerText = `${value?.text || value || "Not detected"}`;
+
+  p.appendChild(spanFieldName);
+  p.appendChild(spanValue);
+
+  return p;
 }
 
 /**
@@ -109,54 +176,6 @@ export function getVisibleRegionOfVideo() {
     }
   }
   return regionInPixels;
-}
-
-/**
- * Create an HTML paragraph element containing the document field name and value.
- *
- * @param {string} field - The document field name.
- * @param {string} value - The document field value.
- * @returns {HTMLElement} The paragraph element containing the formatted document field name and value.
- */
-export function resultToHTMLElement(field, value) {
-  const p = document.createElement("p");
-  p.className = "parsed-filed";
-  const spanFieldName = document.createElement("span");
-  spanFieldName.className = "field-name";
-  const spanValue = document.createElement("span");
-  spanValue.className = "field-value";
-
-  spanFieldName.innerText = `${field} : `;
-  spanValue.innerText = `${value || "Not detected"}`;
-
-  p.appendChild(spanFieldName);
-  p.appendChild(spanValue);
-
-  return p;
-}
-
-/**
- * Formats a Machine Readable Zone (MRZ) string by adding line breaks based on its length.
- *
- * @param {string} [mrzString=""] - The MRZ string to format.
- * @returns {string} The formatted MRZ string with appropriate line breaks or the original string
- */
-export function formatMRZ(mrzString = "") {
-  let formattedMRZ = mrzString;
-
-  // Check if the length matches any known MRZ format
-  if (mrzString.length === 88) {
-    // Passport (TD3 format)
-    formattedMRZ = mrzString.slice(0, 44) + "\n" + mrzString.slice(44);
-  } else if (mrzString.length === 90) {
-    // ID card (TD1 format)
-    formattedMRZ = mrzString.slice(0, 30) + "\n" + mrzString.slice(30, 60) + "\n" + mrzString.slice(60);
-  } else if (mrzString.length === 72) {
-    // Visa (TD2 format)
-    formattedMRZ = mrzString.slice(0, 36) + "\n" + mrzString.slice(36);
-  }
-
-  return formattedMRZ;
 }
 
 /** Check if current resolution is Full HD or HD

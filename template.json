@@ -2,21 +2,21 @@
   "CaptureVisionTemplates": [
     {
       "Name": "ReadPassportAndId",
-      "OutputOriginalImage": 0,
+      "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-passport-and-id"],
       "SemanticProcessingNameArray": ["sp-passport-and-id"],
       "Timeout": 2000
     },
     {
       "Name": "ReadPassport",
-      "OutputOriginalImage": 0,
+      "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-passport"],
       "SemanticProcessingNameArray": ["sp-passport"],
       "Timeout": 2000
     },
     {
       "Name": "ReadId",
-      "OutputOriginalImage": 0,
+      "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-id"],
       "SemanticProcessingNameArray": ["sp-id"],
       "Timeout": 2000
@@ -38,75 +38,75 @@
   ],
   "TextLineSpecificationOptions": [
     {
-      "Name": "tls-mrz-passport",
-      "BaseTextLineSpecificationName": "tls-base",
+      "Name": "tls_mrz_passport",
+      "BaseTextLineSpecificationName": "tls_base",
       "StringLengthRange": [44, 44],
       "OutputResults": 1,
       "ExpectedGroupsCount": 1,
       "ConcatResults": 1,
-      "ConcatSeparator": "",
+      "ConcatSeparator": "\n",
       "SubGroups": [
         {
           "StringRegExPattern": "(P[A-Z<][A-Z<]{3}[A-Z<]{39}){(44)}",
           "StringLengthRange": [44, 44],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{14}[0-9<][0-9]){(44)}",
+          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9<]{4}[0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{14}[0-9<][0-9]){(44)}",
           "StringLengthRange": [44, 44],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         }
       ]
     },
     {
-      "Name": "tls-mrz-id-td2",
-      "BaseTextLineSpecificationName": "tls-base",
+      "Name": "tls_mrz_id_td2",
+      "BaseTextLineSpecificationName": "tls_base",
       "StringLengthRange": [36, 36],
       "OutputResults": 1,
       "ExpectedGroupsCount": 1,
       "ConcatResults": 1,
-      "ConcatSeparator": "",
+      "ConcatSeparator": "\n",
       "SubGroups": [
         {
           "StringRegExPattern": "([ACI][A-Z<][A-Z<]{3}[A-Z<]{31}){(36)}",
           "StringLengthRange": [36, 36],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{8}){(36)}",
+          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9<]{4}[0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{8}){(36)}",
           "StringLengthRange": [36, 36],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         }
       ]
     },
     {
-      "Name": "tls-mrz-id-td1",
-      "BaseTextLineSpecificationName": "tls-base",
+      "Name": "tls_mrz_id_td1",
+      "BaseTextLineSpecificationName": "tls_base",
       "StringLengthRange": [30, 30],
       "OutputResults": 1,
       "ExpectedGroupsCount": 1,
       "ConcatResults": 1,
-      "ConcatSeparator": "",
+      "ConcatSeparator": "\n",
       "SubGroups": [
         {
           "StringRegExPattern": "([ACI][A-Z<][A-Z<]{3}[A-Z0-9<]{9}[0-9<][A-Z0-9<]{15}){(30)}",
           "StringLengthRange": [30, 30],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         },
         {
-          "StringRegExPattern": "([0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z<]{3}[A-Z0-9<]{11}[0-9]){(30)}",
+          "StringRegExPattern": "([0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[0-9<]{4}[0-9][A-Z<]{3}[A-Z0-9<]{11}[0-9]){(30)}",
           "StringLengthRange": [30, 30],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         },
         {
           "StringRegExPattern": "([A-Z<]{30}){(30)}",
           "StringLengthRange": [30, 30],
-          "BaseTextLineSpecificationName": "tls-base"
+          "BaseTextLineSpecificationName": "tls_base"
         }
       ]
     },
     {
-      "Name": "tls-base",
+      "Name": "tls_base",
       "CharacterModelName": "MRZ",
       "CharHeightRange": [5, 1000, 1],
       "BinarizationModes": [
@@ -132,7 +132,7 @@
     {
       "Name": "task-passport",
       "ConfusableCharactersPath": "ConfusableChars.data",
-      "TextLineSpecificationNameArray": ["tls-mrz-passport"],
+      "TextLineSpecificationNameArray": ["tls_mrz_passport"],
       "SectionImageParameterArray": [
         {
           "Section": "ST_REGION_PREDETECTION",
@@ -151,7 +151,7 @@
     {
       "Name": "task-id",
       "ConfusableCharactersPath": "ConfusableChars.data",
-      "TextLineSpecificationNameArray": ["tls-mrz-id-td1", "tls-mrz-id-td2"],
+      "TextLineSpecificationNameArray": ["tls_mrz_id_td1", "tls_mrz_id_td2"],
       "SectionImageParameterArray": [
         {
           "Section": "ST_REGION_PREDETECTION",
@@ -170,7 +170,7 @@
     {
       "Name": "task-passport-and-id",
       "ConfusableCharactersPath": "ConfusableChars.data",
-      "TextLineSpecificationNameArray": ["tls-mrz-passport", "tls-mrz-id-td1", "tls-mrz-id-td2"],
+      "TextLineSpecificationNameArray": ["tls_mrz_passport", "tls_mrz_id_td1", "tls_mrz_id_td2"],
       "SectionImageParameterArray": [
         {
           "Section": "ST_REGION_PREDETECTION",
