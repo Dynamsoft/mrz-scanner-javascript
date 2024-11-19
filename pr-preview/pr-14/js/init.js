@@ -7,9 +7,7 @@ const pDataLoad = createPendingPromise();
 /** LICENSE ALERT - README
  * To use the library, you need to first specify a license key using the API "initLicense" as shown below.
  */
-Dynamsoft.License.LicenseManager.initLicense(
-  "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAwLTEwMzAwNjk2NyIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21sdHMuZHluYW1zb2Z0LmNvbS8iLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMCIsInNlc3Npb25QYXNzd29yZCI6IkVUSHZVNlNPV3F3ZiIsInN0YW5kYnlTZXJ2ZXJVUkwiOiJodHRwczovL3NsdHMuZHluYW1zb2Z0LmNvbS8iLCJjaGVja0NvZGUiOjM5OTMzODU2Nn0="
-);
+Dynamsoft.License.LicenseManager.initLicense("");
 /**
  * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=docs&package=js to get your own trial license good for 30 days.
  * Note that if you downloaded this sample from Dynamsoft while logged in, the above license key may already be your own 30-day trial license.
@@ -106,6 +104,7 @@ let init = (async () => {
 })();
 
 export const handleCapturedResult = (result, uploadedImage = null) => {
+  console.log(result);
   const recognizedResults = result.textLineResultItems;
   const parsedResults = result.parsedResultItems;
   const originalImage = result.items?.[0]?.imageData;
@@ -127,7 +126,7 @@ export const handleCapturedResult = (result, uploadedImage = null) => {
       alert(`Failed to parse the content.`);
       parsedResultArea.style.justifyContent = "flex-start";
     }
-    displayImage(uploadedImage || originalImage, recognizedResults[0].location.points);
+    displayImage(uploadedImage || originalImage);
 
     dispose();
   } else if (uploadedImage) {
@@ -157,7 +156,7 @@ const displayResults = (recognizedText, parsedResult) => {
   return false;
 };
 
-function displayImage(image, points) {
+function displayImage(image) {
   scannedImage.textContent = "";
 
   if (image.type?.startsWith("image/")) {
@@ -166,40 +165,11 @@ function displayImage(image, points) {
 
     img.src = imageUrl;
     img.className = "uploaded-image";
-    // Crop image based on points
+
     img.onload = () => {
       URL.revokeObjectURL(imageUrl);
 
-      if (points) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-
-        const width = points[1].x - points[0].x;
-        const height = points[2].y - points[1].y;
-
-        canvas.width = width;
-        canvas.height = height;
-
-        ctx.drawImage(
-          img,
-          points[0].x,
-          points[0].y,
-          width,
-          height, // Source coordinates
-          0,
-          0,
-          width,
-          height // Destination coordinates
-        );
-
-        const croppedImage = new Image();
-        croppedImage.src = canvas.toDataURL();
-        croppedImage.className = "uploaded-image";
-
-        scannedImage.append(croppedImage);
-      } else {
-        scannedImage.append(img);
-      }
+      scannedImage.append(img);
     };
   } else if (image.toCanvas) {
     scannedImage.append(image.toCanvas());
