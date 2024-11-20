@@ -7,9 +7,7 @@ const pDataLoad = createPendingPromise();
 /** LICENSE ALERT - README
  * To use the library, you need to first specify a license key using the API "initLicense" as shown below.
  */
-Dynamsoft.License.LicenseManager.initLicense(
-  "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAwLTEwMzAwNjk2NyIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21sdHMuZHluYW1zb2Z0LmNvbS8iLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMCIsInNlc3Npb25QYXNzd29yZCI6IkVUSHZVNlNPV3F3ZiIsInN0YW5kYnlTZXJ2ZXJVUkwiOiJodHRwczovL3NsdHMuZHluYW1zb2Z0LmNvbS8iLCJjaGVja0NvZGUiOjM5OTMzODU2Nn0="
-);
+Dynamsoft.License.LicenseManager.initLicense("");
 /**
  * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=samples&package=js to get your own trial license good for 30 days.
  * For more information, see https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/mrz-scanner.html#specify-the-license or contact support@dynamsoft.com.
@@ -99,31 +97,43 @@ let init = (async () => {
 
   /* Defines the result receiver for the solution.*/
   const resultReceiver = new Dynamsoft.CVR.CapturedResultReceiver();
-  resultReceiver.onCapturedResultReceived = (result) => {
-    const recognizedResults = result.textLineResultItems;
-    const parsedResults = result.parsedResultItems;
-    const originalImage = result.items?.[0]?.imageData;
+  resultReceiver.onCapturedResultReceived = handleCapturedResult;
 
-    if (recognizedResults?.length) {
-      // Play sound feedback if enabled
-      isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
-
-      // Display image
-      scannedImage.textContent = "";
-      scannedImage.append(originalImage.toCanvas());
-
-      const parseSuccess = displayResults(recognizedResults[0]?.text, parsedResults?.[0]);
-
-      if (!parseSuccess) {
-        alert(`Failed to parse the content.`);
-        parsedResultArea.style.justifyContent = "flex-start";
-      }
-
-      dispose();
-    }
-  };
   await cvRouter.addResultReceiver(resultReceiver);
 })();
+
+export const handleCapturedResult = (result, uploadedImage = null) => {
+  console.log(result);
+  const recognizedResults = result.textLineResultItems;
+  const parsedResults = result.parsedResultItems;
+  const originalImage = result.items?.[0]?.imageData;
+
+  if (recognizedResults?.length) {
+    // Play sound feedback if enabled
+    isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
+
+    parsedResultArea.innerText = "";
+
+    // Add MRZ Text to Result
+    const mrzElement = resultToHTMLElement("MRZ String", recognizedResults[0]?.text);
+    mrzElement.classList.add("code");
+    parsedResultArea.appendChild(mrzElement);
+
+    const parseSuccess = displayResults(recognizedResults[0]?.text, parsedResults?.[0]);
+
+    if (!parseSuccess) {
+      alert(`Failed to parse the content.`);
+      parsedResultArea.style.justifyContent = "flex-start";
+    }
+    displayImage(uploadedImage || originalImage);
+
+    dispose();
+  } else if (uploadedImage) {
+    parsedResultArea.innerText = "No results found";
+    displayImage(uploadedImage);
+    dispose();
+  }
+};
 
 const displayResults = (recognizedText, parsedResult) => {
   parsedResultArea.innerText = "";
@@ -145,12 +155,33 @@ const displayResults = (recognizedText, parsedResult) => {
   return false;
 };
 
+function displayImage(image) {
+  scannedImage.textContent = "";
+
+  if (image.type?.startsWith("image/")) {
+    const img = document.createElement("img");
+    const imageUrl = URL.createObjectURL(image);
+
+    img.src = imageUrl;
+    img.className = "uploaded-image";
+
+    img.onload = () => {
+      URL.revokeObjectURL(imageUrl);
+
+      scannedImage.append(img);
+    };
+  } else if (image.toCanvas) {
+    scannedImage.append(image.toCanvas());
+  }
+}
+
 function dispose() {
   resultContainer.style.display = "flex"; // Show result container
   cameraListContainer.style.display = "none"; // hide header menu windows
   informationListContainer.style.display = "none";
   scanModeContainer.style.display = "none"; // hide scan mode buttons
 
+  cameraEnhancer.close();
   cvRouter.stopCapturing();
   cameraView.clearAllInnerDrawingItems();
 }
