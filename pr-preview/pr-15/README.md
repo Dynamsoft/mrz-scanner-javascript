@@ -30,7 +30,7 @@ git clone https://github.com/Dynamsoft/mrz-scanner-javascript
 
 ## Request a Trial License
 
-The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (found in the js/init.js file) is a test license valid for 24 hours for any newly authorized browser. If you wish to test the SDK further, you can request a 30-day free trial license through the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&utm_source=samples&package=js" target="_blank">Request a Trial License</a> link.
+The key "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9" used in this solution (found in the js/init.js file) is a test license valid for 24 hours for any newly authorized browser. If you wish to test the SDK further, you can request a 30-day free trial license through the <a href="https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&utm_source=samples&package=js" target="_blank">Request a Trial License</a> link. For more information, see [Specify the License](https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/mrz-scanner.html#specify-the-license) or contact [support@dynamsoft.com](mailto:support@dynamsoft.com).
 
 ## Project Structure
 

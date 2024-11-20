@@ -9,7 +9,7 @@ const pDataLoad = createPendingPromise();
  */
 Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
 /**
- * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=github&package=js to get your own trial license good for 30 days.
+ * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=samples&package=js to get your own trial license good for 30 days.
  * For more information, see https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/mrz-scanner.html#specify-the-license or contact support@dynamsoft.com.
  * LICENSE ALERT - THE END
  */
