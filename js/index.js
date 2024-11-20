@@ -145,8 +145,6 @@ uploadImageInput.addEventListener("change", async (event) => {
   try {
     const file = event.target.files[0];
 
-    console.log(event);
-
     if (file) {
       // Open the camera after the model and .wasm files have loaded
       pInit = pInit || (await init);
