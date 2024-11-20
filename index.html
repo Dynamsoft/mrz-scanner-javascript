@@ -70,11 +70,54 @@
           <img class="up" src="./assets/arrow-up.svg" alt="up" />
         </div>
         <div class="camera-list"></div>
+        <input type="file" class="upload-image-input" style="display: none" />
+        <div
+          class="upload-img-btn"
+          title="Upload an Image"
+          onclick="document.querySelector('.upload-image-input').click()"
+        >
+          <img class="upload-img-icon" src="./assets/upload-menu.svg" alt="upload-menu" />
+        </div>
         <div class="music-container">
           <img class="music" src="./assets/music-selected.svg" alt="music" title="Turn sound off" />
           <img class="no-music" src="./assets/music-unselected.svg" alt="no-music" title="Turn sound on" />
         </div>
-        <div class="information-btn">
+        <div class="live-chat">
+          <svg
+            data-v-2a1e9ed8=""
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            class="live-chat-icon"
+            onclick="Comm100API.do('livechat.button.click')"
+          >
+            <g data-v-2a1e9ed8="" transform="translate(-319 -816.551)">
+              <g data-v-2a1e9ed8="">
+                <g data-v-2a1e9ed8="" id="conversation-chat-2">
+                  <path
+                    data-v-2a1e9ed8=""
+                    d="M333.5,817.051h-10a4,4,0,0,0-4,4v5a4,4,0,0,0,4,4h1v4l4.5-4h4.5a4,4,0,0,0,4-4v-5A4,4,0,0,0,333.5,817.051Z"
+                    fill="none"
+                    stroke="#aaa"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                  ></path>
+                  <path
+                    data-v-2a1e9ed8=""
+                    d="M330.5,833.051v1.5a2.5,2.5,0,0,0,2.5,2.5h2.5l3,3v-3H340a2.5,2.5,0,0,0,2.5-2.5v-3a2.5,2.5,0,0,0-2.5-2.5h-.5"
+                    fill="none"
+                    stroke="#aaa"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                  ></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="information-btn" title="More Information">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="icon icon-tabler icon-tabler-info-circle"
@@ -138,8 +181,8 @@
             right: 0;
             bottom: 0;
             margin: auto;
-            width: 40%;
-            height: 40%;
+            width: 20%;
+            height: 20%;
             fill: #aaa;
             animation: 1s linear infinite dce-rotate;
           "
@@ -360,5 +403,31 @@
       ></iframe>
     </noscript>
     <!-- End Google Tag Manager -->
+    <div style="background-repeat: no-repeat; background-position: 0px 0px; margin: 0; padding: 0px 0px 0px 0px">
+      <!--Begin Comm100 Live Chat Code-->
+      <div id="comm100-button-20242b05-3781-4d86-9b7f-fab63ddcdde3"></div>
+      <script type="text/javascript">
+        var Comm100API = Comm100API || {};
+        (function (t) {
+          function e(e) {
+            var a = document.createElement("script"),
+              c = document.getElementsByTagName("script")[0];
+            (a.type = "text/javascript"), (a.async = !0), (a.src = e + t.site_id), c.parentNode.insertBefore(a, c);
+          }
+          (t.chat_buttons = t.chat_buttons || []),
+            t.chat_buttons.push({
+              code_plan: "20242b05-3781-4d86-9b7f-fab63ddcdde3",
+              div_id: "comm100-button-20242b05-3781-4d86-9b7f-fab63ddcdde3",
+            }),
+            (t.site_id = 90003305),
+            (t.main_code_plan = "20242b05-3781-4d86-9b7f-fab63ddcdde3"),
+            e("https://vue.comm100.com/livechat.ashx?siteId="),
+            setTimeout(function () {
+              t.loaded || e("https://standby.comm100vue.com/livechat.ashx?siteId=");
+            }, 5e3);
+        })(Comm100API || {});
+      </script>
+      <!--End Comm100 Live Chat Code-->
+    </div>
   </body>
 </html>

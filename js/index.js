@@ -1,4 +1,4 @@
-import { init, pDataLoad } from "./init.js";
+import { handleCapturedResult, init, pDataLoad } from "./init.js";
 import { judgeCurResolution, shouldShowScanModeContainer, showNotification } from "./util.js";
 import { checkOrientation, getVisibleRegionOfVideo } from "./util.js";
 
@@ -140,6 +140,30 @@ const restartVideo = async () => {
   document.querySelector(`#scan-${currentMode}-btn`).click();
 };
 scanAgainBtn.addEventListener("click", restartVideo);
+
+uploadImageInput.addEventListener("change", async (event) => {
+  try {
+    const file = event.target.files[0];
+
+    console.log(event);
+
+    if (file) {
+      // Open the camera after the model and .wasm files have loaded
+      pInit = pInit || (await init);
+      await pDataLoad.promise;
+
+      event.target.value = "";
+
+      // Decode selected image with 'both' template.
+      const result = await cvRouter.capture(file, SCAN_TEMPLATES.both);
+      handleCapturedResult(result, file);
+    }
+  } catch (ex) {
+    let errMsg = ex.message || ex;
+    alert(errMsg);
+    console.error(errMsg);
+  }
+});
 
 cameraSelector.addEventListener("click", (e) => {
   informationListContainer.style.display = "none"; // hide information menu
