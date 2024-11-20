@@ -216,8 +216,8 @@ img {
 }
 
 .scanner-container .header .music-container {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -240,8 +240,8 @@ img {
 }
 
 .scanner-container .header .upload-img-btn {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
