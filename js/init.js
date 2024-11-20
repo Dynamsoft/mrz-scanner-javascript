@@ -11,7 +11,7 @@ Dynamsoft.License.LicenseManager.initLicense(
   "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAwLTEwMzAwNjk2NyIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21sdHMuZHluYW1zb2Z0LmNvbS8iLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMCIsInNlc3Npb25QYXNzd29yZCI6IkVUSHZVNlNPV3F3ZiIsInN0YW5kYnlTZXJ2ZXJVUkwiOiJodHRwczovL3NsdHMuZHluYW1zb2Z0LmNvbS8iLCJjaGVja0NvZGUiOjM5OTMzODU2Nn0="
 );
 /**
- * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=github&package=js to get your own trial license good for 30 days.
+ * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=samples&package=js to get your own trial license good for 30 days.
  * For more information, see https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/mrz-scanner.html#specify-the-license or contact support@dynamsoft.com.
  * LICENSE ALERT - THE END
  */
