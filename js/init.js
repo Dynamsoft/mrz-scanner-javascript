@@ -1,5 +1,5 @@
 import { judgeCurResolution, showNotification } from "./util.js";
-import { createPendingPromise, extractDocumentFields, resultToHTMLElement, formatMRZ } from "./util.js";
+import { createPendingPromise, extractDocumentFields, resultToHTMLElement } from "./util.js";
 
 // Promise variable used to control model loading state
 const pDataLoad = createPendingPromise();
@@ -9,9 +9,8 @@ const pDataLoad = createPendingPromise();
  */
 Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
 /**
- * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=docs&package=js to get your own trial license good for 30 days.
- * Note that if you downloaded this sample from Dynamsoft while logged in, the above license key may already be your own 30-day trial license.
- * For more information, see https://www.dynamsoft.com/label-recognition/programming/javascript/user-guide.html?ver=latest#specify-the-license or contact support@dynamsoft.com.
+ * You can visit https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=samples&package=js to get your own trial license good for 30 days.
+ * For more information, see https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/user-guide/mrz-scanner.html#specify-the-license or contact support@dynamsoft.com.
  * LICENSE ALERT - THE END
  */
 
@@ -101,39 +100,57 @@ let init = (async () => {
   resultReceiver.onCapturedResultReceived = (result) => {
     const recognizedResults = result.textLineResultItems;
     const parsedResults = result.parsedResultItems;
+    const originalImage = result.items?.[0]?.imageData;
 
     if (recognizedResults?.length) {
       // Play sound feedback if enabled
       isSoundOn ? Dynamsoft.DCE.Feedback.beep() : null;
 
-      parsedResultArea.innerText = "";
+      // Display image
+      scannedImage.textContent = "";
+      scannedImage.append(originalImage.toCanvas());
 
-      // Add MRZ Text to Result
-      const mrzElement = resultToHTMLElement("MRZ String", formatMRZ(recognizedResults[0]?.text));
-      mrzElement.classList.add("code");
-      parsedResultArea.appendChild(mrzElement);
+      const parseSuccess = displayResults(recognizedResults[0]?.text, parsedResults?.[0]);
 
-      // If a parsed result is obtained, use it to render the result page
-      if (parsedResults) {
-        const parseResultInfo = extractDocumentFields(parsedResults[0]);
-        Object.entries(parseResultInfo).map(([field, value]) => {
-          const resultElement = resultToHTMLElement(field, value);
-          parsedResultArea.appendChild(resultElement);
-        });
-      } else {
+      if (!parseSuccess) {
         alert(`Failed to parse the content.`);
         parsedResultArea.style.justifyContent = "flex-start";
       }
-      resultContainer.style.display = "flex";
-      cameraListContainer.style.display = "none";
-      informationListContainer.style.display = "none";
-      scanModeContainer.style.display = "none";
 
-      cvRouter.stopCapturing();
-      cameraView.clearAllInnerDrawingItems();
+      dispose();
     }
   };
   await cvRouter.addResultReceiver(resultReceiver);
 })();
+
+const displayResults = (recognizedText, parsedResult) => {
+  parsedResultArea.innerText = "";
+
+  // Display MRZ text
+  const mrzElement = resultToHTMLElement("MRZ String", recognizedText);
+  mrzElement.classList.add("code");
+  parsedResultArea.appendChild(mrzElement);
+
+  // Display parsed fields
+  if (parsedResult) {
+    const fields = extractDocumentFields(parsedResult);
+    Object.entries(fields).forEach(([field, value]) => {
+      parsedResultArea.appendChild(resultToHTMLElement(field, value));
+    });
+    return true;
+  }
+
+  return false;
+};
+
+function dispose() {
+  resultContainer.style.display = "flex"; // Show result container
+  cameraListContainer.style.display = "none"; // hide header menu windows
+  informationListContainer.style.display = "none";
+  scanModeContainer.style.display = "none"; // hide scan mode buttons
+
+  cvRouter.stopCapturing();
+  cameraView.clearAllInnerDrawingItems();
+}
 
 export { pDataLoad, init };
