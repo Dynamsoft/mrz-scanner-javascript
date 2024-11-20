@@ -39,14 +39,15 @@ const scannerContainer = document.querySelector(".scanner-container");
 const mrzGuideFrame = document.querySelector(".mrz-frame");
 
 const resultContainer = document.querySelector(".result-container");
+const scannedImage = document.querySelector(".scanned-image");
 const parsedResultArea = document.querySelector(".parsed-result-area");
 
-const startScaningBtn = document.querySelector(".start-btn");
+const startScanningBtn = document.querySelectorAll(".start-btn");
 
 const scanModeContainer = document.querySelector(".scan-mode-container");
 const scanBothBtn = document.querySelector("#scan-both-btn");
 
-const restartVideoBtn = document.querySelector(".btn-restart-video");
+const scanAgainBtn = document.querySelector(".btn-scan-again");
 
 const playSoundBtn = document.querySelector(".music");
 const closeSoundBtn = document.querySelector(".no-music");

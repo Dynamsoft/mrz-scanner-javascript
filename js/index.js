@@ -115,10 +115,10 @@ const region = () => {
 // -----------Logic for calculating scan region ↑------------
 
 window.addEventListener("click", () => {
-  cameraListContainer.style.display = "none";
+  cameraListContainer.style.display = "none"; // hide camera list and reset arrow indicator
   up.style.display = "none";
   down.style.display = "inline-block";
-  informationListContainer.style.display = "none";
+  informationListContainer.style.display = "none"; // hide information menu
 });
 
 // Recalculate the scan region when the window size changes
@@ -134,14 +134,16 @@ window.addEventListener("resize", () => {
 });
 
 // Add click events to buttons
-startScaningBtn.addEventListener("click", () => scanBothBtn.click());
+startScanningBtn.forEach((btn) => btn.addEventListener("click", () => scanBothBtn.click()));
 const restartVideo = async () => {
   resultContainer.style.display = "none";
   document.querySelector(`#scan-${currentMode}-btn`).click();
 };
-restartVideoBtn.addEventListener("click", restartVideo);
+scanAgainBtn.addEventListener("click", restartVideo);
 
 cameraSelector.addEventListener("click", (e) => {
+  informationListContainer.style.display = "none"; // hide information menu
+
   e.stopPropagation();
   const isShow = cameraListContainer.style.display === "block";
   cameraListContainer.style.display = isShow ? "none" : "block";
@@ -165,6 +167,8 @@ closeSoundBtn.addEventListener("click", () => {
 
 informationBtn.forEach((infoBtn) =>
   infoBtn.addEventListener("click", (e) => {
+    cameraListContainer.style.display = "none"; // hide camera list
+
     e.stopPropagation();
     const isShow = informationListContainer.style.display === "block";
     informationListContainer.style.display = isShow ? "none" : "block";

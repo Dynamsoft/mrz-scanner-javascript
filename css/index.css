@@ -57,12 +57,12 @@ img {
 }
 
 .home-page .logo {
-  width: 150px;
-  height: 36px;
+  width: 112.5px;
+  height: 27px;
 }
 
 .home-page .description {
-  width: 50%;
+  width: 85%;
   text-align: center;
   background-color: #323234;
   margin: 0 auto;
@@ -71,7 +71,7 @@ img {
 }
 
 .home-page .description .title {
-  font-size: 30px;
+  font-size: 26px;
   font-family: Oswald-Regular;
 }
 
@@ -79,7 +79,37 @@ img {
   font-family: OpenSans-Regular;
   font-size: 16px;
   line-height: 26px;
-  margin: 16px 0 25px;
+  margin: 1rem 0 1rem;
+}
+
+.home-page .description .desktop-qr-container {
+  font-family: OpenSans-Regular;
+  background-color: #2b2b2b;
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-page .description .desktop-start-btn {
+  font-family: OpenSans-Regular;
+  background-color: #2b2b2b;
+  margin-top: 1rem;
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1rem;
+  text-align: start;
+}
+
+.home-page .description .desktop-start-btn .start-btn {
+  display: flex;
+  width: 100%;
 }
 
 .home-page .description .start-btn {
@@ -89,12 +119,13 @@ img {
   max-height: 60px;
   background-color: #fe8e14;
   font-family: Oswald-Regular;
-  font-size: 20px;
+  font-size: 16px;
   margin: 0 auto;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
 }
 
 .home-page .description .start-btn:hover {
@@ -185,8 +216,8 @@ img {
 }
 
 .scanner-container .header .music-container {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -206,6 +237,20 @@ img {
   width: 24px;
   height: 24px;
   display: none;
+}
+
+.scanner-container .header .upload-img-btn {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.scanner-container .header .upload-img-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .result-container {
@@ -239,6 +284,16 @@ img {
   color: #aaaaaa;
 }
 
+.result-container .scanned-image {
+  max-height: 200px;
+}
+
+.result-container .scanned-image canvas {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
 .result-container .parsed-result-area {
   width: 100%;
   height: 84%;
@@ -254,15 +309,38 @@ img {
 
 .result-container .parsed-result-area .parsed-filed .field-name {
   color: #aaaaaa;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .result-container .parsed-result-area .parsed-filed .field-value {
   word-wrap: break-word;
 }
+
 .result-container .parsed-result-area .code .field-value {
   font-family: monospace;
 }
 
-.result-container .restart-video {
+.result-container .parsed-result-area .parsed-filed .status-icon {
+  display: inline-flex;
+  align-items: center;
+  cursor: help; /* Indicates there's a tooltip */
+}
+
+.result-container .parsed-result-area .parsed-filed .status-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.result-container .parsed-result-area .parsed-filed .status-success {
+  color: #22c55e; /* Green */
+}
+
+.result-container .parsed-result-area .parsed-filed .status-failed {
+  color: #ef4444; /* Red */
+}
+
+.result-container .scan-again {
   width: 100%;
   height: 10%;
   min-height: 60px;
@@ -274,7 +352,7 @@ img {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.result-container .restart-video .btn-restart-video {
+.result-container .scan-again .btn-scan-again {
   width: 160px;
   height: 60%;
   border: 0;
@@ -462,8 +540,18 @@ img {
     box-shadow: none;
   }
 
+  .home-page .description .desktop-qr-container {
+    display: none;
+  }
+
+  .home-page .description .desktop-start-btn {
+    display: none;
+  }
+
   .home-page .description .start-btn {
+    display: flex;
     font-size: 20px;
+    padding: 1.5rem;
   }
 }
 
