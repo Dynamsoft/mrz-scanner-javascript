@@ -31,6 +31,8 @@ const cameraViewContainer = document.querySelector(".camera-view-container");
 const cameraListContainer = document.querySelector(".camera-list");
 const cameraSelector = document.querySelector(".camera-selector");
 
+const uploadImageInput = document.querySelector(".upload-image-input");
+
 const informationBtn = document.querySelectorAll(".information-btn");
 const informationListContainer = document.querySelector(".information-list");
 
