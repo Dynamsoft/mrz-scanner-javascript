@@ -215,8 +215,8 @@ img {
 }
 
 .scanner-container .header .music-container {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -239,8 +239,8 @@ img {
 }
 
 .scanner-container .header .upload-img-btn {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -528,6 +528,20 @@ img {
   }
 }
 
+/* LIVE CHAT */
+.scanner-container .header .live-chat {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  cursor: pointer;
+}
+
+.scanner-container .header .live-chat:hover {
+  opacity: 0.8;
+}
+
 @media screen and (max-width: 800px) {
   html,
   body,
@@ -552,6 +566,15 @@ img {
     display: flex;
     font-size: 20px;
     padding: 1.5rem;
+  }
+
+  /* LIVE CHAT CSS */
+  .live-chat {
+    display: flex !important;
+  }
+
+  #comm100-float-button-20242b05-3781-4d86-9b7f-fab63ddcdde3-2 {
+    display: none !important;
   }
 }
 
