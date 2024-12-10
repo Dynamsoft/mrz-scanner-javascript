@@ -45,14 +45,21 @@ export function extractDocumentFields(result) {
     };
   };
 
+  const getDocumentNumber = (documentType) => {
+    const primaryField = documentType === "P" ? "passportNumber" : "documentNumber";
+    const primaryNumber = fieldWithStatus(primaryField);
+    const longNumber = fieldWithStatus("longDocumentNumber");
+
+    return primaryNumber?.text ? primaryNumber : longNumber;
+  };
+
   const documentType = result.getFieldValue("documentCode");
-  const documentNumberField = documentType === "P" ? "passportNumber" : "documentNumber";
 
   return {
     Surname: fieldWithStatus("primaryIdentifier"),
     "Given Name": fieldWithStatus("secondaryIdentifier"),
     Nationality: fieldWithStatus("nationality"),
-    "Document Number": fieldWithStatus(documentNumberField),
+    "Document Number": getDocumentNumber(documentType),
     "Issuing State": fieldWithStatus("issuingState"),
     Sex: fieldWithStatus("sex"),
     "Date of Birth (YYYY-MM-DD)": parseDate("birthYear", "birthMonth", "birthDay"),
