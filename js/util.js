@@ -46,7 +46,7 @@ export function extractDocumentFields(result) {
   };
 
   const getDocumentNumber = (documentType) => {
-    const primaryField = documentType === "P" ? "passportNumber" : "documentNumber";
+    const primaryField = documentType?.startsWith("P") ? "passportNumber" : "documentNumber";
     const primaryNumber = fieldWithStatus(primaryField);
     const longNumber = fieldWithStatus("longDocumentNumber");
 
