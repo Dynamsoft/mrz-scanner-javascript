@@ -561,7 +561,8 @@ img {
   }
 }
 
-@media screen and (max-width: 800px) and (orientation: landscape) {
+/* Media query for mobile phones */
+@media screen and (max-width: 926px) and (orientation: landscape) {
   .result-container .parsed-result-area .parsed-filed {
     font-size: 14px;
   }
