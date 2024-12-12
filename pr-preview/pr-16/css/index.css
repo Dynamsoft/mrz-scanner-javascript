@@ -285,7 +285,7 @@ img {
 
 .result-container .result-area {
   width: 100%;
-  height: 100%;
+  height: 84%;
   display: flex;
   flex-direction: column;
 }
