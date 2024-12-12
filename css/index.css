@@ -283,6 +283,13 @@ img {
   color: #aaaaaa;
 }
 
+.result-container .result-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .result-container .scanned-image {
   max-height: 200px;
 }
@@ -557,5 +564,10 @@ img {
 @media screen and (max-width: 800px) and (orientation: landscape) {
   .result-container .parsed-result-area .parsed-filed {
     font-size: 14px;
+  }
+
+  .result-container .result-area {
+    height: 70%;
+    flex-direction: row;
   }
 }
