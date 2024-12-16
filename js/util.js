@@ -116,7 +116,7 @@ export function resultToHTMLElement(field, value) {
 
   spanFieldName.innerText = `${field}`;
   spanFieldName.append(statusIcon);
-  spanValue.innerText = `${value?.text || value || "Not detected"}`;
+  spanValue.innerText = `${typeof value === "string" ? value : value?.text || "Not detected"}`;
 
   p.appendChild(spanFieldName);
   p.appendChild(spanValue);
