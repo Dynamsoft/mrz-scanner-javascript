@@ -213,6 +213,26 @@ export function shouldShowScanModeContainer() {
   scanModeContainer.style.display = isHomepageClosed && isResultClosed ? "flex" : "none";
 }
 
+export const isMobile = () =>
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+export function changeMobileLayout() {
+  const resultArea = resultContainer.querySelector(".result-area");
+  console.log(isMobile(), checkOrientation() === "landscape");
+  Object.assign(
+    resultArea.style,
+    isMobile() && checkOrientation() === "landscape"
+      ? {
+          height: "70%",
+          flexDirection: "row",
+        }
+      : {
+          height: "84%",
+          flexDirection: "column",
+        }
+  );
+}
+
 /** Show notification banner to users
  * @params {string} message - noficiation message
  * @params {string} className - CSS class name to show notification status

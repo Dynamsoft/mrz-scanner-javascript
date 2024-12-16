@@ -290,6 +290,7 @@ img {
 }
 
 .result-container .scanned-image {
+  flex: 1;
   max-height: 200px;
 }
 
@@ -301,6 +302,7 @@ img {
 }
 
 .result-container .parsed-result-area {
+  flex: 1;
   width: 100%;
   height: 84%;
   padding: 15px 15px 5px 30px;
@@ -585,7 +587,7 @@ img {
 }
 
 /* Media query for mobile phones */
-@media screen and (orientation: landscape) and (max-width: 1500px) {
+@media screen and (orientation: landscape) and (max-width: 900px) {
   .result-container .parsed-result-area .parsed-filed {
     font-size: 14px;
   }
