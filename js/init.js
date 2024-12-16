@@ -1,4 +1,4 @@
-import { judgeCurResolution, showNotification } from "./util.js";
+import { changeMobileLayout, judgeCurResolution, showNotification } from "./util.js";
 import { createPendingPromise, extractDocumentFields, resultToHTMLElement } from "./util.js";
 
 // Promise variable used to control model loading state
@@ -124,6 +124,7 @@ let init = (async () => {
 })();
 
 const displayResults = (recognizedText, parsedResult) => {
+  changeMobileLayout(); // Update mobile layout to support horizontal view
   parsedResultArea.innerText = "";
 
   // Display MRZ text
