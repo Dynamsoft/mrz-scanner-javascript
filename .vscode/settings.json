@@ -1,3 +1,9 @@
 {
-  "liveServer.settings.port": 5503
+  "liveServer.settings.https": {
+  "enable": true, //set it true to enable the feature.
+  "cert": "C:\\https\\server.crt", //full path of the certificate
+  "key": "C:\\https\\server.key", //full path of the private key
+  "passphrase": "12345"
+  },
+"liveServer.settings.port": 5501
 }

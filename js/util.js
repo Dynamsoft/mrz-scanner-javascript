@@ -218,7 +218,7 @@ export const isMobile = () =>
 
 export function changeMobileLayout() {
   const resultArea = resultContainer.querySelector(".result-area");
-  console.log(isMobile(), checkOrientation() === "landscape");
+
   Object.assign(
     resultArea.style,
     isMobile() && checkOrientation() === "landscape"
