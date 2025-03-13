@@ -15,10 +15,38 @@
       "Timeout": 2000
     },
     {
+      "Name": "ReadId-TD1",
+      "OutputOriginalImage": 1,
+      "ImageROIProcessingNameArray": ["roi-id-td1"],
+      "SemanticProcessingNameArray": ["sp-id-td1"],
+      "Timeout": 2000
+    },
+    {
+      "Name": "ReadId-TD2",
+      "OutputOriginalImage": 1,
+      "ImageROIProcessingNameArray": ["roi-id-td2"],
+      "SemanticProcessingNameArray": ["sp-id-td2"],
+      "Timeout": 2000
+    },
+    {
       "Name": "ReadId",
       "OutputOriginalImage": 1,
       "ImageROIProcessingNameArray": ["roi-id"],
       "SemanticProcessingNameArray": ["sp-id"],
+      "Timeout": 2000
+    },
+    {
+      "Name": "ReadPassportAndId-TD1",
+      "OutputOriginalImage": 1,
+      "ImageROIProcessingNameArray": ["roi-passport-and-id-td1"],
+      "SemanticProcessingNameArray": ["sp-passport-and-id-td1"],
+      "Timeout": 2000
+    },
+    {
+      "Name": "ReadPassportAndId-TD2",
+      "OutputOriginalImage": 1,
+      "ImageROIProcessingNameArray": ["roi-passport-and-id-td2"],
+      "SemanticProcessingNameArray": ["sp-passport-and-id-td2"],
       "Timeout": 2000
     }
   ],
@@ -28,8 +56,24 @@
       "TaskSettingNameArray": ["task-passport-and-id"]
     },
     {
+      "Name": "roi-passport-and-id-td1",
+      "TaskSettingNameArray": ["task-passport-and-id-td1"]
+    },
+    {
+      "Name": "roi-passport-and-id-td2",
+      "TaskSettingNameArray": ["task-passport-and-id-td2"]
+    },
+    {
       "Name": "roi-passport",
       "TaskSettingNameArray": ["task-passport"]
+    },
+    {
+      "Name": "roi-id-td1",
+      "TaskSettingNameArray": ["task-id-td1"]
+    },
+    {
+      "Name": "roi-id-td2",
+      "TaskSettingNameArray": ["task-id-td2"]
     },
     {
       "Name": "roi-id",
@@ -111,8 +155,8 @@
       "CharHeightRange": [5, 1000, 1],
       "BinarizationModes": [
         {
-          "BlockSizeX": 30,
-          "BlockSizeY": 30,
+          "BlockSizeX": 41,
+          "BlockSizeY": 41,
           "Mode": "BM_LOCAL_BLOCK",
           "EnableFillBinaryVacancy": 0,
           "ThresholdCompensation": 15
@@ -149,9 +193,28 @@
       ]
     },
     {
-      "Name": "task-id",
+      "Name": "task-id-td1",
       "ConfusableCharactersPath": "ConfusableChars.data",
-      "TextLineSpecificationNameArray": ["tls_mrz_id_td1", "tls_mrz_id_td2"],
+      "TextLineSpecificationNameArray": ["tls_mrz_id_td1"],
+      "SectionImageParameterArray": [
+        {
+          "Section": "ST_REGION_PREDETECTION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_LOCALIZATION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_RECOGNITION",
+          "ImageParameterName": "ip-mrz"
+        }
+      ]
+    },
+    {
+      "Name": "task-id-td2",
+      "ConfusableCharactersPath": "ConfusableChars.data",
+      "TextLineSpecificationNameArray": ["tls_mrz_id_td2"],
       "SectionImageParameterArray": [
         {
           "Section": "ST_REGION_PREDETECTION",
@@ -171,6 +234,63 @@
       "Name": "task-passport-and-id",
       "ConfusableCharactersPath": "ConfusableChars.data",
       "TextLineSpecificationNameArray": ["tls_mrz_passport", "tls_mrz_id_td1", "tls_mrz_id_td2"],
+      "SectionImageParameterArray": [
+        {
+          "Section": "ST_REGION_PREDETECTION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_LOCALIZATION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_RECOGNITION",
+          "ImageParameterName": "ip-mrz"
+        }
+      ]
+    },
+    {
+      "Name": "task-passport-and-id-td1",
+      "ConfusableCharactersPath": "ConfusableChars.data",
+      "TextLineSpecificationNameArray": ["tls_mrz_passport", "tls_mrz_id_td1"],
+      "SectionImageParameterArray": [
+        {
+          "Section": "ST_REGION_PREDETECTION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_LOCALIZATION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_RECOGNITION",
+          "ImageParameterName": "ip-mrz"
+        }
+      ]
+    },
+    {
+      "Name": "task-passport-and-id-td2",
+      "ConfusableCharactersPath": "ConfusableChars.data",
+      "TextLineSpecificationNameArray": ["tls_mrz_passport", "tls_mrz_id_td2"],
+      "SectionImageParameterArray": [
+        {
+          "Section": "ST_REGION_PREDETECTION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_LOCALIZATION",
+          "ImageParameterName": "ip-mrz"
+        },
+        {
+          "Section": "ST_TEXT_LINE_RECOGNITION",
+          "ImageParameterName": "ip-mrz"
+        }
+      ]
+    },
+    {
+      "Name": "task-id",
+      "ConfusableCharactersPath": "ConfusableChars.data",
+      "TextLineSpecificationNameArray": ["tls_mrz_id_td1", "tls_mrz_id_td2"],
       "SectionImageParameterArray": [
         {
           "Section": "ST_REGION_PREDETECTION",
@@ -219,6 +339,13 @@
   ],
   "SemanticProcessingOptions": [
     {
+      "Name": "sp-passport",
+      "ReferenceObjectFilter": {
+        "ReferenceTargetROIDefNameArray": ["roi-passport"]
+      },
+      "TaskSettingNameArray": ["dcp-passport"]
+    },
+    {
       "Name": "sp-passport-and-id",
       "ReferenceObjectFilter": {
         "ReferenceTargetROIDefNameArray": ["roi-passport-and-id"]
@@ -226,11 +353,33 @@
       "TaskSettingNameArray": ["dcp-passport-and-id"]
     },
     {
-      "Name": "sp-passport",
+      "Name": "sp-passport-and-id-td1",
       "ReferenceObjectFilter": {
-        "ReferenceTargetROIDefNameArray": ["roi-passport"]
+        "ReferenceTargetROIDefNameArray": ["roi-passport-and-id-td1"]
       },
-      "TaskSettingNameArray": ["dcp-passport"]
+      "TaskSettingNameArray": ["dcp-passport-and-id-td1"]
+    },
+    {
+      "Name": "sp-passport-and-id-td2",
+      "ReferenceObjectFilter": {
+        "ReferenceTargetROIDefNameArray": ["roi-passport-and-id-td2"]
+      },
+      "TaskSettingNameArray": ["dcp-passport-and-id-td2"]
+    },
+
+    {
+      "Name": "sp-id-td1",
+      "ReferenceObjectFilter": {
+        "ReferenceTargetROIDefNameArray": ["roi-id-td1"]
+      },
+      "TaskSettingNameArray": ["dcp-id-td1"]
+    },
+    {
+      "Name": "sp-id-td2",
+      "ReferenceObjectFilter": {
+        "ReferenceTargetROIDefNameArray": ["roi-id-td2"]
+      },
+      "TaskSettingNameArray": ["dcp-id-td2"]
     },
     {
       "Name": "sp-id",
@@ -246,12 +395,28 @@
       "CodeSpecifications": ["MRTD_TD3_PASSPORT"]
     },
     {
-      "Name": "dcp-id",
-      "CodeSpecifications": ["MRTD_TD1_ID", "MRTD_TD2_ID"]
+      "Name": "dcp-id-td1",
+      "CodeSpecifications": ["MRTD_TD1_ID"]
+    },
+    {
+      "Name": "dcp-id-td2",
+      "CodeSpecifications": ["MRTD_TD2_ID"]
     },
     {
       "Name": "dcp-passport-and-id",
       "CodeSpecifications": ["MRTD_TD3_PASSPORT", "MRTD_TD1_ID", "MRTD_TD2_ID"]
+    },
+    {
+      "Name": "dcp-passport-and-id-td1",
+      "CodeSpecifications": ["MRTD_TD3_PASSPORT", "MRTD_TD1_ID"]
+    },
+    {
+      "Name": "dcp-passport-and-id-td2",
+      "CodeSpecifications": ["MRTD_TD3_PASSPORT", "MRTD_TD2_ID"]
+    },
+    {
+      "Name": "dcp-id",
+      "CodeSpecifications": ["MRTD_TD1_ID", "MRTD_TD2_ID"]
     }
   ]
 }
