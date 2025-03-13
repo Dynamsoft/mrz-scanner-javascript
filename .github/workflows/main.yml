@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 # Controls when the workflow will run
@@ -20,13 +18,24 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-         # Runs a set of commands using the runners shell
       - name: Get Source
         run: |
           cd /home/ubuntu
           [ -d mrz-scanner-javascript ] && rm -rf mrz-scanner-javascript
           git clone --depth 1 -b demo https://github.com/Dynamsoft/mrz-scanner-javascript.git 
+
+      - name: Prepare Files
+        run: |
+          # Create a temporary directory for the files to be uploaded
+          mkdir -p /home/ubuntu/mrz-scanner-javascript/deploy
           
+          # Copy the dist folder
+          cp -r /home/ubuntu/mrz-scanner-javascript/dist /home/ubuntu/mrz-scanner-javascript/deploy
+          
+          # Copy demo and hello world. On demo branch, be sure to update the pathing for the demo
+          cp -r /home/ubuntu/mrz-scanner-javascript/samples/demo/* /home/ubuntu/mrz-scanner-javascript/deploy
+          cp -r /home/ubuntu/mrz-scanner-javascript/samples/hello-world.html /home/ubuntu/mrz-scanner-javascript/deploy
+
       - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
@@ -34,5 +43,5 @@ jobs:
           username: ${{ secrets.FTP_DEMO_USERNAME }}
           password: ${{ secrets.FTP_DEMO_PASSWORD }}
           port: 21 
-          local-dir: /home/ubuntu/mrz-scanner-javascript/
-          server-dir: /Demo.dynamsoft.com/solutions/mrz-scanner/
+          local-dir: /home/ubuntu/mrz-scanner-javascript/deploy/
+          server-dir: /Demo.dynamsoft.com/mrz-scanner/

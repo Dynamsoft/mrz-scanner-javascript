@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamsoft MRZ Scanner</title>
+    <link rel="stylesheet" href="./css/index.css" />
+    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script> -->
+    <!-- To use locally: -->
+    <!-- <script src="../../dist/mrz-scanner.bundle.js"></script> -->
+    <!-- DEMO specific -->
+    <script src="./dist/mrz-scanner.bundle.js"></script>
+  </head>
+
+  <body>
+    <div class="logo">
+      <!-- Logo -->
+      <a class="logo-container" href="https://www.dynamsoft.com" target="_blank">
+        <img class="logo-img" src="./assets/dynamsoftLogo.png" alt="dynamsoft-logo" />
+      </a>
+    </div>
+
+    <!-- Mobile View -->
+    <div id="mobile-view" class="container">
+      <div class="header">MRZ Scanner</div>
+      <div class="camera-selection">
+        <div class="selection-group-title">Available Cameras:</div>
+        <div class="live-camera-options">
+          <div class="camera-option">Use Live Camera</div>
+        </div>
+        <div class="virtual-camera-options">
+          <div class="camera-option virtual" data-device-id="virtual1">Virtual Camera 1: Passport</div>
+          <div class="camera-option virtual" data-device-id="virtual2">Virtual Camera 2: ID (TD1)</div>
+          <div class="camera-option virtual" data-device-id="virtual3">Virtual Camera 3: ID (TD2)</div>
+        </div>
+      </div>
+      <button class="start-button" id="start-scan">Scan with Live Camera</button>
+    </div>
+
+    <!-- Desktop View (initially hidden) -->
+    <div id="desktop-view" class="container" style="display: none">
+      <div class="header">MRZ Scanner</div>
+
+      <div class="description">
+        Dynamsoft MRZ Scanner recognizes the Machine-Readable Zone (MRZ) on a passport or ID card and converts the
+        encoded strings into human-readable fields
+      </div>
+
+      <div class="qr-container">
+        <div>Scan to Open on Mobile</div>
+        <img src="./assets/mrz-scanner-qr-code.svg" alt="https://demo.dynamsoft.com/mrz-scanner" class="qr-code" />
+      </div>
+
+      <div class="quick-start">
+        <div class="quick-start-header">
+          <div>Quick Start Option:</div>
+          <button class="desktop-button" id="desktop-proceed">Continue on Desktop</button>
+        </div>
+        <div class="note">
+          Note: Desktop cameras may have limited performance. Mobile scanning is recommended for best results.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Powered by Dynamsoft</div>
+
+    <script>
+      const mobileView = document.getElementById("mobile-view");
+      const desktopView = document.getElementById("desktop-view");
+      const resultsView = document.getElementById("results-view");
+      const startScanButton = document.getElementById("start-scan");
+      const desktopProceedButton = document.getElementById("desktop-proceed");
+      const backButton = document.getElementById("back-button");
+
+      let result = null;
+      let firstLoad = true;
+
+      // Handle view switching based on device type
+      function detectDeviceAndSetView() {
+        // Check if mobile or desktop based on screen width
+        if (window.innerWidth < 1024 || !firstLoad) {
+          mobileView.style.display = "flex";
+          desktopView.style.display = "none";
+        } else {
+          mobileView.style.display = "none";
+          desktopView.style.display = "flex";
+        }
+      }
+
+      // Call function on page load and window resize
+      window.addEventListener("load", detectDeviceAndSetView);
+      window.addEventListener("resize", detectDeviceAndSetView);
+
+      // Initialize the Dynamsoft MRZ Scanner
+      const mrzscanner = new Dynamsoft.MRZScanner({
+        license: "YOUR_LICENSE_KEY_HERE",
+        resultViewConfig: {
+          toolbarButtonsConfig: {
+            done: {
+              label: "Return Home",
+            },
+          },
+        },
+      });
+
+      (async () => {
+        const demoCameraOptionContainer = document.querySelector(".virtual-camera-options");
+
+        const cameraOptions = document.querySelectorAll(".camera-option");
+
+        const checkmarkSvg = ` 
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l5 5l10 -10" />
+</svg>
+`;
+
+        // Camera selection
+        cameraOptions.forEach((option, i) => {
+          option.addEventListener("click", function () {
+            // Remove 'selected' class from all options
+            cameraOptions.forEach((opt) => {
+              opt.classList.remove("selected");
+              opt.innerHTML = opt.textContent.replace(` ${checkmarkSvg}`, "");
+            });
+
+            // Add 'selected' class to clicked option
+            this.classList.add("selected");
+            this.innerHTML =
+              this.textContent.replace(` ${checkmarkSvg}`, "") + ` <span class="checkmark">${checkmarkSvg}</span>`;
+
+            const virtualOrLive = this.classList.contains("virtual") ? "Virtual" : "Live";
+
+            // Update button text
+            startScanButton.textContent = "Scan with " + virtualOrLive + " Camera";
+            selectedCamera = this.getAttribute("data-device-id") ?? null;
+
+            // Update scan button color
+            startScanButton.style.backgroundColor = virtualOrLive === "Virtual" ? "#4297ea" : "#fe8e14";
+          });
+
+          if (i === 0) {
+            option.click();
+          }
+        });
+
+        // Start scan button handler
+        startScanButton.addEventListener("click", async function () {
+          mobileView.style.display = "none";
+          desktopView.style.display = "none";
+
+          try {
+            // Launch the scanner and wait for the result
+            result = await mrzscanner.launch(selectedCamera);
+            console.log(result);
+
+            detectDeviceAndSetView(); // Return to appropriate view based on device
+          } catch (error) {
+            console.error("Error scanning:", error);
+            detectDeviceAndSetView();
+          }
+        });
+      })();
+
+      // Desktop proceed button handler
+      desktopProceedButton.addEventListener("click", async function () {
+        desktopView.style.display = "none";
+        mobileView.style.display = "flex";
+
+        firstLoad = false;
+      });
+    </script>
+  </body>
+</html>
