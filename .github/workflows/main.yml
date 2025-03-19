@@ -32,7 +32,8 @@ jobs:
 
       - name: Prepare Files
         run: |
-          # Create a temporary directory for the files to be uploaded
+          # Remove deploy directory if it exists and create a new one
+          rm -rf /home/ubuntu/mrz-scanner-javascript/deploy
           mkdir -p /home/ubuntu/mrz-scanner-javascript/deploy
           
           # Copy the dist folder
