@@ -1,6 +1,6 @@
 # User Guide for the MRZ Scanner for Web
 
-This user guide will walk you through the [Hello World](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/README.md) sample app. When creating your own application, we recommend using this sample as a reference.
+This user guide will walk you through the [Hello World](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/hello-world.html) sample app. When creating your own application, we recommend using this sample as a reference.
 
 To learn about what an MRZ is, along with the makeup and system requirements of this solution, please visit the [MRZ Introduction](https://www.dynamsoft.com/mrz-scanner/docs/web/introduction/index.html) page on the Dynamsoft website.
 
@@ -87,7 +87,7 @@ Since this is a Hello World implementation, the HTML body will be kept quite sim
 
 <!-- The main DOM element that is required in the `<body>` is a `<div>` element where the MRZ result (or lack thereof) and the original image of the MRZ document will be displayed once the user clicks *Done* in the result view. Feel free to customize the styling of the `<div>` element to your liking. -->
 
-Now let's move to the main script that will define the operation of the 
+Now let's move to the main script that will define the operation of the MRZ scanning.
 
 ### Step 2: Initialize the MRZ Scanner
 
