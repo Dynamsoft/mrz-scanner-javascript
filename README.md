@@ -24,6 +24,74 @@ As mentioned previously, the purpose of this guide is to help you implement a He
 
 The first step before you venture into writing the code is to include the SDK in your application. The simplest way to include the SDK would be to use the precompiled script - but you can also build it from source yourself.
 
+### Using the Precompiled Script
+
+The simplest way to include the SDK is to use either the [**jsDelivr**](https://jsdelivr.com/) or [**UNPKG**](https://unpkg.com/) CDN. The Hello World sample that this guide will explore uses **jsDelivr**:
+
+- jsDelivr
+
+  ```html
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
+  ```
+
+- UNPKG
+
+  ```html
+  <script src="https://unpkg.com/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
+  ```
+
+When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
+
+  ```sh
+  npm i dynamsoft-mrz-scanner@2.0.0 -E
+  # or
+  yarn add dynamsoft-mrz-scanner@2.0.0 -E
+  ```
+
+> [!WARNING]
+> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
+
+Below is the complete Hello World sample page that uses the precompiled script served via a CDN.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamsoft MRZ Scanner - Hello World</title>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
+  </head>
+
+  <body>
+    <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
+
+    <script>
+      // Initialize the Dynamsoft MRZ Scanner
+      const mrzScanner = new Dynamsoft.MRZScanner({
+        license: "YOUR_LICENSE_KEY_HERE",
+      });
+      (async () => {
+        // Launch the scanner and wait for the result
+        const result = await mrzScanner.launch({});
+      })();
+    </script>
+  </body>
+</html>
+```
+
+> [!NOTE]
+>
+> This code is identical to the Hello World file mentioned in *Build from Source*, except for the script source.
+>
+> Please do not forget to replace `YOUR_LICENSE_KEY_HERE` with your own license key, whether it is trial or full.
+
+To run the sample, create a new file called `hello-world.html`, then copy and paste the code above into the file. Next, serve the page directly by deploying it to a server.
+
+If you are using VS Code, a quick and easy way to serve the project is using the [Five Server VSCode extension](https://marketplace.visualstudio.com/items?itemName=yandeu.five-server). Simply install the extension, open the `hello-world.html` file in the editor, and click "Go Live" in the bottom right corner of the editor. This will serve the application at `http://127.0.0.1:5500/hello-world.html`.
+
+Alternatively, you can use other methods like `IIS` or `Apache` to serve the project, though we will omit those methods here for brevity.
+
 ### Building the Library from Source
 
 In this guide, we will show the developer how to build the scanner themselves from the source files. The advantage of doing this is that it allows the developer to do some deep customization of the scanner if they are familiar with using the foundational products **Dynamsoft Label Recognizer**, **Dynamsoft Code Parser**, and the **Dynamsoft Camera Enhancer**.
