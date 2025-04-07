@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World</title>
+    <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
+    <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-bundle@2.6.1000/dist/dcv.bundle.js"></script>
+</head>
+
+<body>
+	<input type="button" value="Scan" onclick="AcquireImage();" />
+    <input type="button" value="Load" onclick="LoadImage();" />
+    <input type="button" value="Read MRZ" onclick="readMRZ();" />
+    <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
+	<div style="margin-top: 30px;letter-spacing: 0px;color: #323234;font-size: 14px;">
+		<div style="font: normal normal 600 14px/27px Open Sans;">About: </div>
+		<div style="font: normal normal normal 14px/24px Open Sans;">This sample uses the Core Module of Dynamic Web TWAIN.</div>
+		<div style="margin-top: 10px;font: normal normal 600 14px/27px Open Sans;">Learn More:</div>
+		<div style="font: normal normal normal 14px/28px Open Sans;color: #FE8E14;">
+			<a style="color: #FE8E14;text-decoration: none;" target="_blank" href="https://www.dynamsoft.com/web-twain/docs/faq/download-virtual-scanner-for-testing.html?product=dwt&utm_source=installer">Download virtual scanner for testing ></a><br/>
+			<a style="color: #FE8E14;text-decoration: none;" target="_blank" href="https://www.dynamsoft.com/web-twain/docs/indepth/features/initialize.html#dynamsoftdwtload?product=dwt&utm_source=installer">How to initialize Dynamic Web TWAIN instance on demand ></a>        
+		</div>
+	</div>
+
+
+    <script type="text/javascript">
+		var DWTObject;
+        var cvRouter;
+
+		Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", function () {
+            initializeMRZ();
+			DWTObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
+		});
+
+        async function initializeMRZ() {
+            // Inialize License Key
+            Dynamsoft.License.LicenseManager.initLicense("DLS2eyJoYW5kc2hha2VDb2RlIjoiMzE0NTQwLVRYbFhaV0pRY205cSIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21sdHMuZHluYW1zb2Z0LmNvbSIsIm9yZ2FuaXphdGlvbklEIjoiMzE0NTQwIiwic3RhbmRieVNlcnZlclVSTCI6Imh0dHBzOi8vc2x0cy5keW5hbXNvZnQuY29tIiwiY2hlY2tDb2RlIjoxOTY5OTM3NTcyfQ==");
+            
+            // Load MRZ Resources
+            Dynamsoft.Core.CoreModule.loadWasm(["DLR", "DCP"]);
+            Dynamsoft.DCP.CodeParserModule.loadSpec("MRTD_TD3_PASSPORT");
+            Dynamsoft.DCP.CodeParserModule.loadSpec("MRTD_TD1_ID");
+            Dynamsoft.DCP.CodeParserModule.loadSpec("MRTD_TD2_ID");
+            Dynamsoft.DLR.LabelRecognizerModule.loadRecognitionData("MRZ");
+
+            // Create Capture Vision Router Instance with MRZ templates
+            cvRouter = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
+            await cvRouter.initSettings("./Resources/mrz-template.json");
+
+            console.log("MRZ Initialized Successfully");
+        }
+
+		function AcquireImage() {
+            if (DWTObject) {
+				DWTObject.SelectSourceAsync().then(function(){
+					return DWTObject.AcquireImageAsync({
+					        IfCloseSourceAfterAcquire: true // Scanner source will be closed automatically after the scan.
+						});
+				}).catch(function (exp) {
+					alert(exp.message);
+				});
+            }
+        }
+
+        //Callback functions for async APIs
+        function OnSuccess() {
+            console.log('successful');
+        }
+
+        function OnFailure(errorCode, errorString) {
+            if(errorCode != -2326)
+			alert(errorString);
+        }
+
+        function LoadImage() {
+            if (DWTObject) {
+                DWTObject.IfShowFileDialog = true; // Open the system's file dialog to load image
+                DWTObject.LoadImageEx("", Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL, OnSuccess, OnFailure); // Load images in all supported formats (.bmp, .jpg, .tif, .png, .pdf). OnSuccess or OnFailure will be called after the operation
+            }
+        }
+
+        function checkIfImagesInBuffer() {
+            if (DWTObject.HowManyImagesInBuffer == 0) {
+                console.log("There is no image in the buffer.")
+                return false;
+            }
+            else
+                return true;
+        }
+
+        // Used by the Button on page, to trigger a MRZ read with the current select page
+        async function readMRZ() {
+            if (!checkIfImagesInBuffer()) {
+                return;
+            }
+            if (!cvRouter) {
+                console.log("cvRouter is not initialized.");
+                return;
+            }
+            console.log("Reading MRZ on Index " + DWTObject.CurrentImageIndexInBuffer);
+            let imgURL = DWTObject.GetImageURL(DWTObject.CurrentImageIndexInBuffer);
+            let capturedResults = await cvRouter.capture(imgURL, "ReadPassportAndId");
+            const recognizedResults = capturedResults.textLineResultItems;
+            const parsedResults = capturedResults.parsedResultItems;
+            console.log(parsedResults);
+            if (!parsedResults || !parsedResults.length) {
+                console.log("No Result");
+                return;
+            }
+            
+            extractedResults = extractDocumentFields(parsedResults[0]);
+            console.log(recognizedResults);
+            console.log(extractedResults);
+            console.log("Please See Detailed MRZ Result in Console");
+
+            /*DWTObject.ConvertToBlob(
+                [DWTObject.CurrentImageIndexInBuffer],
+                Dynamsoft.DWT.EnumDWT_ImageType.IT_PNG,
+                async function (result, indices, type) {
+                    let capturedResults = await cvRouter.capture(result, "ReadPassportAndId");
+                    const recognizedResults = capturedResults.textLineResultItems;
+                    const parsedResults = capturedResults.parsedResultItems;
+
+                    console.log(parsedResults);
+                    if (!parsedResults || !parsedResults.length) {
+                        console.log("No Result");
+                        return;
+                    }
+                    
+                    extractedResults = extractDocumentFields(parsedResults[0]);
+                    console.log(recognizedResults);
+                    console.log(extractedResults);
+                    console.log("Please See Detailed MRZ Result in Console");
+                },
+                function (errorCode, errorString) {
+                    console.log(errorString);
+                }
+            );*/
+            
+        }
+
+        /**
+         * Extracts and returns document fields from the parsed MRZ result
+         *
+         * @param {Object} result - The parsed result object containing document fields.
+         * @returns {Object} An object with key-value pairs of the extracted fields.
+         */
+        function extractDocumentFields(result) {
+            if (!result || result.exception) {
+            return {};
+            }
+        
+            const fieldWithStatus = (fieldName, raw=false) => ({
+            text: raw ? result.getFieldRawValue(fieldName) : result.getFieldValue(fieldName),
+            status: result.getFieldValidationStatus(fieldName),
+            });
+        
+            const parseDate = (yearField, monthField, dayField) => {
+                const year = result.getFieldValue(yearField);
+                const currentYear = new Date().getFullYear() % 100;
+                const baseYear =
+                    yearField === "expiryYear" ? (parseInt(year) >= 60 ? "19" : "20") : parseInt(year) > currentYear ? "19" : "20";
+            
+                return {
+                    text: `${baseYear}${year}-${result.getFieldValue(monthField)}-${result.getFieldValue(dayField)}`,
+                    status: [yearField, monthField, dayField].every(
+                    (field) => result.getFieldValidationStatus(field) === Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED
+                    )
+                    ? Dynamsoft.DCP.EnumValidationStatus.VS_SUCCEEDED
+                    : Dynamsoft.DCP.EnumValidationStatus.VS_FAILED,
+                };
+            };
+        
+            // Add special case for Spanish IDs
+            const getDocumentNumber = (codeType) => {
+            const documentType = mapDocumentType(codeType);
+            const documentNumberField =
+            documentType === "passport" && codeType === "MRTD_TD3_PASSPORT"
+                ? "passportNumber"
+                : result.getFieldRawValue("nationality") === "ESP" ? 
+                "optionalData1" : "documentNumber";
+
+            const primaryNumber = fieldWithStatus(documentNumberField);
+            const longNumber = fieldWithStatus("longDocumentNumber");
+        
+            return primaryNumber?.text ? primaryNumber : longNumber;
+            };
+        
+            // Document Type and Name
+            const codeType = result.codeType;
+        
+            return {
+            Surname: fieldWithStatus("primaryIdentifier"),
+            "Given Name": fieldWithStatus("secondaryIdentifier"),
+            Nationality: fieldWithStatus("nationality", true),
+            "Document Number": getDocumentNumber(codeType),
+            "Document Type": documentTypeLabel(codeType),
+            "Issuing State": fieldWithStatus("issuingState", true),
+            Sex: fieldWithStatus("sex"),
+            "Date of Birth (YYYY-MM-DD)": parseDate("birthYear", "birthMonth", "birthDay"),
+            "Date of Expiry (YYYY-MM-DD)": parseDate("expiryYear", "expiryMonth", "expiryDay"),
+            "Document Type": JSON.parse(result.jsonString).CodeType,
+            };
+        }
+
+        function mapDocumentType(codeType) {
+            switch (codeType) {
+            case "MRTD_TD1_ID":
+                return "td1";
+        
+            case "MRTD_TD2_ID":
+            case "MRTD_TD2_VISA":
+            case "MRTD_TD2_FRENCH_ID":
+                return "td2";
+        
+            case "MRTD_TD3_PASSPORT":
+            case "MRTD_TD3_VISA":
+                return "passport";
+        
+            default:
+                throw new Error(`Unknown document type: ${codeType}`);
+            }
+        }
+
+        function documentTypeLabel(codeType) {
+            switch (codeType) {
+            case "MRTD_TD1_ID":
+                return "ID (TD1)";
+        
+            case "MRTD_TD2_ID":
+                return "ID (TD2)";
+            case "MRTD_TD2_VISA":
+                return "ID (VISA)";
+            case "MRTD_TD2_FRENCH_ID":
+                return "French ID (TD2)";
+        
+            case "MRTD_TD3_PASSPORT":
+                return "Passport (TD3)";
+            case "MRTD_TD3_VISA":
+                return "Visa (TD3)";
+        
+            default:
+                throw new Error(`Unknown document type: ${codeType}`);
+            }
+        } 
+    </script>
+</body>
+
+</html>
