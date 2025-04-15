@@ -49,7 +49,7 @@ When using a framework such as **React**, **Vue** or **Angular**, we recommend a
   ```
 
 > [!WARNING]
-> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
+> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
 
 Below is the complete Hello World sample page that uses the precompiled script served via a CDN.
 
