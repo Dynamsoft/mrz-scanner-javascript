@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamsoft MRZ Scanner - Use File Input</title>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta.0514202501/dist/mrz-scanner.bundle.js"></script> -->
+    <!-- To use locally: -->
+    <script src="../../dist/mrz-scanner.bundle.js"></script>
+
+    <!-- PDF.js library  -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      #results canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button type="button" id="start-scan">Start Scan Button</button>
+    <input type="file" id="initialFile" accept="image/png,image/jpeg,application/pdf" />
+    <div id="results"></div>
+    <script>
+      // Setup PDF.js
+      const pdfjsLib = window["pdfjs-dist/build/pdf"];
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+      const resultContainer = document.querySelector("#results");
+
+      // Initialize the Dynamsoft MRZ Scanner
+      const mrzscanner = new Dynamsoft.MRZScanner({
+        license: "YOUR_LICENSE_KEY_HERE",
+        scannerViewConfig: {
+          uploadAcceptedTypes: "image/*,application/pdf",
+          uploadFileConverter: async (file) => {
+            if (file.type === "application/pdf") {
+              // Example PDF to image conversion
+              const pdfData = await convertPDFToImage(file);
+              return pdfData;
+            }
+
+            // For other non-image types, you can add more conversion logic
+            // If it's not a supported type, throw an error
+            throw new Error("Unsupported file type");
+          },
+        },
+      });
+
+      // PDF to image conversion function
+      async function convertPDFToImage(file) {
+        try {
+          // Load the PDF file
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+          // Get the first page only
+          if (pdf.numPages === 0) {
+            throw new Error("The PDF has no pages");
+          }
+
+          const page = await pdf.getPage(1); // Page numbers are 1-based in pdf.js
+
+          // Set a reasonable scale for good rendering quality
+          const scale = 1.5;
+          const viewport = page.getViewport({ scale });
+
+          // Create a canvas for rendering
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+
+          // Render the PDF page to the canvas
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport,
+          };
+
+          await page.render(renderContext).promise;
+
+          // Convert canvas to blob
+          return new Promise((resolve, reject) => {
+            canvas.toBlob((blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error("Failed to create image from PDF"));
+              }
+            }, "image/png");
+          });
+        } catch (error) {
+          console.error("PDF processing error:", error);
+          alert("PDF Processing error. Please try again");
+          throw new Error("PDF Processing Error.");
+        }
+      }
+
+      function displayResult(result) {
+        console.log(result);
+
+        if (result?.data) {
+          resultContainer.innerHTML = ""; // Clear placeholder content
+
+          if (result.originalImageResult?.toCanvas) {
+            const canvas = result.originalImageResult?.toCanvas();
+
+            canvas.style.objectFit = "contain";
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            resultContainer.appendChild(canvas);
+          }
+
+          let resultHTML = ``;
+          Object.entries(result.data).forEach(([key, value]) => {
+            const label = Dynamsoft.MRZDataLabel[key];
+
+            const container = document.createElement("div");
+            container.className = "mrz-result-container";
+            const labelContainer = document.createElement("div");
+            const valueContainer = document.createElement("div");
+
+            labelContainer.textContent = label;
+            valueContainer.textContent = `${JSON.stringify(value)}`;
+
+            container.appendChild(labelContainer);
+            container.appendChild(valueContainer);
+            resultContainer.appendChild(container);
+          });
+        } else {
+          resultContainer.innerHTML = "<p>No MRZ scanned. Please try again.</p>";
+        }
+      }
+
+      document.getElementById("start-scan").onclick = async function () {
+        const result = await mrzscanner.launch();
+        displayResult(result);
+      };
+
+      document.getElementById("initialFile").onchange = async function () {
+        const files = Array.from(this.files || []);
+        if (files.length) {
+          try {
+            let fileToProcess = files[0];
+
+            // Handle PDF conversion if needed
+            if (fileToProcess.type === "application/pdf") {
+              fileToProcess = await convertPDFToImage(fileToProcess);
+            }
+
+            const result = await mrzscanner.launch(fileToProcess);
+            displayResult(result);
+          } catch (error) {
+            console.error("Error processing file:", error);
+            resultContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
