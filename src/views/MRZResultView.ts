@@ -233,7 +233,12 @@ export default class MRZResultView {
           result.classList.add("invalid-field");
         }
 
-        const nonEditableFields = [EnumMRZData.MRZText, EnumMRZData.DocumentType];
+        const nonEditableFields = [
+          EnumMRZData.MRZText,
+          EnumMRZData.DocumentType,
+          EnumMRZData.IssuingStateRaw,
+          EnumMRZData.NationalityRaw,
+        ];
 
         const resultLabel = document.createElement("span");
         resultLabel.className = "dynamsoft-mrz-data-label";
