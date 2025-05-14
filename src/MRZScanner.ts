@@ -1,8 +1,17 @@
 import { LicenseManager } from "dynamsoft-license";
-import { CoreModule, EngineResourcePaths } from "dynamsoft-core";
+import {
+  _toBlob,
+  _toCanvas,
+  CoreModule,
+  DSImageData,
+  EngineResourcePaths,
+  EnumCapturedResultItemType,
+  MimeType,
+  OriginalImageResultItem,
+} from "dynamsoft-core";
 import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
 import { CameraEnhancer, CameraView } from "dynamsoft-camera-enhancer";
-import { CodeParserModule } from "dynamsoft-code-parser";
+import { CodeParserModule, ParsedResultItem } from "dynamsoft-code-parser";
 import { LabelRecognizerModule } from "dynamsoft-label-recognizer";
 import {
   DEFAULT_TEMPLATE_NAMES,
@@ -14,14 +23,15 @@ import {
 } from "./views/utils/types";
 import { createStyle, getElement, isEmptyObject } from "./views/utils";
 import MRZScannerView, { MRZScannerViewConfig } from "./views/MRZScannerView";
-import { MRZResult } from "./views/utils/MRZParser";
+import { MRZData, MRZResult, processMRZData } from "./views/utils/MRZParser";
 import MRZResultView, { MRZResultViewConfig } from "./views/MRZResultView";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./views/utils/LoadingScreen";
 
 // Default DCE UI path
-const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.ui.html";
+const DEFAULT_DCE_UI_PATH =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta.0514202501/dist/mrz-scanner.ui.html"; // TODO
 const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH =
-  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.template.json";
+  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta.0514202501/dist/mrz-scanner.template.json"; // TODO
 
 const DEFAULT_DCV_ENGINE_RESOURCE_PATHS = { rootDirectory: "https://cdn.jsdelivr.net/npm/" };
 const DEFAULT_CONTAINER_HEIGHT = "100dvh";
@@ -77,13 +87,10 @@ class MRZScanner {
     if (this.loadingScreen) {
       this.loadingScreen.hide();
       this.loadingScreen = null;
+      configContainer.style.display = "none";
 
-      if (hideContainer) {
-        configContainer.style.display = "none";
-
-        if (this.config?.container) {
-          getElement(this.config.container).style.display = "none";
-        }
+      if (hideContainer && this.config?.container) {
+        getElement(this.config.container).style.display = "none";
       }
     }
   }
@@ -156,9 +163,8 @@ class MRZScanner {
 
       let errMsg = ex?.message || ex;
       const error = `Initialization Failed: ${errMsg}`;
-
-      alert(error);
       console.error(error);
+
       return { resources: this.resources, components: {} };
     } finally {
       this.hideLoadingOverlay(true);
@@ -167,15 +173,21 @@ class MRZScanner {
 
   private async initializeDCVResources(): Promise<boolean> {
     try {
-      LicenseManager.initLicense(this.config?.license || "", true);
-
       //The following code uses the jsDelivr CDN, feel free to change it to your own location of these files
       CoreModule.engineResourcePaths = isEmptyObject(this.config?.engineResourcePaths)
         ? DEFAULT_DCV_ENGINE_RESOURCE_PATHS
         : this.config.engineResourcePaths;
 
-      // Optional. Used to load wasm resources in advance, reducing latency between video playing and document modules.
+      // Change trial link to include product and deploymenttype
+      (LicenseManager as any)._onAuthMessage = (message: string) =>
+        message.replace(
+          "(https://www.dynamsoft.com/customer/license/trialLicense?product=unknown&deploymenttype=unknown)",
+          "(https://www.dynamsoft.com/customer/license/trialLicense?product=mrz&deploymenttype=web)"
+        );
 
+      await LicenseManager.initLicense(this.config?.license || "", { executeNow: true });
+
+      // Optional. Used to load wasm resources in advance, reducing latency between video playing and document modules.
       // Can add other specs. Please check https://www.dynamsoft.com/code-parser/docs/core/code-types/mrtd.html
       CoreModule.loadWasm(["DLR", "DCP"]);
       CodeParserModule.loadSpec("MRTD_TD3_PASSPORT");
@@ -440,7 +452,95 @@ class MRZScanner {
     this.isInitialized = false;
   }
 
-  async launch(): Promise<MRZResult> {
+  /**
+   * Processes an uploaded image file
+   * @param imageOrFile The file to process
+   * @returns Promise with the document result
+   */
+  private async processUploadedFile(
+    imageOrFile: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
+  ): Promise<MRZResult> {
+    try {
+      this.showLoadingOverlay("Processing File...");
+
+      const { cvRouter } = this.resources;
+
+      // Use CaptureVisionRouter to process the image
+      const currentTemplate = this.config.utilizedTemplateNames?.all;
+
+      const newSettings = await cvRouter.getSimplifiedSettings(currentTemplate);
+      newSettings.roiMeasuredInPercentage = true;
+      newSettings.roi.points = [
+        {
+          x: 0,
+          y: 0,
+        },
+        {
+          x: 100,
+          y: 0,
+        },
+        {
+          x: 100,
+          y: 100,
+        },
+        {
+          x: 0,
+          y: 100,
+        },
+      ];
+      await cvRouter.updateSettings(currentTemplate, newSettings);
+      const capturedResult = await cvRouter.capture(imageOrFile, currentTemplate);
+      const resultItems = capturedResult.items;
+      const originalImage = resultItems.filter(
+        (item) => item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE
+      ) as OriginalImageResultItem[];
+
+      const imageData = originalImage[0].imageData;
+      (imageData as any).toCanvas = () => _toCanvas(imageData);
+      (imageData as any).toBlob = async () => await _toBlob(`image/png` as MimeType, imageData);
+
+      const textLineResultItems = capturedResult?.textLineResultItems;
+      const parsedResultItems = capturedResult?.parsedResultItems;
+
+      let processedData = {} as MRZData;
+
+      if (textLineResultItems?.length) {
+        const mrzText = textLineResultItems[0]?.text || "";
+        const parsedResult = parsedResultItems[0] as ParsedResultItem;
+
+        processedData = processMRZData(mrzText, parsedResult);
+      }
+
+      const mrzResult = {
+        status: {
+          code: EnumResultStatus.RS_SUCCESS,
+          message: "Success",
+        },
+        originalImageResult: imageData,
+        data: processedData,
+
+        // Used for MWC
+        imageData: true,
+        _imageData: imageData,
+      };
+      // Emit result through shared resources
+      this.resources.onResultUpdated?.(mrzResult);
+    } catch (error) {
+      console.error("Failed to process uploaded file:", error);
+      return {
+        status: {
+          code: EnumResultStatus.RS_FAILED,
+          message: `Failed to process image: ${error.message || error}`,
+        },
+      };
+    } finally {
+      this.hideLoadingOverlay(false);
+    }
+  }
+
+  async launch(
+    imageOrFile: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
+  ): Promise<MRZResult> {
     if (this.isCapturing) {
       throw new Error("Capture session already in progress");
     }
@@ -455,6 +555,12 @@ class MRZScanner {
 
       if (this.config.container) {
         getElement(this.config.container).style.display = "block";
+      }
+
+      // Handle direct file upload if provided
+      if (imageOrFile) {
+        components.scannerView = null;
+        await this.processUploadedFile(imageOrFile);
       }
 
       // Special case handling for direct views with existing results

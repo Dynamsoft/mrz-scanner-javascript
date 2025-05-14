@@ -14,7 +14,9 @@ export enum EnumMRZData {
   Age = "age",
   Sex = "sex",
   IssuingState = "issuingState",
+  IssuingStateRaw = "issuingStateRaw",
   Nationality = "nationality",
+  NationalityRaw = "nationalityRaw",
   DateOfBirth = "dateOfBirth",
   DateOfExpiry = "dateOfExpiry",
 }
@@ -24,6 +26,8 @@ export interface MRZResult {
   originalImageResult?: DSImageData;
   data?: MRZData;
 
+  // Used for MWC
+  imageData?: boolean;
   _imageData?: DSImageData;
 }
 
@@ -37,7 +41,9 @@ export interface MRZData {
   [EnumMRZData.Age]: number;
   [EnumMRZData.Sex]: string;
   [EnumMRZData.IssuingState]: string;
+  [EnumMRZData.IssuingStateRaw]: string;
   [EnumMRZData.Nationality]: string;
+  [EnumMRZData.NationalityRaw]: string;
   [EnumMRZData.DateOfBirth]: MRZDate;
   [EnumMRZData.DateOfExpiry]: MRZDate;
 }
@@ -59,7 +65,9 @@ export const MRZDataLabel: Record<EnumMRZData, string> = {
   [EnumMRZData.Age]: "Age",
   [EnumMRZData.Sex]: "Sex",
   [EnumMRZData.IssuingState]: "Issuing State",
+  [EnumMRZData.IssuingStateRaw]: "Issuing State (Raw Value)",
   [EnumMRZData.Nationality]: "Nationality",
+  [EnumMRZData.NationalityRaw]: "Nationality State (Raw Value)",
   [EnumMRZData.DateOfBirth]: "Date Of Birth (YYYY-MM-DD)",
   [EnumMRZData.DateOfExpiry]: "Date Of Expiry (YYYY-MM-DD)",
 };
@@ -138,6 +146,11 @@ function documentTypeLabel(codeType: string): string {
   }
 }
 
+function processRawCountryCodes(result: string) {
+  // As of DCV 2.6.1000, there's a bug with DCP (Dynamsoft Code Parser) where German nationality and issuing state is noted as `D<<`
+  return result === "D<<" ? "D" : result;
+}
+
 export function processMRZData(mrzText: string, parsedResult: ParsedResultItem): MRZData | null {
   const invalidFields: EnumMRZData[] = [];
 
@@ -188,10 +201,12 @@ export function processMRZData(mrzText: string, parsedResult: ParsedResultItem):
   const fields = {
     [EnumMRZData.LastName]: parsedResult.getFieldValue("primaryIdentifier"),
     [EnumMRZData.FirstName]: parsedResult.getFieldValue("secondaryIdentifier"),
-    [EnumMRZData.Nationality]: parsedResult.getFieldRawValue("nationality"),
+    [EnumMRZData.Nationality]: parsedResult.getFieldValue("nationality"),
+    [EnumMRZData.NationalityRaw]: processRawCountryCodes(parsedResult.getFieldRawValue("nationality")),
     [EnumMRZData.DocumentNumber]:
       parsedResult.getFieldValue(documentNumberField) || parsedResult.getFieldValue("longDocumentNumber"),
-    [EnumMRZData.IssuingState]: parsedResult.getFieldRawValue("issuingState"),
+    [EnumMRZData.IssuingState]: parsedResult.getFieldValue("issuingState"),
+    [EnumMRZData.IssuingStateRaw]: processRawCountryCodes(parsedResult.getFieldRawValue("issuingState")),
     [EnumMRZData.Sex]: capitalize(parsedResult.getFieldValue("sex")),
   };
 
@@ -228,9 +243,11 @@ export function processMRZData(mrzText: string, parsedResult: ParsedResultItem):
     [EnumMRZData.DateOfBirth]: dateOfBirth,
     [EnumMRZData.Sex]: fields[EnumMRZData.Sex],
     [EnumMRZData.Nationality]: fields[EnumMRZData.Nationality],
+    [EnumMRZData.NationalityRaw]: fields[EnumMRZData.NationalityRaw],
     [EnumMRZData.DocumentNumber]: fields[EnumMRZData.DocumentNumber],
     [EnumMRZData.DateOfExpiry]: dateOfExpiry,
     [EnumMRZData.IssuingState]: fields[EnumMRZData.IssuingState],
+    [EnumMRZData.IssuingStateRaw]: fields[EnumMRZData.IssuingStateRaw],
     [EnumMRZData.DocumentType]: capitalize(docTypeLabel),
     [EnumMRZData.MRZText]: mrzText,
   };
