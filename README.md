@@ -139,7 +139,7 @@ Let's now go through the code of the Hello World sample and understand the purpo
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta.0514202501/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta-0514202502/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
