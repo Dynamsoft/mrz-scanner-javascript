@@ -1,4 +1,11 @@
-import { EnumCapturedResultItemType, EnumImagePixelFormat, OriginalImageResultItem } from "dynamsoft-core";
+import {
+  _toBlob,
+  _toCanvas,
+  EnumCapturedResultItemType,
+  EnumImagePixelFormat,
+  MimeType,
+  OriginalImageResultItem,
+} from "dynamsoft-core";
 import { CapturedResultReceiver, CapturedResult } from "dynamsoft-capture-vision-router";
 import { SharedResources } from "../MRZScanner";
 import { EnumResultStatus, UtilizedTemplateNames, EnumMRZScanMode, EnumMRZDocumentType } from "./utils/types";
@@ -21,8 +28,12 @@ export interface MRZScannerViewConfig {
   showUploadImage?: boolean;
   showFormatSelector?: boolean;
   showSoundToggle?: boolean;
+  showPoweredByDynamsoft?: boolean; // true by default
 
   enableMultiFrameCrossFilter?: boolean; // true by default
+
+  uploadAcceptedTypes?: string; // Default: "image/*"
+  uploadFileConverter?: (file: File) => Promise<Blob>; // Function to convert non-image files to blobs
 }
 
 const MRZScanGuideRatios: Record<EnumMRZDocumentType, { width: number; height: number }> = {
@@ -209,11 +220,16 @@ export default class MRZScannerView {
     // Hide configs
 
     if (this.config.showUploadImage === false) {
-      this.DCE_ELEMENTS.uploadImageBtn.style.display = "none";
+      this.DCE_ELEMENTS.uploadImageBtn.style.visibility = "hidden";
     }
 
     if (this.config.showSoundToggle === false) {
-      this.DCE_ELEMENTS.soundFeedbackBtn.style.display = "none";
+      this.DCE_ELEMENTS.soundFeedbackBtn.style.visibility = "hidden";
+    }
+
+    if (this.config?.showPoweredByDynamsoft === false) {
+      const poweredByDynamsoft = DCEContainer.shadowRoot.querySelector(".dce-mn-msg-poweredby") as HTMLElement;
+      poweredByDynamsoft.style.display = "none";
     }
 
     this.initializedDCE = true;
@@ -250,7 +266,7 @@ export default class MRZScannerView {
 
     this.closeCamera = this.closeCamera.bind(this);
 
-    this.DCE_ELEMENTS.uploadImageBtn.onclick = () => this.uploadImage();
+    this.DCE_ELEMENTS.uploadImageBtn.onclick = () => this.uploadFile();
     this.DCE_ELEMENTS.soundFeedbackBtn.onclick = () => this.toggleSoundFeedback();
     this.DCE_ELEMENTS.closeScannerBtn.onclick = () => this.handleCloseBtn();
 
@@ -393,26 +409,31 @@ export default class MRZScannerView {
     settingsBox.click();
   }
 
-  private async uploadImage() {
+  private async relaunch() {
+    return;
+  }
+
+  private async uploadFile() {
     const { cvRouter } = this.resources;
 
     // Create hidden file input
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
+    input.accept = this.config.uploadAcceptedTypes ?? "image/*";
     input.style.display = "none";
     document.body.appendChild(input);
 
     try {
-      this.showScannerLoadingOverlay("Processing image...");
+      this.showScannerLoadingOverlay("Processing file...");
       await this.closeCamera(false);
 
       // Get file from input
       const file = await new Promise<File>((resolve, reject) => {
         input.onchange = (e: Event) => {
           const f = (e.target as HTMLInputElement).files?.[0];
-          if (!f?.type.startsWith("image/")) {
-            reject(new Error("Please select an image file"));
+
+          if (!f) {
+            reject(new Error("No file selected"));
             return;
           }
           resolve(f);
@@ -420,69 +441,67 @@ export default class MRZScannerView {
 
         input.addEventListener("cancel", async () => {
           this.hideScannerLoadingOverlay(false);
-          await this.launch();
+          // Start capturing
+          await this.openCamera();
+
+          await this.startCapturing();
+
+          //Show scan guide
+          this.toggleScanGuide();
         });
 
         input.click();
       });
 
       if (!file) {
-        this.hideScannerLoadingOverlay(false);
-        await this.launch();
-
         return;
       }
 
-      // Convert file to blob
-      const currentTemplate = this.config.utilizedTemplateNames[this.currentScanMode];
+      let fileBlob: Blob;
 
+      // Use custom converter if provided and file is not an image
+      if (this.config.uploadFileConverter && !file.type.startsWith("image/")) {
+        try {
+          fileBlob = await this.config.uploadFileConverter(file);
+        } catch (error) {
+          throw new Error(`Error converting file: ${error.message}`);
+        }
+      } else if (file.type.startsWith("image/")) {
+        // For images, use existing conversion path
+        fileBlob = file;
+      } else {
+        throw new Error("Unsupported file type. Please provide a converter function for this file type.");
+      }
+
+      // Update ROI for full image scanning
+      const currentTemplate = this.config.utilizedTemplateNames[this.currentScanMode];
       if (this.config.showScanGuide !== false) {
-        // Update ROI if scanGuide can be shown
         const newSettings = await cvRouter.getSimplifiedSettings(currentTemplate);
         newSettings.roiMeasuredInPercentage = true;
         newSettings.roi.points = [
-          {
-            x: 0,
-            y: 0,
-          },
-          {
-            x: 100,
-            y: 0,
-          },
-          {
-            x: 100,
-            y: 100,
-          },
-          {
-            x: 0,
-            y: 100,
-          },
+          { x: 0, y: 0 },
+          { x: 100, y: 0 },
+          { x: 100, y: 100 },
+          { x: 0, y: 100 },
         ];
         await cvRouter.updateSettings(currentTemplate, newSettings);
       }
 
-      const capturedResult = await cvRouter.capture(file, currentTemplate);
+      // Capture mrz from file
+      const capturedResult = await cvRouter.capture(fileBlob, currentTemplate);
       this.capturedResultItems = capturedResult.items;
       const originalImage = this.capturedResultItems.filter(
         (item) => item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE
       ) as OriginalImageResultItem[];
 
+      if (originalImage.length === 0) {
+        throw new Error("No image data found in the captured result");
+      }
+
       const imageData = originalImage[0].imageData;
-      (imageData as any).toCanvas = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = imageData.width;
-        canvas.height = imageData.height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          throw new Error("Failed to get canvas context");
-        }
+      (imageData as any).toCanvas = () => _toCanvas(imageData);
+      (imageData as any).toBlob = async () => await _toBlob(`image/png` as MimeType, imageData);
 
-        // Create ImageData from the bytes
-        const imgData = new ImageData(new Uint8ClampedArray(imageData.bytes.buffer), imageData.width, imageData.height);
-        ctx.putImageData(imgData, 0, 0);
-
-        return canvas;
-      };
       this.originalImageData = imageData;
 
       const textLineResultItems = capturedResult?.textLineResultItems;
@@ -493,7 +512,6 @@ export default class MRZScannerView {
       if (textLineResultItems?.length) {
         const mrzText = textLineResultItems[0]?.text || "";
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
-
         processedData = processMRZData(mrzText, parsedResult);
       }
 
@@ -503,17 +521,14 @@ export default class MRZScannerView {
           message: "Success",
         },
         originalImageResult: this.originalImageData,
-        _imageData: this.originalImageData,
         data: processedData,
+
+        imageData: true,
+        _imageData: this.originalImageData,
       };
-      // Emit result through shared resources
+
       this.resources.onResultUpdated?.(mrzResult);
-
-      // Resolve scan promise
       this.currentScanResolver(mrzResult);
-
-      // Done processing
-      this.hideScannerLoadingOverlay(true);
     } catch (ex: any) {
       let errMsg = ex?.message || ex;
       console.error(errMsg);
@@ -523,11 +538,12 @@ export default class MRZScannerView {
       const result = {
         status: {
           code: EnumResultStatus.RS_FAILED,
-          message: "Error processing uploaded image",
+          message: `Error processing file: ${errMsg}`,
         },
       };
       this.currentScanResolver(result);
     } finally {
+      this.hideScannerLoadingOverlay(true);
       document.body.removeChild(input);
     }
   }
@@ -704,6 +720,12 @@ export default class MRZScannerView {
         await cameraEnhancer.resume();
       }
 
+      // Try to set default as 2k
+      await cameraEnhancer.setResolution({
+        width: 2560,
+        height: 1440,
+      });
+
       // Assign element
       if (!this.initializedDCE && cameraEnhancer.isOpen()) {
         await this.initializeElements();
@@ -789,8 +811,12 @@ export default class MRZScannerView {
       const originalImage = result.items.filter(
         (item) => item.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE
       ) as OriginalImageResultItem[];
-      this.originalImageData = originalImage.length && originalImage[0].imageData;
 
+      const imageData = originalImage[0].imageData;
+      (imageData as any).toCanvas = () => _toCanvas(imageData);
+      (imageData as any).toBlob = async () => await _toBlob(`image/png` as MimeType, imageData);
+
+      this.originalImageData = imageData;
       const textLineResultItems = result?.textLineResultItems;
       const parsedResultItems = result?.parsedResultItems;
 
@@ -812,8 +838,11 @@ export default class MRZScannerView {
             message: "Success",
           },
           originalImageResult: this.originalImageData,
-          _imageData: this.originalImageData,
           data: processedData,
+
+          // Used for MWC
+          imageData: true,
+          _imageData: this.originalImageData,
         };
 
         // Emit result through shared resources

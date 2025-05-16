@@ -67,7 +67,9 @@ declare enum EnumMRZData {
     Age = "age",
     Sex = "sex",
     IssuingState = "issuingState",
+    IssuingStateRaw = "issuingStateRaw",
     Nationality = "nationality",
+    NationalityRaw = "nationalityRaw",
     DateOfBirth = "dateOfBirth",
     DateOfExpiry = "dateOfExpiry"
 }
@@ -75,6 +77,7 @@ interface MRZResult {
     status: ResultStatus;
     originalImageResult?: DSImageData;
     data?: MRZData;
+    imageData?: boolean;
     _imageData?: DSImageData;
 }
 interface MRZData {
@@ -87,7 +90,9 @@ interface MRZData {
     [EnumMRZData.Age]: number;
     [EnumMRZData.Sex]: string;
     [EnumMRZData.IssuingState]: string;
+    [EnumMRZData.IssuingStateRaw]: string;
     [EnumMRZData.Nationality]: string;
+    [EnumMRZData.NationalityRaw]: string;
     [EnumMRZData.DateOfBirth]: MRZDate;
     [EnumMRZData.DateOfExpiry]: MRZDate;
 }
@@ -109,7 +114,10 @@ interface MRZScannerViewConfig {
     showUploadImage?: boolean;
     showFormatSelector?: boolean;
     showSoundToggle?: boolean;
+    showPoweredByDynamsoft?: boolean;
     enableMultiFrameCrossFilter?: boolean;
+    uploadAcceptedTypes?: string;
+    uploadFileConverter?: (file: File) => Promise<Blob>;
 }
 declare class MRZScannerView {
     private resources;
@@ -137,7 +145,8 @@ declare class MRZScannerView {
     private attachOptionClickListeners;
     private highlightCameraAndResolutionOption;
     private toggleSelectCameraBox;
-    private uploadImage;
+    private relaunch;
+    private uploadFile;
     private toggleSoundFeedback;
     private calculateScanRegion;
     private toggleScanGuide;
@@ -229,7 +238,13 @@ declare class MRZScanner {
     private initializeMRZScannerConfig;
     private createViewContainers;
     dispose(): void;
-    launch(): Promise<MRZResult>;
+    /**
+     * Processes an uploaded image file
+     * @param imageOrFile The file to process
+     * @returns Promise with the document result
+     */
+    private processUploadedFile;
+    launch(imageOrFile: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>;
 }
 
 declare const DynamsoftMRZScanner: {
