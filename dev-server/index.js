@@ -50,6 +50,10 @@ app.get("/hello-world", (req, res) => {
   res.sendFile(path.join(__dirname, "../samples/hello-world.html"));
 });
 
+app.get("/scenarios/use-file-input", (req, res) => {
+  res.sendFile(path.join(__dirname, "../samples/scenarios/use-file-input.html"));
+});
+
 let httpPort = 3002;
 let httpsPort = 3003;
 
@@ -113,6 +117,8 @@ httpServer.listen(httpPort, () => {
   console.log("\x1b[90m-------------------\x1b[0m");
   console.log("\x1b[33m Hello World:\x1b[0m    http://localhost:" + httpPort + "/hello-world");
   console.log("\x1b[33m Demo:\x1b[0m    http://localhost:" + httpPort + "/demo");
+  console.log("\x1b[90m-------------------\x1b[0m");
+  console.log("\x1b[33m Use File Input:\x1b[0m    http://localhost:" + httpPort + "/scenarios/use-file-input");
 });
 
 httpsServer.listen(httpsPort, "0.0.0.0", () => {
@@ -132,6 +138,8 @@ httpsServer.listen(httpsPort, "0.0.0.0", () => {
   ipv4Addresses.forEach((localIP) => {
     console.log("\x1b[32m Hello World:\x1b[0m  https://" + localIP + ":" + httpsPort + "/hello-world");
     console.log("\x1b[32m Demo:\x1b[0m  https://" + localIP + ":" + httpsPort + "/demo");
+    console.log("\x1b[90m-------------------\x1b[0m");
+    console.log("\x1b[32m Use File Input:\x1b[0m  https://" + localIP + ":" + httpsPort + "/scenarios/use-file-input");
   });
   console.log("\n");
   console.log("\x1b[90mPress Ctrl+C to stop the server\x1b[0m\n");
