@@ -2,7 +2,7 @@
 // Dynamsoft JavaScript Library for Basic Initiation of Dynamic Web TWAIN
 // More info on Dynamic Web TWAIN: http://www.dynamsoft.com/Products/WebTWAIN_Overview.aspx
 //
-// Copyright 2025, Dynamsoft Corporation 
+// Copyright 2025, Dynamsoft Corporation
 // Author: Dynamsoft Team
 // Version: 19.0
 //
@@ -12,7 +12,7 @@ var Dynamsoft = Dynamsoft || { DWT: {} };
 ///
 Dynamsoft.DWT.AutoLoad = true;
 ///
-Dynamsoft.DWT.Containers = [{ WebTwainId: '', ContainerId: 'dwtcontrolContainer', Width: 350, Height: 380 }];
+Dynamsoft.DWT.Containers = [{ WebTwainId: "", ContainerId: "dwtcontrolContainer", Width: 350, Height: 380 }];
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  WARNING:  The productKey in this file is protected by copyright law            //
@@ -22,10 +22,10 @@ Dynamsoft.DWT.Containers = [{ WebTwainId: '', ContainerId: 'dwtcontrolContainer'
 //  extent possible under the law.  Further, you may not reverse engineer,         //
 //  decompile, disassemble, or modify the productKey .                             //
 /////////////////////////////////////////////////////////////////////////////////////
-/// If you need to use multiple keys on the same server, you can combine keys and write like this 
+/// If you need to use multiple keys on the same server, you can combine keys and write like this
 /// Dynamsoft.DWT.ProductKey = 'key1;key2;key3';
 /// To get a free trial, please visit https://www.dynamsoft.com/customer/license/trialLicense?product=dwt&utm_source=installer.
-Dynamsoft.DWT.ProductKey = 't0114NwEAADXUFBxK4hY3NKFp4gOnxH3twvk6g+kyrTsASXPZy50VDZYZSUHapiiH+Gsmx3IHYbcziGR9GFQmWKSgKs7AUZvnggNbY+kLGFcRcH0BYQ4uUeeqAJZvZm0aPx9/PB7LYGzqDBkjnDhR1B1tYD2t';
+Dynamsoft.DWT.ProductKey = "YOUR_DWT_LICENSE_KEY";
 
 ///
 //Dynamsoft.DWT.ResourcesPath = 'Resources';
@@ -130,9 +130,7 @@ Dynamsoft.DWT.IfConfineMaskWithinTheViewer = true;
     }
 };*/
 
-
 /// All callbacks are defined in the dynamsoft.webtwain.install.js file, you can customize them.
 // Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function(){
 // 		// webtwain has been inited
 // });
-
