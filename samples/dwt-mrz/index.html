@@ -30,9 +30,7 @@
 
       async function initializeMRZ() {
         // Inialize License Key
-        Dynamsoft.License.LicenseManager.initLicense(
-          "DLS2eyJoYW5kc2hha2VDb2RlIjoiMzE0NTQwLVRYbFhaV0pRY205cSIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21sdHMuZHluYW1zb2Z0LmNvbSIsIm9yZ2FuaXphdGlvbklEIjoiMzE0NTQwIiwic3RhbmRieVNlcnZlclVSTCI6Imh0dHBzOi8vc2x0cy5keW5hbXNvZnQuY29tIiwiY2hlY2tDb2RlIjoxOTY5OTM3NTcyfQ=="
-        );
+        Dynamsoft.License.LicenseManager.initLicense("YOUR_LICENSE_KEY_HERE");
 
         // Load MRZ Resources
         Dynamsoft.Core.CoreModule.loadWasm(["DLR", "DCP"]);
