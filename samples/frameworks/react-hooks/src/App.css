@@ -1,0 +1,44 @@
+.mrz-scanner-hello-world-page {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.mrz-scanner-title {
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.mrz-scanner-title .mrz-scanner-title-logo {
+  width: 60px;
+  height: 60px;
+  animation: retate 5s infinite linear;
+}
+
+.mrz-scanner-result-container {
+  overflow-y: auto;
+  height: calc(100dvh - 90px - 40px);
+  width: 100%;
+}
+
+.mrz-scanner-result-container .result-img {
+  width: 100%;
+}
+
+.mrz-scanner-result-container .result-data {
+  white-space: pre-line;
+  padding-bottom: 20px;
+}
+
+@keyframes retate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,34 @@
+.mrz-scanner-hello-world-page {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.mrz-scanner-title {
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.mrz-scanner-title .mrz-scanner-title-logo {
+  margin-left: 4px;
+  width: 24px;
+  height: 24px;
+}
+
+.mrz-scanner-result-container {
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.mrz-scanner-result-container .result-img {
+  width: 100%;
+}
+
+.mrz-scanner-result-container .result-data {
+  white-space: pre-line;
+  padding-bottom: 20px;
+}
