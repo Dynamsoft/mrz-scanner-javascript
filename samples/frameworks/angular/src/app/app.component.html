@@ -1,0 +1,15 @@
+<div class="mrz-scanner-hello-world-page">
+  <div class="mrz-scanner-title">
+    <h2 class="mrz-scanner-title-text">Hello World for Angular</h2>
+    <img class="mrz-scanner-title-logo" src="./favicon.ico" alt="logo" />
+  </div>
+  <div class="mrz-scanner-result-container">
+    <img
+      *ngIf="result?.image"
+      class="result-img"
+      [src]="result.image"
+      alt="mrz-result"
+    />
+    <div *ngIf="result?.data" class="result-data">{{ result.data }}</div>
+  </div>
+</div>
