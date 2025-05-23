@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Configuration object for initializing the MRZ Scanner instance
     const config = {
-      license: 'DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9', // Replace with your Dynamsoft license key
+      license: 'YOUR_LICENSE_KEY_HERE', // Replace with your Dynamsoft license key
     };
 
     const mrzscanner = new MRZScanner(config);
