@@ -73,7 +73,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
       });
       (async () => {
         // Launch the scanner and wait for the result
-        const result = await mrzScanner.launch({});
+        const result = await mrzScanner.launch();
       })();
     </script>
   </body>
@@ -173,7 +173,7 @@ Above you will see the **simplest** way that you can initialize the MRZ Scanner.
 ```js
 (async () => {
   // Launch the scanner and wait for the result
-  const result = await mrzscanner.launch({});
+  const result = await mrzscanner.launch();
   console.log(result); 
 })();
 ```
