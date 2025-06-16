@@ -6,6 +6,7 @@ import MRZScannerView from "./MRZScannerView";
 import { SharedResources } from "../MRZScanner";
 
 export interface MRZResultViewToolbarButtonsConfig {
+  cancel?: ToolbarButton;
   rescan?: ToolbarButtonConfig;
   done?: ToolbarButtonConfig;
 }
@@ -16,7 +17,12 @@ export interface MRZResultViewConfig {
   showOriginalImage?: boolean; // True by default
   showMRZText?: boolean; // True by default
   allowResultEditing?: boolean; // New option to control if result fields can be edited
+  emptyResultMessage?: string;
   onDone?: (result: MRZResult) => Promise<void>;
+  onCancel?: (result: MRZResult) => Promise<void>;
+
+  // Internal config
+  _isFileMode?: boolean;
 }
 
 export default class MRZResultView {
@@ -90,6 +96,39 @@ export default class MRZResultView {
     }
   }
 
+  private async handleCancel() {
+    try {
+      if (this.config?.onCancel) {
+        await this.config.onCancel(this.resources.result);
+      }
+
+      // Resolve with cancelled status
+      if (this.currentScanResultViewResolver) {
+        this.currentScanResultViewResolver({
+          status: {
+            code: EnumResultStatus.RS_CANCELLED,
+            message: "Upload file cancelled",
+          },
+        });
+      }
+
+      // Clean up
+      this.hideView();
+      this.dispose();
+    } catch (error) {
+      console.error("Error in cancel handler:", error);
+      if (this.currentScanResultViewResolver) {
+        this.currentScanResultViewResolver({
+          status: {
+            code: EnumResultStatus.RS_FAILED,
+            message: error?.message || error,
+          },
+        });
+      }
+      throw error;
+    }
+  }
+
   private async handleDone() {
     try {
       // Apply edited fields to the result
@@ -135,15 +174,24 @@ export default class MRZResultView {
     const { toolbarButtonsConfig } = this.config;
 
     const buttons: ToolbarButton[] = [
-      {
-        id: `dynamsoft-mrz-scanResult-rescan`,
-        icon: toolbarButtonsConfig?.rescan?.icon || MRZScanner_ICONS.rescan,
-        label: toolbarButtonsConfig?.rescan?.label || "Re-scan",
-        onClick: () => this.handleRescan(),
-        className: `${toolbarButtonsConfig?.rescan?.className || ""}`,
-        isHidden: toolbarButtonsConfig?.rescan?.isHidden || false,
-        isDisabled: !this.scannerView,
-      },
+      this.config._isFileMode
+        ? {
+            id: `dynamsoft-mrz-scanResult-cancel`,
+            icon: toolbarButtonsConfig?.cancel?.icon || MRZScanner_ICONS.cancel,
+            label: toolbarButtonsConfig?.cancel?.label || "Cancel",
+            onClick: () => this.handleCancel(),
+            className: `${toolbarButtonsConfig?.cancel?.className || ""}`,
+            isHidden: toolbarButtonsConfig?.cancel?.isHidden || false,
+          }
+        : {
+            id: `dynamsoft-mrz-scanResult-rescan`,
+            icon: toolbarButtonsConfig?.rescan?.icon || MRZScanner_ICONS.rescan,
+            label: toolbarButtonsConfig?.rescan?.label || "Re-scan",
+            onClick: () => this.handleRescan(),
+            className: `${toolbarButtonsConfig?.rescan?.className || ""}`,
+            isHidden: toolbarButtonsConfig?.rescan?.isHidden || false,
+            isDisabled: !this.scannerView,
+          },
       {
         id: `dynamsoft-mrz-scanResult-done`,
         icon: toolbarButtonsConfig?.done?.icon || MRZScanner_ICONS.complete,
@@ -182,6 +230,13 @@ export default class MRZResultView {
     const isEditingAllowed = !!this.config.allowResultEditing;
     const invalidFields = mrzData.invalidFields || [];
 
+    const hiddenFields = [EnumMRZData.InvalidFields, EnumMRZData.IssuingStateRaw, EnumMRZData.NationalityRaw];
+
+    // Hide MRZText based on config
+    if (this.config?.showMRZText === false) {
+      hiddenFields.push(EnumMRZData.MRZText);
+    }
+
     const resultContainer = document.createElement("div");
     resultContainer.className = "dynamsoft-mrz-data-container";
 
@@ -214,13 +269,7 @@ export default class MRZResultView {
       }
 
       Object.entries(mrzData).forEach(([key, value]) => {
-        if (key === EnumMRZData.InvalidFields || !value) {
-          // Don't display invalidFields array
-          return;
-        }
-
-        if (key === EnumMRZData.MRZText && this.config?.showMRZText === false) {
-          // Don't display MRZ Text if config is set to false
+        if (hiddenFields.includes(key as EnumMRZData) || !value) {
           return;
         }
 
@@ -328,7 +377,8 @@ export default class MRZResultView {
     } else {
       const empty = document.createElement("div");
       empty.className = "dynamsoft-mrz-data-row empty";
-      empty.innerText = "No MRZ detected. Please try again.";
+      empty.innerText =
+        this.config?.emptyResultMessage ?? "The necessary information couldn't be detected. Please try again.";
 
       resultContainer.appendChild(empty);
       return resultContainer;
@@ -473,7 +523,7 @@ const DEFAULT_RESULT_VIEW_STYLE = `
 }
 
 .dynamsoft-mrz-info-notification {
-  background-color: rgba(196, 231, 60, 0.2);
+  background-color: #fe8e14;
 }
 
 .dynamsoft-mrz-edit-icon {

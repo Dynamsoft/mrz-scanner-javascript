@@ -119,6 +119,7 @@ httpServer.listen(httpPort, () => {
   console.log("\x1b[33m Demo:\x1b[0m    http://localhost:" + httpPort + "/demo");
   console.log("\x1b[90m-------------------\x1b[0m");
   console.log("\x1b[33m Use File Input:\x1b[0m    http://localhost:" + httpPort + "/scenarios/use-file-input");
+  console.log("\x1b[90m-------------------\x1b[0m");
 });
 
 httpsServer.listen(httpsPort, "0.0.0.0", () => {

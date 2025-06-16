@@ -5,16 +5,18 @@ import {
   EnumImagePixelFormat,
   MimeType,
   OriginalImageResultItem,
-} from "dynamsoft-core";
-import { CapturedResultReceiver, CapturedResult } from "dynamsoft-capture-vision-router";
+  CapturedResultReceiver,
+  CapturedResult,
+  ParsedResultItem,
+  Feedback,
+  MultiFrameResultCrossFilter,
+  TextLineResultItem,
+} from "dynamsoft-capture-vision-bundle";
 import { SharedResources } from "../MRZScanner";
 import { EnumResultStatus, UtilizedTemplateNames, EnumMRZScanMode, EnumMRZDocumentType } from "./utils/types";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./utils/LoadingScreen";
 import { createStyle, findClosestResolutionLevel, getElement } from "./utils";
 import { MRZData, MRZResult, processMRZData } from "./utils/MRZParser";
-import { ParsedResultItem } from "dynamsoft-code-parser";
-import { Feedback } from "dynamsoft-camera-enhancer";
-import { MultiFrameResultCrossFilter } from "dynamsoft-utility";
 
 export interface MRZScannerViewConfig {
   cameraEnhancerUIPath?: string;
@@ -152,13 +154,9 @@ export default class MRZScannerView {
       // Set cameraEnhancer as input for CaptureVisionRouter
       cvRouter.setInput(cameraEnhancer);
 
-      // Initialize the template parameters for mrz scanning
-      await cvRouter.initSettings(this.config.templateFilePath);
-
       if (this.config.enableMultiFrameCrossFilter === true) {
         const filter = new MultiFrameResultCrossFilter();
         filter.enableResultCrossVerification(EnumCapturedResultItemType.CRIT_TEXT_LINE, true);
-        filter.enableResultDeduplication(EnumCapturedResultItemType.CRIT_TEXT_LINE, true);
         await cvRouter.addResultFilter(filter);
       }
 
@@ -442,12 +440,16 @@ export default class MRZScannerView {
         input.addEventListener("cancel", async () => {
           this.hideScannerLoadingOverlay(false);
           // Start capturing
-          await this.openCamera();
+          this.showScannerLoadingOverlay("Initializing camera...");
 
-          await this.startCapturing();
+          await this.openCamera();
 
           //Show scan guide
           this.toggleScanGuide();
+
+          await this.startCapturing();
+
+          this.hideScannerLoadingOverlay();
         });
 
         input.click();
@@ -504,13 +506,12 @@ export default class MRZScannerView {
 
       this.originalImageData = imageData;
 
-      const textLineResultItems = capturedResult?.textLineResultItems;
-      const parsedResultItems = capturedResult?.parsedResultItems;
+      const parsedResultItems = capturedResult?.parsedResult?.parsedResultItems;
 
       let processedData = {} as MRZData;
 
-      if (textLineResultItems?.length) {
-        const mrzText = textLineResultItems[0]?.text || "";
+      if (parsedResultItems?.length) {
+        const mrzText = ((parsedResultItems[0] as any)?.referencedItem as TextLineResultItem)?.text || ""; // TODO
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
         processedData = processMRZData(mrzText, parsedResult);
       }
@@ -569,83 +570,57 @@ export default class MRZScannerView {
 
     if (!cameraEnhancer || !cameraEnhancer.isOpen()) return;
 
-    // Get visible region of video
+    const targetRatio = MRZScanGuideRatios[documentType].width / MRZScanGuideRatios[documentType].height;
+
+    let region: {
+      left: number;
+      right: number;
+      top: number;
+      bottom: number;
+      isMeasuredInPercentage: boolean;
+    };
+
+    // Get visible region to determine orientation
     const visibleRegion = cameraView.getVisibleRegionOfVideo({ inPixels: true });
+    const { width, height } = visibleRegion;
 
     if (!visibleRegion) return;
 
-    // Get the total video dimensions
-    const video = cameraView.getVideoElement();
-    const totalWidth = video.videoWidth;
-    const totalHeight = video.videoHeight;
-
-    // Get the document ratio for the specific document type
-    const targetRatio = MRZScanGuideRatios[documentType];
-
-    // Calculate the base unit to scale the document dimensions
-    let baseUnit: number;
-
-    // Calculate bottom margin of 5rem in pixels (assuming 16px per rem)
-    const bottomMarginPx = 5 * 16;
-    const effectiveHeightWithMargin = visibleRegion.height - bottomMarginPx;
-
     if (visibleRegion.width > visibleRegion.height) {
-      // Landscape orientation
-      const availableHeight = effectiveHeightWithMargin * 0.75;
-      baseUnit = availableHeight / targetRatio.height;
+      // Horizontal orientation
+      const targetHeight = 0.5 * height;
+      const targetWidth = targetHeight * targetRatio;
+      const widthPercent = Math.round((targetWidth / width) * 100);
 
-      // Check if width would exceed bounds
-      const resultingWidth = baseUnit * targetRatio.width;
-      if (resultingWidth > visibleRegion.width * 0.9) {
-        // If too wide, recalculate using width as reference
-        baseUnit = (visibleRegion.width * 0.9) / targetRatio.width;
-      }
+      // Center horizontally
+      const leftPercent = (100 - widthPercent) / 2;
+      const rightPercent = leftPercent + widthPercent;
+
+      region = {
+        left: leftPercent,
+        right: rightPercent,
+        top: 25,
+        bottom: 75,
+        isMeasuredInPercentage: true,
+      };
     } else {
       // Portrait orientation
-      const availableWidth = visibleRegion.width * 0.9;
-      baseUnit = availableWidth / targetRatio.width;
+      const targetWidth = 0.9 * width;
+      const targetHeight = targetWidth / targetRatio;
+      const heightPercent = Math.round((targetHeight / height) * 100);
 
-      // Check if height would exceed bounds
-      const resultingHeight = baseUnit * targetRatio.height;
-      if (resultingHeight > effectiveHeightWithMargin * 0.75) {
-        // If too tall, recalculate using height as reference
-        baseUnit = (effectiveHeightWithMargin * 0.75) / targetRatio.height;
-      }
+      // Center Vertically
+      const topPercent = (100 - heightPercent) / 2;
+      const bottomPercent = topPercent + heightPercent;
+
+      region = {
+        left: 5,
+        right: 95,
+        top: topPercent,
+        bottom: bottomPercent,
+        isMeasuredInPercentage: true,
+      };
     }
-
-    // Calculate actual dimensions in pixels
-    const actualWidth = baseUnit * targetRatio.width;
-    const actualHeight = baseUnit * targetRatio.height;
-
-    // Calculate the offsets to center the region horizontally and vertically
-    const leftOffset = (visibleRegion.width - actualWidth) / 2;
-    const topOffset = (effectiveHeightWithMargin - actualHeight) / 2;
-
-    // Calculate pixel coordinates of the scan region relative to the visible region
-    const scanLeft = leftOffset;
-    const scanRight = leftOffset + actualWidth;
-    const scanTop = topOffset;
-    const scanBottom = topOffset + actualHeight;
-
-    // Convert to percentages relative to the TOTAL video size, considering the visible region offset
-    const absoluteLeft = visibleRegion.x + scanLeft;
-    const absoluteRight = visibleRegion.x + scanRight;
-    const absoluteTop = visibleRegion.y + scanTop;
-    const absoluteBottom = visibleRegion.y + scanBottom;
-
-    const left = (absoluteLeft / totalWidth) * 100;
-    const right = (absoluteRight / totalWidth) * 100;
-    const top = (absoluteTop / totalHeight) * 100;
-    const bottom = (absoluteBottom / totalHeight) * 100;
-
-    // Apply scan region
-    const region = {
-      left: Math.round(left),
-      right: Math.round(right),
-      top: Math.round(top),
-      bottom: Math.round(bottom),
-      isMeasuredInPercentage: true,
-    };
 
     cameraView?.setScanRegionMaskVisible(true);
     cameraEnhancer.setScanRegion(region);
@@ -702,8 +677,6 @@ export default class MRZScannerView {
 
   async openCamera(): Promise<void> {
     try {
-      this.showScannerLoadingOverlay("Initializing camera...");
-
       const { cameraEnhancer, cameraView } = this.resources;
 
       const configContainer = getElement(this.config.container);
@@ -753,8 +726,6 @@ export default class MRZScannerView {
         },
       };
       this.currentScanResolver(result);
-    } finally {
-      this.hideScannerLoadingOverlay();
     }
   }
 
@@ -798,12 +769,17 @@ export default class MRZScannerView {
   }
 
   async handleMRZResult(result: CapturedResult) {
-    this.capturedResultItems = result.items;
+    if (this.firstFrame) {
+      this.firstFrame = false;
+      return;
+    }
 
     // If only original image is returned in result.items (i.e. no text line or parsed result items), skip processing result
     if (result.items.length <= 1) {
       return;
     }
+
+    this.capturedResultItems = result.items;
 
     try {
       const { onResultUpdated } = this.resources;
@@ -817,14 +793,14 @@ export default class MRZScannerView {
       (imageData as any).toBlob = async () => await _toBlob(`image/png` as MimeType, imageData);
 
       this.originalImageData = imageData;
-      const textLineResultItems = result?.textLineResultItems;
-      const parsedResultItems = result?.parsedResultItems;
+      const parsedResultItems = result?.parsedResult?.parsedResultItems;
 
-      if (textLineResultItems) {
+      if (parsedResultItems?.length) {
         if (this.isSoundFeedbackOn) {
           Feedback.beep();
         }
-        const mrzText = textLineResultItems?.[0]?.text || "";
+
+        const mrzText = ((parsedResultItems[0] as any)?.referencedItem as TextLineResultItem)?.text || ""; // TODO
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
 
         const processedData = processMRZData(mrzText, parsedResult);
@@ -927,6 +903,8 @@ export default class MRZScannerView {
     }, duration) as any;
   }
 
+  // Used to skip the first frame processed by DCV. first frame doens't have scan region or color
+  private firstFrame = true;
   private async startCapturing() {
     const { cvRouter, cameraEnhancer } = this.resources;
 
@@ -958,6 +936,7 @@ export default class MRZScannerView {
         await cvRouter.updateSettings(currentTemplate, newSettings);
       }
 
+      this.firstFrame = true;
       await cvRouter.startCapturing(currentTemplate);
 
       // By default, cameraEnhancer captures grayscale images to optimize performance.
@@ -997,9 +976,10 @@ export default class MRZScannerView {
       this.currentScanMode = this.getScanMode();
 
       this.stopCapturing();
-      await this.startCapturing();
 
       this.toggleScanGuide();
+
+      await this.startCapturing();
 
       this.DCE_ELEMENTS.td1ModeOption.classList.toggle("selected", this.scanModeManager[EnumMRZDocumentType.TD1]);
       this.DCE_ELEMENTS.td2ModeOption.classList.toggle("selected", this.scanModeManager[EnumMRZDocumentType.TD2]);
@@ -1030,6 +1010,8 @@ export default class MRZScannerView {
       return new Promise(async (resolve) => {
         this.currentScanResolver = resolve;
 
+        this.showScannerLoadingOverlay("Initializing camera...");
+
         // Start capturing
         await this.openCamera();
 
@@ -1038,10 +1020,12 @@ export default class MRZScannerView {
           await this.initializeElements();
         }
 
-        await this.startCapturing();
-
         //Show scan guide
         this.toggleScanGuide();
+
+        await this.startCapturing();
+
+        this.hideScannerLoadingOverlay();
       });
     } catch (ex: any) {
       let errMsg = ex?.message || ex;
