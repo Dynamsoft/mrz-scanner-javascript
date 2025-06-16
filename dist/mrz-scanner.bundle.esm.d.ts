@@ -1,13 +1,5 @@
-import { DSImageData, EngineResourcePaths } from 'dynamsoft-core';
-export * from 'dynamsoft-core';
-export * from 'dynamsoft-license';
-import { CapturedResult, CaptureVisionRouter } from 'dynamsoft-capture-vision-router';
-export * from 'dynamsoft-capture-vision-router';
-import { CameraEnhancer, CameraView } from 'dynamsoft-camera-enhancer';
-export * from 'dynamsoft-camera-enhancer';
-export * from 'dynamsoft-label-recognizer';
-export * from 'dynamsoft-code-parser';
-export * from 'dynamsoft-utility';
+import { DSImageData, CapturedResult, CaptureVisionRouter, CameraEnhancer, CameraView, EngineResourcePaths } from 'dynamsoft-capture-vision-bundle';
+export * from 'dynamsoft-capture-vision-bundle';
 
 declare enum EnumMRZScanMode {
     Passport = "passport",
@@ -158,12 +150,14 @@ declare class MRZScannerView {
     private initializeScanModeManager;
     private getScanMode;
     private DCEShowToast;
+    private firstFrame;
     private startCapturing;
     private toggleScanDocType;
     launch(): Promise<MRZResult>;
 }
 
 interface MRZResultViewToolbarButtonsConfig {
+    cancel?: ToolbarButton;
     rescan?: ToolbarButtonConfig;
     done?: ToolbarButtonConfig;
 }
@@ -173,7 +167,10 @@ interface MRZResultViewConfig {
     showOriginalImage?: boolean;
     showMRZText?: boolean;
     allowResultEditing?: boolean;
+    emptyResultMessage?: string;
     onDone?: (result: MRZResult) => Promise<void>;
+    onCancel?: (result: MRZResult) => Promise<void>;
+    _isFileMode?: boolean;
 }
 declare class MRZResultView {
     private resources;
@@ -184,6 +181,7 @@ declare class MRZResultView {
     constructor(resources: SharedResources, config: MRZResultViewConfig, scannerView: MRZScannerView);
     launch(): Promise<MRZResult>;
     private handleRescan;
+    private handleCancel;
     private handleDone;
     private createControls;
     private handleFieldEdit;
@@ -219,6 +217,8 @@ declare class MRZScanner {
     private isInitialized;
     private isCapturing;
     private loadingScreen;
+    private isDynamsoftResourcesLoaded;
+    protected isFileMode: boolean;
     private showLoadingOverlay;
     private hideLoadingOverlay;
     constructor(config: MRZScannerConfig);
@@ -229,6 +229,7 @@ declare class MRZScanner {
             resultView?: MRZResultView;
         };
     }>;
+    private initializeDynamsoftResources;
     private initializeDCVResources;
     private shouldCreateDefaultContainer;
     private createDefaultMRZScannerContainer;

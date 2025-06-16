@@ -40,38 +40,28 @@ const banner = `/*!
 const plugin_terser_es6 = terser({ ecma: 6, format: terser_format });
 const plugin_terser_es5 = terser({ ecma: 5, format: terser_format });
 
+const DCV_CONFIG_PATH = `src/dcv-config`;
+const BUNDLE_BUILD_PATH = `src/build`;
+const TYPES_PATH = "dist/types/build";
+
 const copyFiles = () => ({
   name: "copy-files",
   writeBundle() {
-    fs.copyFileSync("src/mrz-scanner.ui.html", "dist/mrz-scanner.ui.html");
-    fs.copyFileSync("src/mrz-scanner.template.json", "dist/mrz-scanner.template.json");
+    fs.copyFileSync(`${DCV_CONFIG_PATH}/mrz-scanner.ui.html`, "dist/mrz-scanner.ui.html");
+    fs.copyFileSync(`${DCV_CONFIG_PATH}/mrz-scanner.template.json`, "dist/mrz-scanner.template.json");
   },
 });
 
-const external = [
-  "dynamsoft-core",
-  "dynamsoft-license",
-  "dynamsoft-capture-vision-router",
-  "dynamsoft-camera-enhancer",
-  "dynamsoft-code-parser",
-  "dynamsoft-label-recognizer",
-  "dynamsoft-utility",
-];
+const external = ["dynamsoft-capture-vision-bundle"];
 
 const globals = {
-  "dynamsoft-core": "Dynamsoft.Core",
-  "dynamsoft-license": "Dynamsoft.License",
-  "dynamsoft-capture-vision-router": "Dynamsoft.CVR",
-  "dynamsoft-camera-enhancer": "Dynamsoft.DCE",
-  "dynamsoft-code-parser": "Dynamsoft.DCP",
-  "dynamsoft-label-recognizer": "Dynamsoft.DLR",
-  "dynamsoft-utility": "Dynamsoft.Utility",
+  "dynamsoft-capture-vision-bundle": "Dynamsoft",
 };
 
 export default [
   // 1. Full bundle
   {
-    input: "src/mrz-scanner.bundle.ts",
+    input: `${BUNDLE_BUILD_PATH}/mrz-scanner.bundle.ts`,
     plugins: [
       nodeResolve({ browser: true }),
       typescript({
@@ -103,7 +93,7 @@ export default [
   },
   // 2. Standard UMD bundle
   {
-    input: "src/mrz-scanner.ts",
+    input: `${BUNDLE_BUILD_PATH}/mrz-scanner.ts`,
     external,
     plugins: [
       typescript({
@@ -128,7 +118,7 @@ export default [
   },
   // 3. ESM bundle
   {
-    input: "src/mrz-scanner.bundle.esm.ts",
+    input: `${BUNDLE_BUILD_PATH}/mrz-scanner.bundle.esm.ts`,
     plugins: [
       nodeResolve({ browser: true }),
       typescript({
@@ -150,7 +140,7 @@ export default [
   },
   // 4. ESM with externals
   {
-    input: "src/mrz-scanner.ts",
+    input: `${BUNDLE_BUILD_PATH}/mrz-scanner.ts`,
     external,
     plugins: [
       typescript({
@@ -171,7 +161,7 @@ export default [
   },
   // 5. No-content ESM
   {
-    input: "src/mrz-scanner.no-content-bundle.esm.ts",
+    input: `${BUNDLE_BUILD_PATH}/mrz-scanner.no-content-bundle.esm.ts`,
     external,
     plugins: [
       typescript({
@@ -192,7 +182,7 @@ export default [
   },
   // 6. Type declarations for CommonJS/UMD
   {
-    input: "src/mrz-scanner.ts",
+    input: `${BUNDLE_BUILD_PATH}/mrz-scanner.ts`,
     external,
     plugins: [
       dts(),
@@ -212,13 +202,13 @@ export default [
   },
   // 7. Type declarations for ESM
   {
-    input: "dist/types/mrz-scanner.bundle.esm.d.ts",
+    input: `${TYPES_PATH}/mrz-scanner.bundle.esm.d.ts`,
     plugins: [
       dts(),
       {
         // https://rollupjs.org/guide/en/#writebundle
         writeBundle(options, bundle) {
-          fs.rmSync("dist/types", { recursive: true, force: true });
+          fs.rmSync(TYPES_PATH, { recursive: true, force: true });
           // change `export { type A }` to `export { A }`,
           // so project use old typescript still works.
           let txt = fs
