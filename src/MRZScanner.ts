@@ -1,5 +1,5 @@
-import { LicenseManager } from "dynamsoft-license";
 import {
+  LicenseManager,
   _toBlob,
   _toCanvas,
   CoreModule,
@@ -7,12 +7,14 @@ import {
   EngineResourcePaths,
   EnumCapturedResultItemType,
   MimeType,
+  CodeParserModule,
+  ParsedResultItem,
   OriginalImageResultItem,
-} from "dynamsoft-core";
-import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
-import { CameraEnhancer, CameraView } from "dynamsoft-camera-enhancer";
-import { CodeParserModule, ParsedResultItem } from "dynamsoft-code-parser";
-import { LabelRecognizerModule } from "dynamsoft-label-recognizer";
+  CaptureVisionRouter,
+  CameraEnhancer,
+  CameraView,
+  TextLineResultItem,
+} from "dynamsoft-capture-vision-bundle";
 import {
   DEFAULT_TEMPLATE_NAMES,
   EnumMRZDocumentType,
@@ -28,10 +30,9 @@ import MRZResultView, { MRZResultViewConfig } from "./views/MRZResultView";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./views/utils/LoadingScreen";
 
 // Default DCE UI path
-const DEFAULT_DCE_UI_PATH =
-  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta-0514202502/dist/mrz-scanner.ui.html"; // TODO
+const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.ui.html"; // TODO
 const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH =
-  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.1.0-beta-0514202502/dist/mrz-scanner.template.json"; // TODO
+  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.template.json"; // TODO
 
 const DEFAULT_DCV_ENGINE_RESOURCE_PATHS = { rootDirectory: "https://cdn.jsdelivr.net/npm/" };
 const DEFAULT_CONTAINER_HEIGHT = "100dvh";
@@ -71,6 +72,10 @@ class MRZScanner {
 
   private loadingScreen: ReturnType<typeof showLoadingScreen> | null = null;
 
+  private isDynamsoftResourcesLoaded = false;
+
+  protected isFileMode: boolean = false;
+
   private showLoadingOverlay(message?: string) {
     const configContainer =
       getElement(this.config.scannerViewConfig?.container) || getElement(this.config.resultViewConfig?.container);
@@ -95,7 +100,11 @@ class MRZScanner {
     }
   }
 
-  constructor(private config: MRZScannerConfig) {}
+  constructor(private config: MRZScannerConfig) {
+    if (!this.isDynamsoftResourcesLoaded) {
+      this.initializeDynamsoftResources();
+    }
+  }
 
   async initialize(): Promise<{
     resources: SharedResources;
@@ -126,13 +135,7 @@ class MRZScanner {
       createStyle("dynamsoft-mrz-loading-screen-style", DEFAULT_LOADING_SCREEN_STYLE);
       this.showLoadingOverlay("Loading...");
 
-      const success = await this.initializeDCVResources();
-      if (!success) {
-        this.hideLoadingOverlay(true);
-        // Failed to initialize DCV resources
-        console.error("Failed to initialize DCV resources");
-        return { resources: this.resources, components: {} };
-      }
+      await this.initializeDCVResources();
 
       this.resources.onResultUpdated = (result) => {
         this.resources.result = result;
@@ -144,7 +147,7 @@ class MRZScanner {
       } = {};
 
       // Only initialize components that are configured
-      if (this.config.scannerViewConfig) {
+      if (this.config.scannerViewConfig && !this.isFileMode) {
         this.scannerView = new MRZScannerView(this.resources, this.config.scannerViewConfig);
         components.scannerView = this.scannerView;
         await this.scannerView.initialize();
@@ -165,18 +168,35 @@ class MRZScanner {
       const error = `Initialization Failed: ${errMsg}`;
       console.error(error);
 
-      return { resources: this.resources, components: {} };
+      throw new Error(error);
     } finally {
       this.hideLoadingOverlay(true);
     }
   }
 
-  private async initializeDCVResources(): Promise<boolean> {
+  private initializeDynamsoftResources() {
+    //The following code uses the jsDelivr CDN, feel free to change it to your own location of these files
+    CoreModule.engineResourcePaths = isEmptyObject(this.config?.engineResourcePaths)
+      ? DEFAULT_DCV_ENGINE_RESOURCE_PATHS
+      : this.config.engineResourcePaths;
+
+    // Optional. Used to load wasm resources in advance, reducing latency between video playing and document modules.
+    // Can add other specs. Please check https://www.dynamsoft.com/code-parser/docs/core/code-types/mrtd.html
+    CoreModule.loadWasm();
+    CodeParserModule.loadSpec("MRTD_TD3_PASSPORT");
+    CodeParserModule.loadSpec("MRTD_TD3_VISA");
+    CodeParserModule.loadSpec("MRTD_TD1_ID");
+    CodeParserModule.loadSpec("MRTD_TD2_ID");
+    CodeParserModule.loadSpec("MRTD_TD2_VISA");
+
+    this.isDynamsoftResourcesLoaded = true;
+  }
+
+  private async initializeDCVResources(): Promise<void> {
     try {
-      //The following code uses the jsDelivr CDN, feel free to change it to your own location of these files
-      CoreModule.engineResourcePaths = isEmptyObject(this.config?.engineResourcePaths)
-        ? DEFAULT_DCV_ENGINE_RESOURCE_PATHS
-        : this.config.engineResourcePaths;
+      if (!this.isDynamsoftResourcesLoaded) {
+        this.initializeDynamsoftResources();
+      }
 
       // Change trial link to include product and deploymenttype
       (LicenseManager as any)._onAuthMessage = (message: string) =>
@@ -187,35 +207,28 @@ class MRZScanner {
 
       await LicenseManager.initLicense(this.config?.license || "", { executeNow: true });
 
-      // Optional. Used to load wasm resources in advance, reducing latency between video playing and document modules.
-      // Can add other specs. Please check https://www.dynamsoft.com/code-parser/docs/core/code-types/mrtd.html
-      CoreModule.loadWasm(["DLR", "DCP"]);
-      CodeParserModule.loadSpec("MRTD_TD3_PASSPORT");
-      CodeParserModule.loadSpec("MRTD_TD1_ID");
-      CodeParserModule.loadSpec("MRTD_TD2_ID");
-      LabelRecognizerModule.loadRecognitionData("MRZ");
+      // No need to create cameraEnhancer if user launches with a file
+      if (!this.isFileMode) {
+        this.resources.cameraView = await CameraView.createInstance(
+          this.config.scannerViewConfig?.uiPath || this.config.scannerViewConfig?.cameraEnhancerUIPath // TODO: cameraEnhancerUIPath will be deprecated!
+        );
 
-      this.resources.cameraView = await CameraView.createInstance(this.config.scannerViewConfig?.cameraEnhancerUIPath);
-      this.resources.cameraEnhancer = await CameraEnhancer.createInstance(this.resources.cameraView);
+        this.resources.cameraEnhancer = await CameraEnhancer.createInstance(this.resources.cameraView);
+      }
+
       this.resources.cvRouter = await CaptureVisionRouter.createInstance();
 
-      return true;
+      // Initialize the template parameters for mrz scanning
+      await this.resources.cvRouter.initSettings(this.config.templateFilePath);
     } catch (ex: any) {
       let errMsg = ex?.message || ex;
 
-      if (errMsg?.toLowerCase().includes("license")) {
-        const error = `The MRZ Scanner license is invalid or has expired. Please contact the site administrator to resolve this issue.`;
+      const error = errMsg?.toLowerCase().includes("license")
+        ? `The MRZ Scanner license is invalid or has expired. Please contact the site administrator to resolve this issue.`
+        : `Resource Initialization Failed: ${errMsg}`;
 
-        alert(error);
-        console.error(error);
-      } else {
-        const error = `Resource Initialization Failed: ${errMsg}`;
-
-        alert(error);
-        console.error(error);
-      }
-
-      return false;
+      console.error(error);
+      throw new Error(error);
     }
   }
 
@@ -361,7 +374,10 @@ class MRZScanner {
       ...this.config.scannerViewConfig,
       container:
         viewContainers[EnumMRZScannerViews.Scanner] || getElement(this.config.scannerViewConfig?.container) || null,
-      cameraEnhancerUIPath: this.config.scannerViewConfig?.cameraEnhancerUIPath || DEFAULT_DCE_UI_PATH,
+      cameraEnhancerUIPath:
+        this.config.scannerViewConfig?.uiPath ||
+        this.config.scannerViewConfig?.cameraEnhancerUIPath || // TODO: cameraEnhancerUIPath will be deprecated!
+        DEFAULT_DCE_UI_PATH,
       templateFilePath: baseConfig.templateFilePath,
       utilizedTemplateNames: baseConfig.utilizedTemplateNames,
       enableMultiFrameCrossFilter: this.config.scannerViewConfig?.enableMultiFrameCrossFilter ?? true,
@@ -371,6 +387,7 @@ class MRZScanner {
     const resultViewConfig = this.showResultView()
       ? {
           ...this.config.resultViewConfig,
+          _isFileMode: this.isFileMode,
           container:
             viewContainers[EnumMRZScannerViews.Result] || getElement(this.config.resultViewConfig?.container) || null,
         }
@@ -499,13 +516,12 @@ class MRZScanner {
       (imageData as any).toCanvas = () => _toCanvas(imageData);
       (imageData as any).toBlob = async () => await _toBlob(`image/png` as MimeType, imageData);
 
-      const textLineResultItems = capturedResult?.textLineResultItems;
-      const parsedResultItems = capturedResult?.parsedResultItems;
+      const parsedResultItems = capturedResult?.parsedResult?.parsedResultItems;
 
       let processedData = {} as MRZData;
 
-      if (textLineResultItems?.length) {
-        const mrzText = textLineResultItems[0]?.text || "";
+      if (parsedResultItems?.length) {
+        const mrzText = ((parsedResultItems[0] as any)?.referencedItem as TextLineResultItem)?.text || ""; // TODO
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
 
         processedData = processMRZData(mrzText, parsedResult);
@@ -547,10 +563,14 @@ class MRZScanner {
 
     try {
       this.isCapturing = true;
+
+      // Check if user uploads a static file
+      this.isFileMode = !!imageOrFile;
+
       const { components } = await this.initialize();
 
       if (isEmptyObject(components)) {
-        throw new Error(`MRZ Scanner initialization failed.`);
+        throw new Error(`MRZ Scanner initialization failed `);
       }
 
       if (this.config.container) {
@@ -558,8 +578,7 @@ class MRZScanner {
       }
 
       // Handle direct file upload if provided
-      if (imageOrFile) {
-        components.scannerView = null;
+      if (this.isFileMode) {
         await this.processUploadedFile(imageOrFile);
       }
 
@@ -569,7 +588,7 @@ class MRZScanner {
       }
 
       // Scanner view is required if no existing result
-      if (!components.scannerView && !this.resources.result) {
+      if (!components.scannerView && !this.resources.result && !this.isFileMode) {
         throw new Error("Scanner view is required when no previous result exists");
       }
 
