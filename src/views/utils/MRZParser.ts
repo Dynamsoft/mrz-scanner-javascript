@@ -1,5 +1,4 @@
-import { EnumValidationStatus, ParsedResultItem } from "dynamsoft-code-parser";
-import { DSImageData } from "dynamsoft-core";
+import { DSImageData, EnumValidationStatus, ParsedResultItem } from "dynamsoft-capture-vision-bundle";
 import { EnumMRZDocumentType, ResultStatus } from "./types";
 import { capitalize } from ".";
 
