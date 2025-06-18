@@ -5,7 +5,12 @@
       <img class="mrz-scanner-title-logo" src="./assets/logo.png" alt="logo" />
     </div>
     <div class="mrz-scanner-result-container">
-      <img v-if="result.image" class="result-img" :src="result.image" alt="mrz-result" />
+      <img
+        v-if="result.image"
+        class="result-img"
+        :src="result.image"
+        alt="mrz-result"
+      />
       <div v-if="result.data" class="result-data">{{ result.data }}</div>
     </div>
   </div>
@@ -36,7 +41,9 @@ onMounted(async () => {
 
     const formattedMRZ = Object.entries(data)
       .map(([key, value]) => {
-        return `${MRZDataLabel[key]}:\n${key === "mrzText" ? value : JSON.stringify(value)}`;
+        return `${MRZDataLabel[key]}:\n${
+          key === "mrzText" ? value : JSON.stringify(value)
+        }`;
       })
       .join("\n\n");
 

@@ -1,20 +1,6 @@
-import { DSImageData, EngineResourcePaths } from 'dynamsoft-core';
-import * as dynamsoftCore from 'dynamsoft-core';
-export { dynamsoftCore as Core };
-import * as dynamsoftLicense from 'dynamsoft-license';
-export { dynamsoftLicense as License };
-import { CapturedResult, CaptureVisionRouter } from 'dynamsoft-capture-vision-router';
-import * as dynamsoftCaptureVisionRouter from 'dynamsoft-capture-vision-router';
-export { dynamsoftCaptureVisionRouter as CVR };
-import { CameraEnhancer, CameraView } from 'dynamsoft-camera-enhancer';
-import * as dynamsoftCameraEnhancer from 'dynamsoft-camera-enhancer';
-export { dynamsoftCameraEnhancer as DCE };
-import * as dynamsoftCodeParser from 'dynamsoft-code-parser';
-export { dynamsoftCodeParser as DCP };
-import * as dynamsoftLabelRecognizer from 'dynamsoft-label-recognizer';
-export { dynamsoftLabelRecognizer as DLR };
-import * as dynamsoftUtility from 'dynamsoft-utility';
-export { dynamsoftUtility as Utility };
+import { DSImageData, CapturedResult, CaptureVisionRouter, CameraEnhancer, CameraView, EngineResourcePaths } from 'dynamsoft-capture-vision-bundle';
+import * as dynamsoftCaptureVisionBundle from 'dynamsoft-capture-vision-bundle';
+export { dynamsoftCaptureVisionBundle as Dynamsoft };
 
 declare enum EnumMRZScanMode {
     Passport = "passport",
@@ -113,6 +99,7 @@ declare function displayMRZDate(date: MRZDate): string;
 
 interface MRZScannerViewConfig {
     cameraEnhancerUIPath?: string;
+    uiPath?: string;
     container?: HTMLElement | string;
     templateFilePath?: string;
     utilizedTemplateNames?: UtilizedTemplateNames;
@@ -165,12 +152,14 @@ declare class MRZScannerView {
     private initializeScanModeManager;
     private getScanMode;
     private DCEShowToast;
+    private firstFrame;
     private startCapturing;
     private toggleScanDocType;
     launch(): Promise<MRZResult>;
 }
 
 interface MRZResultViewToolbarButtonsConfig {
+    cancel?: ToolbarButton;
     rescan?: ToolbarButtonConfig;
     done?: ToolbarButtonConfig;
 }
@@ -180,7 +169,10 @@ interface MRZResultViewConfig {
     showOriginalImage?: boolean;
     showMRZText?: boolean;
     allowResultEditing?: boolean;
+    emptyResultMessage?: string;
     onDone?: (result: MRZResult) => Promise<void>;
+    onCancel?: (result: MRZResult) => Promise<void>;
+    _isFileMode?: boolean;
 }
 declare class MRZResultView {
     private resources;
@@ -191,6 +183,7 @@ declare class MRZResultView {
     constructor(resources: SharedResources, config: MRZResultViewConfig, scannerView: MRZScannerView);
     launch(): Promise<MRZResult>;
     private handleRescan;
+    private handleCancel;
     private handleDone;
     private createControls;
     private handleFieldEdit;
@@ -226,6 +219,8 @@ declare class MRZScanner {
     private isInitialized;
     private isCapturing;
     private loadingScreen;
+    private isDynamsoftResourcesLoaded;
+    protected isFileMode: boolean;
     private showLoadingOverlay;
     private hideLoadingOverlay;
     constructor(config: MRZScannerConfig);
@@ -236,6 +231,7 @@ declare class MRZScanner {
             resultView?: MRZResultView;
         };
     }>;
+    private initializeDynamsoftResources;
     private initializeDCVResources;
     private shouldCreateDefaultContainer;
     private createDefaultMRZScannerContainer;

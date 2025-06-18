@@ -29,7 +29,9 @@ function App() {
 
       const formattedMRZ = Object.entries(data)
         .map(([key, value]) => {
-          return `${MRZDataLabel[key]}:\n${key === "mrzText" ? value : JSON.stringify(value)}`;
+          return `${MRZDataLabel[key]}:\n${
+            key === "mrzText" ? value : JSON.stringify(value)
+          }`;
         })
         .join("\n\n");
 
@@ -40,10 +42,16 @@ function App() {
     <div className="mrz-scanner-hello-world-page">
       <div className="mrz-scanner-title">
         <h2 className="mrz-scanner-title-text">Hello World for React</h2>
-        <img className="mrz-scanner-title-logo" src={reactLogo} alt="logo"></img>
+        <img
+          className="mrz-scanner-title-logo"
+          src={reactLogo}
+          alt="logo"
+        ></img>
       </div>
       <div className="mrz-scanner-result-container">
-        {result?.image && <img className="result-img" src={result.image} alt="mrz-result" />}
+        {result?.image && (
+          <img className="result-img" src={result.image} alt="mrz-result" />
+        )}
         {result?.data && <div className="result-data">{result.data}</div>}
       </div>
     </div>
