@@ -1,0 +1,65 @@
+import { CapturedResult } from "dynamsoft-capture-vision-bundle";
+import { SharedResources } from "../MRZScanner";
+import { UtilizedTemplateNames, EnumMRZDocumentType } from "./utils/types";
+import { MRZResult } from "./utils/MRZParser";
+export interface MRZScannerViewConfig {
+    cameraEnhancerUIPath?: string;
+    uiPath?: string;
+    container?: HTMLElement | string;
+    templateFilePath?: string;
+    utilizedTemplateNames?: UtilizedTemplateNames;
+    mrzFormatType?: EnumMRZDocumentType | Array<EnumMRZDocumentType>;
+    showScanGuide?: boolean;
+    showUploadImage?: boolean;
+    showFormatSelector?: boolean;
+    showSoundToggle?: boolean;
+    showPoweredByDynamsoft?: boolean;
+    enableMultiFrameCrossFilter?: boolean;
+    uploadAcceptedTypes?: string;
+    uploadFileConverter?: (file: File) => Promise<Blob>;
+}
+export default class MRZScannerView {
+    private resources;
+    private config;
+    private isSoundFeedbackOn;
+    private scanModeManager;
+    private currentScanMode;
+    private resizeTimer;
+    private capturedResultItems;
+    private originalImageData;
+    private initialized;
+    private initializedDCE;
+    private DCE_ELEMENTS;
+    private currentScanResolver?;
+    private loadingScreen;
+    private showScannerLoadingOverlay;
+    private hideScannerLoadingOverlay;
+    private handleResize;
+    constructor(resources: SharedResources, config: MRZScannerViewConfig);
+    initialize(): Promise<void>;
+    private initializeElements;
+    private setupScanModeSelector;
+    private assignDCEClickEvents;
+    private handleCloseBtn;
+    private attachOptionClickListeners;
+    private highlightCameraAndResolutionOption;
+    private toggleSelectCameraBox;
+    private relaunch;
+    private uploadFile;
+    private toggleSoundFeedback;
+    private calculateScanRegion;
+    private toggleScanGuide;
+    openCamera(): Promise<void>;
+    closeCamera(hideContainer?: boolean): Promise<void>;
+    pauseCamera(): void;
+    stopCapturing(): void;
+    handleMRZResult(result: CapturedResult): Promise<void>;
+    private initializeScanModeManager;
+    private getScanMode;
+    private DCEShowToast;
+    private firstFrame;
+    private startCapturing;
+    private toggleScanDocType;
+    launch(): Promise<MRZResult>;
+}
+//# sourceMappingURL=MRZScannerView.d.ts.map
