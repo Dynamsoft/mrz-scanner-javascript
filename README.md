@@ -31,21 +31,21 @@ The simplest way to include the SDK is to use either the [**jsDelivr**](https://
 - jsDelivr
 
   ```html
-  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1-beta-202508060001/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1/dist/mrz-scanner.bundle.js"></script>
   ```
 
 - UNPKG
 
   ```html
-  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.1-beta-202508060001/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.1/dist/mrz-scanner.bundle.js"></script>
   ```
 
 When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
 
   ```sh
-  npm i dynamsoft-mrz-scanner@3.0.1-beta-202508060001 -E
+  npm i dynamsoft-mrz-scanner@3.0.1 -E
   # or
-  yarn add dynamsoft-mrz-scanner@3.0.1-beta-202508060001 -E
+  yarn add dynamsoft-mrz-scanner@3.0.1 -E
   ```
 
 > [!WARNING]
@@ -60,7 +60,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1-beta-202508060001/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
@@ -139,7 +139,7 @@ Let's now go through the code of the Hello World sample and understand the purpo
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1-beta-202508060001/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
