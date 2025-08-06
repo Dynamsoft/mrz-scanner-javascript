@@ -30,9 +30,9 @@ import MRZResultView, { MRZResultViewConfig } from "./views/MRZResultView";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./views/utils/LoadingScreen";
 
 // Default DCE UI path
-const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.ui.html"; // TODO
+const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1-beta-202508060001/dist/mrz-scanner.ui.html"; // TODO
 const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH =
-  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.template.json"; // TODO
+  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.1-beta-202508060001/dist/mrz-scanner.template.json"; // TODO
 
 const DEFAULT_DCV_ENGINE_RESOURCE_PATHS = { rootDirectory: "https://cdn.jsdelivr.net/npm/" };
 const DEFAULT_CONTAINER_HEIGHT = "100dvh";
@@ -146,8 +146,8 @@ class MRZScanner {
         resultView?: MRZResultView;
       } = {};
 
-      // Only initialize components that are configured
-      if (this.config.scannerViewConfig && !this.isFileMode) {
+      // Initialize scanner view for main flow only
+      if (!this.isFileMode && this.config.scannerViewConfig) {
         this.scannerView = new MRZScannerView(this.resources, this.config.scannerViewConfig);
         components.scannerView = this.scannerView;
         await this.scannerView.initialize();
@@ -221,7 +221,8 @@ class MRZScanner {
       // Initialize the template parameters for mrz scanning
       await this.resources.cvRouter.initSettings(this.config.templateFilePath);
     } catch (ex: any) {
-      let errMsg = ex?.message || ex;
+      let errMsg =
+        typeof ex === "string" ? ex : ex?.message ?? (typeof ex === "object" ? JSON.stringify(ex) : String(ex));
 
       const error = errMsg?.toLowerCase().includes("license")
         ? `The MRZ Scanner license is invalid or has expired. Please contact the site administrator to resolve this issue.`
@@ -568,47 +569,47 @@ class MRZScanner {
       this.isFileMode = !!imageOrFile;
 
       const { components } = await this.initialize();
-
-      if (isEmptyObject(components)) {
-        throw new Error(`MRZ Scanner initialization failed `);
-      }
-
       if (this.config.container) {
         getElement(this.config.container).style.display = "block";
       }
 
-      // Handle direct file upload if provided
       if (this.isFileMode) {
         await this.processUploadedFile(imageOrFile);
-      }
 
-      // Special case handling for direct views with existing results
-      if (!components.scannerView && this.resources.result) {
-        if (components.resultView) return await components.resultView.launch();
-      }
-
-      // Scanner view is required if no existing result
-      if (!components.scannerView && !this.resources.result && !this.isFileMode) {
-        throw new Error("Scanner view is required when no previous result exists");
-      }
-
-      // Main Flow
-      if (components.scannerView) {
-        const scanResult = await components.scannerView.launch();
-
-        if (scanResult?.status.code !== EnumResultStatus.RS_SUCCESS) {
-          return {
-            status: {
-              code: scanResult?.status.code,
-              message: scanResult?.status.message || "Failed to capture image",
-            },
-          };
-        }
-
-        // Route based on capture method
         if (components.resultView) {
           return await components.resultView.launch();
         }
+        return this.resources.result;
+      }
+
+      // Use existing result if available and result view exists
+      if (!components.scannerView && this.resources.result) {
+        if (components.resultView) {
+          return await components.resultView.launch();
+        }
+        return this.resources.result;
+      }
+
+      // Scanner view is required for main flow without existing result
+      if (!components.scannerView) {
+        throw new Error("Scanner view is required when no previous result exists");
+      }
+
+      // Execute scanner view
+      const scanResult = await components.scannerView.launch();
+
+      if (scanResult?.status.code !== EnumResultStatus.RS_SUCCESS) {
+        return {
+          status: {
+            code: scanResult?.status.code,
+            message: scanResult?.status.message || "Failed to capture image",
+          },
+        };
+      }
+
+      // Return result view if available
+      if (components.resultView) {
+        return await components.resultView.launch();
       }
 
       // If no additional views, return current result
