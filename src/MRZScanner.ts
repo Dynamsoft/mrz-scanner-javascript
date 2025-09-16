@@ -30,11 +30,14 @@ import MRZResultView, { MRZResultViewConfig } from "./views/MRZResultView";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./views/utils/LoadingScreen";
 
 // Default DCE UI path
-const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.2/dist/mrz-scanner.ui.html"; // TODO
+//const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3-beta-202509160002/dist/mrz-scanner.ui.html"; // TODO
+const DEFAULT_DCE_UI_PATH = "https://npm.scannerproxy.com:802/cdn/dynamsoft-mrz-scanner@3.0.3-beta-202509160002/dist/mrz-scanner.ui.html"; // TODO
+//const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3-beta-202509160002/dist/mrz-scanner.template.json"; // TODO
 const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH =
-  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.2/dist/mrz-scanner.template.json"; // TODO
+  "https://npm.scannerproxy.com:802/cdn/dynamsoft-mrz-scanner@3.0.3-beta-202509160002/dist/mrz-scanner.template.json"; // TODO
 
-const DEFAULT_DCV_ENGINE_RESOURCE_PATHS = { rootDirectory: "https://cdn.jsdelivr.net/npm/" };
+const DEFAULT_DCV_ENGINE_RESOURCE_PATHS = { rootDirectory: "https://npm.scannerproxy.com:802/cdn/" };
 const DEFAULT_CONTAINER_HEIGHT = "100dvh";
 
 export interface MRZScannerConfig {
@@ -556,7 +559,7 @@ class MRZScanner {
   }
 
   async launch(
-    imageOrFile: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
+    imageOrFile?: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
   ): Promise<MRZResult> {
     if (this.isCapturing) {
       throw new Error("Capture session already in progress");

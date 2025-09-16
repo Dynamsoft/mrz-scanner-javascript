@@ -44,7 +44,7 @@ export interface MRZDate {
     month: number;
     day: number;
 }
-export declare const MRZDataLabel: Record<EnumMRZData, string>;
+export declare const MRZDataLabel: Record<EnumMRZData, string> & Record<string, string>;
 export declare function displayMRZDate(date: MRZDate): string;
 export declare function processMRZData(mrzText: string, parsedResult: ParsedResultItem): MRZData | null;
 //# sourceMappingURL=MRZParser.d.ts.map

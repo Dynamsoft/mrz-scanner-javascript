@@ -57,7 +57,7 @@ declare class MRZScanner {
      * @returns Promise with the document result
      */
     private processUploadedFile;
-    launch(imageOrFile: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>;
+    launch(imageOrFile?: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>;
 }
 export default MRZScanner;
 //# sourceMappingURL=MRZScanner.d.ts.map
