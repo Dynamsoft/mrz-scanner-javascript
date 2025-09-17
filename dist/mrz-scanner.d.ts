@@ -94,7 +94,7 @@ interface MRZDate {
     month: number;
     day: number;
 }
-declare const MRZDataLabel: Record<EnumMRZData, string>;
+declare const MRZDataLabel: Record<EnumMRZData, string> & Record<string, string>;
 declare function displayMRZDate(date: MRZDate): string;
 
 interface MRZScannerViewConfig {
@@ -247,7 +247,7 @@ declare class MRZScanner {
      * @returns Promise with the document result
      */
     private processUploadedFile;
-    launch(imageOrFile: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>;
+    launch(imageOrFile?: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>;
 }
 
 declare const DynamsoftMRZScanner: {
