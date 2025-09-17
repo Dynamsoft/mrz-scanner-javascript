@@ -28,16 +28,23 @@ export class AppComponent implements OnInit {
 
     mrzscanner.launch().then((_result) => {
       const { originalImageResult, data } = _result;
-      const canvas = originalImageResult?.toCanvas();
-      const dataUrl = canvas.toDataURL('image/png');
 
-      const formattedMRZ = Object.entries(data)
-        .map(([key, value]) => {
-          return `${MRZDataLabel[key]}:\n${
-            key === 'mrzText' ? value : JSON.stringify(value)
-          }`;
-        })
-        .join('\n\n');
+      let dataUrl = '';
+      if (originalImageResult && (originalImageResult as any)?.toCanvas) {
+        const canvas = (originalImageResult as any).toCanvas();
+        dataUrl = canvas.toDataURL('image/png');
+      }
+
+      let formattedMRZ = '';
+      if (data) {
+        formattedMRZ = Object.entries(data)
+          .map(([key, value]) => {
+            return `${MRZDataLabel[key]}:\n${
+              key === 'mrzText' ? value : JSON.stringify(value)
+            }`;
+          })
+          .join('\n\n');
+      }
 
       this.result = { image: dataUrl, data: formattedMRZ };
     });

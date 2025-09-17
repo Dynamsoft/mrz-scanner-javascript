@@ -53,7 +53,7 @@ export interface MRZDate {
   day: number;
 }
 
-export const MRZDataLabel: Record<EnumMRZData, string> = {
+export const MRZDataLabel: Record<EnumMRZData, string> & Record<string, string> = {
   // Not showing Invalid Fields
   [EnumMRZData.InvalidFields]: "Invalid Fields",
   [EnumMRZData.DocumentType]: "Document Type",
