@@ -9,7 +9,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    //"skipLibCheck": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -19,7 +18,6 @@
     "module": "ES2022",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    //"noImplicitAny": false,
     "typeRoots": ["node_modules/@types", "src/types"]
   },
   "angularCompilerOptions": {
