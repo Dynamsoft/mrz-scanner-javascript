@@ -30,9 +30,8 @@ import MRZResultView, { MRZResultViewConfig } from "./views/MRZResultView";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./views/utils/LoadingScreen";
 
 // Default DCE UI path
-const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.ui.html"; // TODO
-const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH =
-  "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.template.json"; // TODO
+const DEFAULT_DCE_UI_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4-beta-202510160004/dist/mrz-scanner.ui.html "; // TODO
+const DEFAULT_MRZ_SCANNER_TEMPLATE_PATH = "https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4-beta-202510160004/dist/mrz-scanner.template.json "; // TODO
 const DEFAULT_DCV_ENGINE_RESOURCE_PATHS = { rootDirectory: "https://cdn.jsdelivr.net/npm/" };
 const DEFAULT_CONTAINER_HEIGHT = "100dvh";
 
@@ -521,7 +520,7 @@ class MRZScanner {
       let processedData = {} as MRZData;
 
       if (parsedResultItems?.length) {
-        const mrzText = ((parsedResultItems[0] as any)?.referencedItem as TextLineResultItem)?.text || ""; // TODO
+        const mrzText = ((parsedResultItems[0] as any)?.referenceItem as TextLineResultItem)?.text || ""; // TODO
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
 
         processedData = processMRZData(mrzText, parsedResult);
