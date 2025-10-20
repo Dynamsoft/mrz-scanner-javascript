@@ -1,5 +1,6 @@
 import formidable from "formidable";
 import express from "express";
+import rateLimit from "express-rate-limit";
 import fs from "fs";
 import http from "http";
 import https from "https";
@@ -22,6 +23,15 @@ if (!fs.existsSync(distPath)) {
 }
 
 const app = express();
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later.",
+});
+
+app.use(limiter);
 
 app.use(
   cors({

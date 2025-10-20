@@ -15,10 +15,12 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   Build-Demo:
-    if: ${{ github.ref == 'refs/heads/demo' }}    
-    
+    if: ${{ github.ref == 'refs/heads/demo' }}
+
     # The type of runner that the job will run on
     runs-on: self-hosted
+    permissions:
+      contents: read
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 

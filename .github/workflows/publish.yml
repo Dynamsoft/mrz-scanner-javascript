@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -20,7 +23,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm i
+        run: |
+          rm -rf package-lock.json node_modules
+          npm install
 
       # - name: Run tests
       #   run: npm test
@@ -29,6 +34,11 @@ jobs:
         run: npm run build
         
       - name: Publish to npm
-        run: npm publish
+        run: |
+          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+            npm publish --tag beta
+          else
+            npm publish
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PAT }}
