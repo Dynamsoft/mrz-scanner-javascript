@@ -31,25 +31,25 @@ The simplest way to include the SDK is to use either the [**jsDelivr**](https://
 - jsDelivr
 
   ```html
-  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   ```
 
 - UNPKG
 
   ```html
-  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   ```
 
 When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
 
-  ```sh
-  npm i dynamsoft-mrz-scanner@3.0.3 -E
-  # or
-  yarn add dynamsoft-mrz-scanner@3.0.3 -E
-  ```
+```sh
+npm i dynamsoft-mrz-scanner@3.0.4 -E
+# or
+yarn add dynamsoft-mrz-scanner@3.0.4 -E
+```
 
 > [!WARNING]
-> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
+> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the _engineResourcePaths_.
 
 Below is the complete Hello World sample page that uses the precompiled script served via a CDN.
 
@@ -60,7 +60,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
@@ -82,7 +82,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
 
 > [!NOTE]
 >
-> This code is identical to the Hello World file mentioned in *Build from Source*, except for the script source.
+> This code is identical to the Hello World file mentioned in _Build from Source_, except for the script source.
 >
 > Please do not forget to replace `YOUR_LICENSE_KEY_HERE` with your own license key, whether it is trial or full.
 
@@ -98,7 +98,7 @@ In this guide, we will show the developer how to build the scanner themselves fr
 
 Please note that we also offer a pre-compiled script reference to make the inclusion of the library even easier. To learn how to use that, please visit the full User Guide for the MRZ Scanner.
 
-This method requires retrieving the **MRZ Scanner for Web** source files from its [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript), compiles them into a distributable package, and then runs a *ready-made* Hello World sample page that is already included in the repo.
+This method requires retrieving the **MRZ Scanner for Web** source files from its [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript), compiles them into a distributable package, and then runs a _ready-made_ Hello World sample page that is already included in the repo.
 
 Please follow these steps in order to build from the source:
 
@@ -106,25 +106,27 @@ Please follow these steps in order to build from the source:
 
 2. Extract the contents of the compressed folder.
 
-3. Open the *Hello World* sample included with the source files located at `samples/hello-world.html`
+3. Open the _Hello World_ sample included with the source files located at `samples/hello-world.html`
 
 4. Search for 'YOUR_LICENSE_KEY_HERE' and replace that with your own license key, whether it is trial or full.
 
 5. Install project dependencies - in the terminal, navigate to the project root directory and run the following:
-    ```bash
-    npm install
-    ```
+
+   ```bash
+   npm install
+   ```
 
 6. Build the project - once the dependencies are installed, build the project by running:
-    ```bash
-    npm run build
-    ```
+
+   ```bash
+   npm run build
+   ```
 
 7. Serve the project via localhost:
-    ```bash
+   `bash
     npm run serve
-    ```
-Once the server is running, open the application in a browser using the address provided in the terminal output after running `npm run serve`.
+    `
+   Once the server is running, open the application in a browser using the address provided in the terminal output after running `npm run serve`.
 
 ## Breaking down Hello World
 
@@ -139,19 +141,18 @@ Let's now go through the code of the Hello World sample and understand the purpo
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
     <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
   </body>
-
 </html>
 ```
 
 The first step in setting up the HTML in a Hello World implementation is to include the SDK. The ways to include the SDK has already been addressed in the [Quick Start](#quick-start---including-the-sdk-and-creating-hello-world) section, so please refer to that if you have not already. In this example, we are including the MRZ Scanner via the precompiled script as that is the easiest way to get started.
 
-Since this is a Hello World implementation, the HTML body will be kept quite simple. Since the MRZ Scanner comes with a **Ready-to-Use UI**, it is not necessary to place any `<div>` placeholder elements or anything like. Once the scanner is launched, the **Ready-to-Use UI** will come up and occupy the page. 
+Since this is a Hello World implementation, the HTML body will be kept quite simple. Since the MRZ Scanner comes with a **Ready-to-Use UI**, it is not necessary to place any `<div>` placeholder elements or anything like. Once the scanner is launched, the **Ready-to-Use UI** will come up and occupy the page.
 
 <!-- The main DOM element that is required in the `<body>` is a `<div>` element where the MRZ result (or lack thereof) and the original image of the MRZ document will be displayed once the user clicks *Done* in the result view. Feel free to customize the styling of the `<div>` element to your liking. -->
 
@@ -174,7 +175,7 @@ Above you will see the **simplest** way that you can initialize the MRZ Scanner.
 (async () => {
   // Launch the scanner and wait for the result
   const result = await mrzscanner.launch();
-  console.log(result); 
+  console.log(result);
 })();
 ```
 
@@ -194,7 +195,7 @@ Here is a quick breakdown of the UI elements that make up the main view of the M
 
 5. **Load Image Button**: When this button is clicked, the user can select a MRZ document image from the device's local storage to be recognized.
 
-6. **Sound Button**: By toggling this on, the MRZ Scanner will play a *beep* sound to signal that the MRZ has been successfully recognized.
+6. **Sound Button**: By toggling this on, the MRZ Scanner will play a _beep_ sound to signal that the MRZ has been successfully recognized.
 
 7. **Flash Button**: This button is responsible for toggling the flash of the camera should it have one. If the device doesn't have the flash feature or if the browser being used doesn't support flash, this flash icon will not show up.
 
@@ -212,9 +213,8 @@ Here is a quick breakdown of the UI elements that make up the result view
 
 4. **Done Button**: Clicking this button basically closes the scanner and destroys the **MRZScanner** instance. At that point, the application will go back to the landing page, but the developer can dictate the action to take once this button is clicked. These actions can include allowing the user to perform some extra actions with the MRZ result, or navigating to another page, or really anything that the developer would like to do once the scanning operation is done.
 
-  > [!NOTE]
-  >  In the Hello World sample, no action is taken once the Done button is clicked. The scanner closes and the user is met with an empty page. In order to open the scanner again, the user must refresh the page. You may choose to implement a more user-friendly behavior in a production environment, such as presenting the user with an option to re-open the MRZ Scanner upon closing it.
-
+> [!NOTE]
+> In the Hello World sample, no action is taken once the Done button is clicked. The scanner closes and the user is met with an empty page. In order to open the scanner again, the user must refresh the page. You may choose to implement a more user-friendly behavior in a production environment, such as presenting the user with an option to re-open the MRZ Scanner upon closing it.
 
 ## Next Steps
 
