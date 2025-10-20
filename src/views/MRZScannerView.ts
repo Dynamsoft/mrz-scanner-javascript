@@ -513,7 +513,7 @@ export default class MRZScannerView {
       let processedData = {} as MRZData;
 
       if (parsedResultItems?.length) {
-        const mrzText = ((parsedResultItems[0] as any)?.referencedItem as TextLineResultItem)?.text || ""; // TODO
+        const mrzText = ((parsedResultItems[0] as any)?.referenceItem as TextLineResultItem)?.text || ""; // TODO
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
         processedData = processMRZData(mrzText, parsedResult);
       }
@@ -802,7 +802,7 @@ export default class MRZScannerView {
           Feedback.beep();
         }
 
-        const mrzText = ((parsedResultItems[0] as any)?.referencedItem as TextLineResultItem)?.text || ""; // TODO
+        const mrzText = ((parsedResultItems[0] as any)?.referenceItem as TextLineResultItem)?.text || ""; // TODO
         const parsedResult = parsedResultItems[0] as ParsedResultItem;
 
         const processedData = processMRZData(mrzText, parsedResult);
