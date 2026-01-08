@@ -12,7 +12,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write  # Required for OIDC
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -41,3 +40,5 @@ jobs:
           else
             npm publish
           fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PAT }}
