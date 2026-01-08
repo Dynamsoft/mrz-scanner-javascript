@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write  # Required for OIDC
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
