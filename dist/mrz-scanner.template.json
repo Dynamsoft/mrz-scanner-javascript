@@ -96,7 +96,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9<]{4}[0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{14}[0-9<][0-9]){(44)}",
+          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9]{2}[0-9]{2}[0-9][MF<][0-9]{2}[0-9]{2}[0-9]{2}[0-9][A-Z0-9<]{14}[0-9<][0-9]){(44)}",
           "StringLengthRange": [44, 44],
           "BaseTextLineSpecificationName": "tls-base"
         }
@@ -117,7 +117,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{14}[A-Z0-9<]{2}){(44)}",
+          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9]{2}[0-9]{2}[0-9][MF<][0-9]{2}[0-9]{2}[0-9]{2}[0-9][A-Z0-9<]{14}[A-Z0-9<]{2}){(44)}",
           "StringLengthRange": [44, 44],
           "BaseTextLineSpecificationName": "tls-base"
         }
@@ -138,7 +138,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{8}){(36)}",
+          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9]{2}[0-9]{2}[0-9][MF<][0-9]{2}[0-9]{2}[0-9]{2}[0-9][A-Z0-9<]{8}){(36)}",
           "StringLengthRange": [36, 36],
           "BaseTextLineSpecificationName": "tls-base"
         }
@@ -159,7 +159,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9<]{4}[0-9][MF<][0-9]{2}[(01-12)][(01-31)][0-9][A-Z0-9<]{8}){(36)}",
+          "StringRegExPattern": "([A-Z0-9<]{9}[0-9][A-Z<]{3}[0-9]{2}[0-9<]{4}[0-9][MF<][0-9]{2}[0-9]{2}[0-9]{2}[0-9][A-Z0-9<]{8}){(36)}",
           "StringLengthRange": [36, 36],
           "BaseTextLineSpecificationName": "tls-base"
         }
@@ -180,7 +180,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "([0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]{2}[0-9<]{4}[0-9][A-Z<]{3}[A-Z0-9<]{11}[0-9]){(30)}",
+          "StringRegExPattern": "([0-9]{2}[0-9]{2}[0-9]{2}[0-9][MF<][0-9]{2}[0-9<]{4}[0-9][A-Z<]{3}[A-Z0-9<]{11}[0-9]){(30)}",
           "StringLengthRange": [30, 30],
           "BaseTextLineSpecificationName": "tls-base"
         },
@@ -206,7 +206,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "([A-Z0-9]{12}[0-9][A-Z<]{14}[0-9]{2}[(01-12)][(01-31)][0-9][MF<][0-9]){(36)}",
+          "StringRegExPattern": "([A-Z0-9]{12}[0-9][A-Z<]{14}[0-9]{2}[0-9]{2}[0-9]{2}[0-9][MF<][0-9]){(36)}",
           "StringLengthRange": [36, 36],
           "BaseTextLineSpecificationName": "tls-base"
         }
@@ -227,7 +227,7 @@
           "BaseTextLineSpecificationName": "tls-base"
         },
         {
-          "StringRegExPattern": "(FACHE[0-9]{12}(<<)[0-9]{2}[(01-12)][(01-31)][<]{5}){(30)}",
+          "StringRegExPattern": "(FACHE[0-9]{12}(<<)[0-9]{2}[0-9]{2}[0-9]{2}[<]{5}){(30)}",
           "StringLengthRange": [30, 30],
           "BaseTextLineSpecificationName": "tls-base"
         },
@@ -271,7 +271,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",
@@ -301,7 +315,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",
@@ -331,7 +359,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",
@@ -368,7 +410,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",
@@ -398,7 +454,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",
@@ -434,7 +504,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",
@@ -469,7 +553,21 @@
         },
         {
           "Section": "ST_TEXT_LINE_LOCALIZATION",
-          "ImageParameterName": "ip-mrz"
+          "ImageParameterName": "ip-mrz",
+          "StageArray": [
+            {
+              "Stage": "SST_LOCALIZE_TEXT_LINES",
+              "LocalizationModes": [
+                {
+                  "Mode": "LM_NEURAL_NETWORK",
+                  "ModelNameArray": ["MRZLocalization"]
+                },
+                {
+                  "Mode": "LM_GENERAL"
+                }
+              ]
+            }
+          ]
         },
         {
           "Section": "ST_TEXT_LINE_RECOGNITION",

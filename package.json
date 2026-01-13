@@ -1,6 +1,6 @@
 {
   "name": "dynamsoft-mrz-scanner",
-  "version": "3.0.4",
+  "version": "3.1.0",
   "description": "Dynamsoft MRZ Scanner JavaScript Edition is a ready-to-use SDK for web applications that accurately recognizes and parses Machine-Readable Zones on Machine-Readable Travel Documents.",
   "files": [
     "/dist",
@@ -69,7 +69,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "dynamsoft-capture-vision-bundle": "3.0.6001",
-    "dynamsoft-capture-vision-data": "1.0.1"
+    "dynamsoft-capture-vision-bundle": "3.2.5000",
+    "dynamsoft-capture-vision-data": "1.1.0"
   }
 }
