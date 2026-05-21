@@ -1,15 +1,19 @@
 <div class="mrz-scanner-hello-world-page">
-  <div class="mrz-scanner-title">
-    <h2 class="mrz-scanner-title-text">Hello World for Angular</h2>
-    <img class="mrz-scanner-title-logo" src="./favicon.ico" alt="logo" />
-  </div>
-  <div class="mrz-scanner-result-container">
-    <img
-      *ngIf="result?.image"
-      class="result-img"
-      [src]="result.image"
-      alt="mrz-result"
-    />
-    <div *ngIf="result?.data" class="result-data">{{ result.data }}</div>
-  </div>
+	<div class="mrz-scanner-title">
+		<h2 class="mrz-scanner-title-text">Hello World for Angular</h2>
+	</div>
+	<div class="mrz-scanner-result-container">
+		@if (result().portraitSide) {
+			<img class="result-img" [src]="result().portraitSide" alt="portrait-side" />
+		}
+		@if (result().mrzSide) {
+			<img class="result-img" [src]="result().mrzSide" alt="mrz-side" />
+		}
+		@if (result().portrait) {
+			<img class="result-img" [src]="result().portrait" alt="portrait" />
+		}
+		@if (result().data) {
+			<div class="result-data">{{ result().data }}</div>
+		}
+	</div>
 </div>

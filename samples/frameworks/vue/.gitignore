@@ -1,23 +1,13 @@
-.DS_Store
-node_modules
+# dependencies
+/node_modules
+
+# production
 /dist
 
+# sdk resources
+/public
 
-# local env files
-.env.local
-.env.*.local
-
-# Log files
+# misc
+.DS_Store
+*.local
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
