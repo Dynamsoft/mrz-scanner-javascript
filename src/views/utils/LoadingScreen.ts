@@ -1,23 +1,23 @@
 interface LoadingScreenOptions {
-  message?: string;
-  spinnerSize?: number;
+	message?: string;
+	spinnerSize?: number;
 }
 
 export function showLoadingScreen(container: HTMLElement, options: LoadingScreenOptions = {}) {
-  const { message, spinnerSize = 32 } = options;
+	const { message, spinnerSize = 32 } = options;
 
-  const overlayDiv = document.createElement("div");
-  overlayDiv.className = "dynamsoft-mrz-loading-screen";
+	const overlayDiv = document.createElement("div");
+	overlayDiv.className = "dynamsoft-mrz-loading-screen";
 
-  const loadingDiv = document.createElement("div");
-  loadingDiv.className = "dynamsoft-mrz-loading";
+	const loadingDiv = document.createElement("div");
+	loadingDiv.className = "dynamsoft-mrz-loading";
 
-  // Create the loading content container
-  const contentDiv = document.createElement("div");
-  contentDiv.className = "dynamsoft-mrz-loading-content";
+	// Create the loading content container
+	const contentDiv = document.createElement("div");
+	contentDiv.className = "dynamsoft-mrz-loading-content";
 
-  // Add spinner
-  const spinner = `
+	// Add spinner
+	const spinner = `
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 24" 
@@ -32,51 +32,51 @@ export function showLoadingScreen(container: HTMLElement, options: LoadingScreen
       <path d="M12 3a9 9 0 1 0 9 9"></path> 
     </svg>
   `;
-  contentDiv.innerHTML = spinner;
+	contentDiv.innerHTML = spinner;
 
-  // Add message only if provided
-  if (message) {
-    const messageDiv = document.createElement("div");
-    messageDiv.className = "dynamsoft-mrz-loading-message";
-    messageDiv.textContent = message;
-    contentDiv.appendChild(messageDiv);
-  }
+	// Add message only if provided
+	if (message) {
+		const messageDiv = document.createElement("div");
+		messageDiv.className = "dynamsoft-mrz-loading-message";
+		messageDiv.textContent = message;
+		contentDiv.appendChild(messageDiv);
+	}
 
-  loadingDiv.appendChild(contentDiv);
-  overlayDiv.appendChild(loadingDiv);
-  container.appendChild(overlayDiv);
+	loadingDiv.appendChild(contentDiv);
+	overlayDiv.appendChild(loadingDiv);
+	container.appendChild(overlayDiv);
 
-  return {
-    element: overlayDiv,
-    updateMessage: (newMessage: string | null) => {
-      let messageEl = loadingDiv.querySelector(".dynamsoft-mrz-loading-message");
+	return {
+		element: overlayDiv,
+		updateMessage: (newMessage: string | null) => {
+			let messageEl = loadingDiv.querySelector(".dynamsoft-mrz-loading-message");
 
-      if (newMessage === null) {
-        // Remove message if exists
-        messageEl?.remove();
-        return;
-      }
+			if (newMessage === null) {
+				// Remove message if exists
+				messageEl?.remove();
+				return;
+			}
 
-      if (messageEl) {
-        // Update existing message
-        messageEl.textContent = newMessage;
-      } else {
-        // Create new message element
-        messageEl = document.createElement("div");
-        messageEl.className = "dynamsoft-mrz-loading-message";
-        messageEl.textContent = newMessage;
-        contentDiv.appendChild(messageEl);
-      }
-    },
-    hide: () => {
-      if (overlayDiv && overlayDiv.parentNode) {
-        overlayDiv.classList.add("fade-out");
-        setTimeout(() => {
-          overlayDiv.parentNode?.removeChild(overlayDiv);
-        }, 200);
-      }
-    },
-  };
+			if (messageEl) {
+				// Update existing message
+				messageEl.textContent = newMessage;
+			} else {
+				// Create new message element
+				messageEl = document.createElement("div");
+				messageEl.className = "dynamsoft-mrz-loading-message";
+				messageEl.textContent = newMessage;
+				contentDiv.appendChild(messageEl);
+			}
+		},
+		hide: () => {
+			if (overlayDiv && overlayDiv.parentNode) {
+				overlayDiv.classList.add("fade-out");
+				setTimeout(() => {
+					overlayDiv.parentNode?.removeChild(overlayDiv);
+				}, 200);
+			}
+		},
+	};
 }
 
 export const DEFAULT_LOADING_SCREEN_STYLE = `
