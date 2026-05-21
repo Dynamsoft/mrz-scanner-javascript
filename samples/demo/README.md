@@ -17,7 +17,6 @@ samples/demo/
     ├── index.css            # shared stylesheet — palette in :root tokens
     ├── landing.css          # landing page, one for mobile and desktop
     ├── result.css           # result view matches default style of MRZ Scanner
-    ├── widgets.css          # live-chat and cookies disclaimer
 ├── tsconfig.json            # IDE/LSP project config (Vite handles build)
 ├── vite.config.ts           # demo-build config: bundles src/ + mirrors DCV into public/, serve /public and /dist
 ├── assets/                  # static assets (logo, QR code SVG)
@@ -26,7 +25,6 @@ samples/demo/
     ├── view.ts              # body[data-view] state, mobile/desktop split, info menu
     ├── scanner.ts           # MRZScanner instance + camera/file/rescan entry points
     ├── results.ts           # displayResults(result, config)
-    ├── chrome.ts            # live-chat and cookies disclaimer
     └── index.ts             # entry — wires DOM events to the exports above
 ```
 
