@@ -11,7 +11,7 @@ const uploadFileButton = $<HTMLButtonElement>("uploadFile");
 const homeError = $("home-error");
 
 const LICENSE =
-	"DLS2eyJoYW5kc2hha2VDb2RlIjoiMzE0NTQwLU16RTBOVFF3TFhkbFlpMVVjbWxoYkZCeWIybyIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21kbHMuZHluYW1zb2Z0b25saW5lLmNvbS8iLCJvcmdhbml6YXRpb25JRCI6IjMxNDU0MCIsInN0YW5kYnlTZXJ2ZXJVUkwiOiJodHRwczovL3NkbHMuZHluYW1zb2Z0b25saW5lLmNvbS8iLCJjaGVja0NvZGUiOjEwOTA0MTkwMDB9";
+	"YOUR_LICENSE_KEY_HERE";
 
 // The demo always returns all three image kinds — there's no UI to
 // toggle them and the result view is built around showing each one.
