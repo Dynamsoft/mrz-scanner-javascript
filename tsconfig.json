@@ -1,19 +1,15 @@
 {
-  "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "outDir": "dist",
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": false,
-    "declaration": true,
-    "declarationMap": true,
-    "declarationDir": "./dist/types",
-    "noImplicitAny": true,
-    "resolveJsonModule": true
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules/**"]
+	"compilerOptions": {
+		"target": "es2019",
+		"outDir": "dist",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"skipLibCheck": true,
+		"sourceMap": false,
+		"declaration": true,
+		"declarationMap": true,
+		"declarationDir": "./dist/types",
+		"resolveJsonModule": true,
+	},
+	"include": ["src/**/*.ts"],
 }

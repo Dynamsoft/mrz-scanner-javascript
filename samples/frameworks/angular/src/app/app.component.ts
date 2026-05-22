@@ -1,52 +1,58 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MRZScanner, MRZDataLabel } from 'dynamsoft-mrz-scanner';
+import { Component, OnInit, OnDestroy, signal } from "@angular/core";
+import {
+	MRZScanner,
+	MRZDataLabel,
+	EnumDocumentSide,
+	EnumMRZData,
+	MRZImage,
+} from "dynamsoft-mrz-scanner";
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+	selector: "app-root",
+	templateUrl: "./app.component.html",
+	styleUrl: "./app.component.css",
 })
-export class AppComponent implements OnInit {
-  result: {
-    image: string;
-    data: string;
-  } = {
-    image: '',
-    data: '',
-  };
+export class AppComponent implements OnInit, OnDestroy {
+	result = signal({ portraitSide: "", mrzSide: "", portrait: "", data: "" });
+	private mrzScanner: MRZScanner | null = null;
 
-  ngOnInit(): void {
-    // Configuration object for initializing the MRZ Scanner instance
-    const config = {
-      license: 'YOUR_LICENSE_KEY_HERE', // Replace with your Dynamsoft license key
-    };
+	async ngOnInit() {
+		try {
+			this.mrzScanner = new MRZScanner({
+				license: "YOUR_LICENSE_KEY_HERE", // Replace with your Dynamsoft license key
+			});
 
-    const mrzscanner = new MRZScanner(config);
+			const scanResult = await this.mrzScanner.launch();
+			const { data } = scanResult;
 
-    mrzscanner.launch().then((_result) => {
-      const { originalImageResult, data } = _result;
+			const formattedMRZ = Object.entries(data ?? {})
+				.map(
+					([key, value]) =>
+						`${MRZDataLabel[key]}:\n${key === EnumMRZData.MRZText ? value : JSON.stringify(value)}`,
+				)
+				.join("\n\n");
 
-      let dataUrl = '';
-      if (originalImageResult && (originalImageResult as any)?.toCanvas) {
-        const canvas = (originalImageResult as any).toCanvas();
-        dataUrl = canvas.toDataURL('image/png');
-      }
+			const toDataUrl = (image: MRZImage) => image.toCanvas().toDataURL("image/png");
 
-      let formattedMRZ = '';
-      if (data) {
-        formattedMRZ = Object.entries(data)
-          .map(([key, value]) => {
-            return `${MRZDataLabel[key]}:\n${
-              key === 'mrzText' ? value : JSON.stringify(value)
-            }`;
-          })
-          .join('\n\n');
-      }
+			const portraitSide = scanResult.getDocumentImage(EnumDocumentSide.Opposite);
+			const mrzSide = scanResult.getDocumentImage(EnumDocumentSide.MRZ);
+			const portrait = scanResult.getPortraitImage();
 
-      this.result = { image: dataUrl, data: formattedMRZ };
-    });
-  }
+			this.result.set({
+				portraitSide: portraitSide ? toDataUrl(portraitSide) : "",
+				mrzSide: mrzSide ? toDataUrl(mrzSide) : "",
+				portrait: portrait ? toDataUrl(portrait) : "",
+				data: formattedMRZ,
+			});
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			console.error(message);
+			alert(message);
+		}
+	}
+
+	ngOnDestroy() {
+		this.mrzScanner?.dispose();
+		this.mrzScanner = null;
+	}
 }
