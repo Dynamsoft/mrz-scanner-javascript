@@ -1,5 +1,5 @@
 export const MRZScanner_ICONS = {
-  cancel: `
+	cancel: `
 <svg id="cancel" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
   <defs>
     <clipPath id="cancelclip-path">
@@ -12,7 +12,7 @@ export const MRZScanner_ICONS = {
   </g>
 </svg>  
   `,
-  rescan: `<svg id="re-take" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28.761" height="23" viewBox="0 0 28.761 23">
+	rescan: `<svg id="re-take" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28.761" height="23" viewBox="0 0 28.761 23">
 <defs>
 <clipPath id="retakeclip-path">
   <rect id="Rectangle_2773" data-name="Rectangle 2773" width="28.761" height="23" fill="#fff"/>
@@ -24,7 +24,7 @@ export const MRZScanner_ICONS = {
 </g>
 </svg>
 `,
-  complete: `
+	complete: `
 <svg id="continue" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
 <defs>
 <clipPath id="continueclip-path">
@@ -37,7 +37,7 @@ export const MRZScanner_ICONS = {
 </g>
 </svg>
 `,
-  failed: `
+	failed: `
   <svg
   xmlns="http://www.w3.org/2000/svg"
   width="20"
@@ -53,7 +53,7 @@ export const MRZScanner_ICONS = {
   <path d="M6 6l12 12" />
 </svg>
 `,
-  info: `
+	info: `
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

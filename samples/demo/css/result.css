@@ -1,0 +1,359 @@
+/* Result — dark theme. Single column on mobile, two columns at md+. */
+body[data-view="result"] #result-section {
+	display: block;
+	background: var(--bg-page);
+	min-height: 100vh;
+	color: var(--fg);
+	padding-bottom: 40px;
+	flex: 1;
+}
+
+/* Shared centered-flex containers. */
+.result-header,
+.info-btn,
+.portrait-box,
+.tab-image-card,
+.btn-rescan,
+.btn-home {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.result-header {
+	padding: 20px 16px 12px;
+	position: relative;
+}
+
+.result-header h2 {
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--fg);
+}
+
+/* Info button + dropdown. */
+.info-menu {
+	position: absolute;
+	right: 16px;
+}
+
+.info-btn {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: 2px solid var(--fg);
+	color: var(--fg);
+	font-size: 14px;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.info-dropdown {
+	display: none;
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	background: var(--bg-card);
+	overflow: hidden;
+	min-width: 180px;
+	box-shadow: var(--shadow-dropdown);
+	z-index: 100;
+}
+
+.info-menu.open .info-dropdown {
+	display: block;
+}
+
+.info-dropdown a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	color: var(--fg);
+	text-decoration: none;
+	font-size: 14px;
+	gap: 12px;
+}
+
+.info-dropdown a:hover {
+	background: var(--bg-line);
+}
+
+.info-dropdown a svg {
+	flex-shrink: 0;
+	opacity: 0.6;
+}
+
+/* Summary card. */
+.summary-card {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: 8px 20px 24px;
+	gap: 12px;
+}
+
+.summary-info .person-name {
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--fg);
+	margin-bottom: 6px;
+}
+
+.summary-info .person-details {
+	font-size: 14px;
+	color: var(--fg-muted);
+	margin-bottom: 4px;
+}
+
+.portrait-box {
+	width: 80px;
+	height: 80px;
+	background: var(--bg-button-hover);
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.portrait-box svg {
+	width: 44px;
+	height: 44px;
+	opacity: 0.6;
+}
+
+.portrait-box canvas {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Image tabs (Processed / Original). The two .tab-content panels share
+   one grid cell so the section's height is the max of either — switching
+   tabs is a visibility flip, no layout reflow. */
+.tabs-section {
+	padding: 0 20px 20px;
+	display: grid;
+	grid-template-areas:
+		"header"
+		"content";
+}
+
+.tab-header {
+	grid-area: header;
+	display: flex;
+	justify-content: center;
+	border-bottom: 1px solid var(--bg-button);
+	margin-bottom: 16px;
+}
+
+.tab-btn {
+	color: var(--fg-very-faint);
+	font-size: 15px;
+	padding: 10px 20px;
+	position: relative;
+	font-weight: 500;
+}
+
+.tab-btn.active {
+	color: var(--fg);
+	font-weight: 600;
+}
+
+/* Underline spans only the text (excludes the 20px horizontal padding)
+   so adjacent tabs' indicators meet but don't overlap. */
+.tab-btn.active::after {
+	content: "";
+	position: absolute;
+	bottom: -1px;
+	left: 20px;
+	right: 20px;
+	height: 2px;
+	background: var(--fg);
+}
+
+.tab-content {
+	grid-area: content;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	visibility: hidden;
+}
+
+.tab-content.active {
+	visibility: visible;
+}
+
+/* Lone card (one scanned side) takes the full width instead of leaving
+   an empty cell next to it. */
+.tab-content > .tab-image-card:only-child {
+	grid-column: 1 / -1;
+}
+
+.tab-image-card {
+	overflow: hidden;
+	min-height: 90px;
+}
+
+.tab-image-card canvas {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+.tab-empty-msg {
+	grid-column: span 2;
+	padding: 20px;
+	color: var(--fg-disabled);
+	text-align: center;
+	font-size: 13px;
+}
+
+/* Data sections. */
+.data-section {
+	padding: 20px 20px 0;
+}
+
+.data-section-title {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--fg);
+	margin-bottom: 14px;
+}
+
+.data-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 0;
+}
+
+.data-row-label {
+	font-size: 14px;
+	color: var(--fg-faint);
+}
+
+.data-row-value {
+	font-size: 14px;
+	color: var(--fg);
+	font-weight: 500;
+	text-align: right;
+	max-width: 60%;
+	word-break: break-word;
+}
+
+/* Raw MRZ text. */
+.mrz-text-section {
+	padding: 20px;
+}
+
+.mrz-raw-text {
+	font-family: "Courier New", monospace;
+	font-size: 13px;
+	color: var(--fg-mono);
+	white-space: pre-wrap;
+	word-break: break-all;
+	line-height: 1.6;
+}
+
+/* Bottom action buttons. */
+.action-buttons {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	padding: 24px 20px 0;
+}
+
+/* Result CTAs — shared shape, different palettes. */
+.btn-rescan,
+.btn-home {
+	padding: 16px;
+	font-size: 15px;
+	font-weight: 500;
+	gap: 8px;
+}
+
+.btn-rescan {
+	background: var(--bg-button);
+	color: var(--fg);
+}
+
+.btn-rescan:hover {
+	background: var(--bg-button-hover);
+}
+
+.btn-home {
+	background: var(--bg-light);
+	color: var(--fg-on-light);
+}
+
+.btn-home:hover {
+	background: var(--bg-light-hover);
+}
+
+/* md+ — switch to two-column grid. */
+@media (min-width: 768px) {
+	body[data-view="result"] #result-section {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas:
+			"header  header"
+			"left    right"
+			"buttons buttons";
+		align-items: start;
+	}
+
+	.result-header {
+		grid-area: header;
+	}
+
+	.result-left {
+		grid-area: left;
+	}
+
+	.result-right {
+		grid-area: right;
+		border-left: 1px solid var(--bg-card);
+	}
+
+	.action-buttons {
+		grid-area: buttons;
+	}
+
+	.summary-card {
+		padding: 16px 32px 32px;
+		align-items: center;
+	}
+
+	.summary-info .person-name {
+		font-size: 36px;
+	}
+
+	.summary-info .person-details {
+		font-size: 15px;
+	}
+
+	.portrait-box {
+		width: 120px;
+		height: 120px;
+	}
+
+	.portrait-box svg {
+		width: 60px;
+		height: 60px;
+	}
+
+	.tabs-section {
+		padding: 0 32px 32px;
+	}
+
+	.data-section {
+		padding: 24px 32px 0;
+	}
+
+	.mrz-text-section {
+		padding: 24px 32px;
+	}
+
+	.action-buttons {
+		padding: 24px 32px 40px;
+	}
+}
