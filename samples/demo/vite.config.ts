@@ -27,8 +27,7 @@ export default defineConfig({
 		headers: {
 			// crossOriginIsolated lets DCV use the multi-threaded (pthread) WASM
 			// variant via SharedArrayBuffer. COEP=credentialless (not require-corp)
-			// preserves isolation while still allowing no-CORP third-party scripts
-			// like Comm100's livechat widget to load.
+			// preserves isolation while still allowing no-CORP third-party scripts to load.
 			"Cross-Origin-Opener-Policy": "same-origin",
 			"Cross-Origin-Embedder-Policy": "credentialless",
 		},

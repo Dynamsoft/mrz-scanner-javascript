@@ -15,8 +15,7 @@ export function showResult(): void {
 	document.body.dataset.view = "result";
 }
 
-// While the SDK's scanner overlay is mounted. Drives widgets.css to hide
-// the chat button so it doesn't overlay the camera UI.
+// While the SDK's scanner overlay is mounted.
 export function showScanner(): void {
 	document.body.dataset.view = "scanner";
 }
