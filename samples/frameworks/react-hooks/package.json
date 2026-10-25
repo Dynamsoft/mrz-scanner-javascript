@@ -14,7 +14,7 @@
 		"@vitejs/plugin-basic-ssl": "^2.3.0",
 		"@vitejs/plugin-react": "^6.0.1",
 		"typescript": "^5.9.3",
-		"vite": "^8.0.13"
+		"vite": "^8.3.5"
 	},
 	"scripts": {
 		"dev": "vite",
