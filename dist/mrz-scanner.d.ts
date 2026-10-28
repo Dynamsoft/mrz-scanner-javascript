@@ -84,7 +84,7 @@ export declare enum EnumResultStatus {
 /**
  * Configuration for format selector button labels
  */
-declare interface FormatSelectorConfig {
+export declare interface FormatSelectorConfig {
     passportLabel?: string;
     idLabel?: string;
     visaLabel?: string;
@@ -94,7 +94,7 @@ declare interface FormatSelectorConfig {
 /**
  * Configuration for UI messages and localization
  */
-declare interface MessagesConfig {
+export declare interface MessagesConfig {
     positionMRZ?: string;
     holdSteady?: string;
     scanSuccess?: string;
@@ -165,6 +165,7 @@ export declare class MRZScanner {
     private scannerView?;
     private resources;
     private isInitialized;
+    private containersValidated;
     private isCapturing;
     private loadingScreen;
     private isDynamsoftResourcesLoaded;
@@ -172,12 +173,6 @@ export declare class MRZScanner {
     private showLoadingOverlay;
     private hideLoadingOverlay;
     constructor(config: MRZScannerConfig);
-    /**
-     * Normalizes template names to TemplatePair format.
-     * Accepts either a string (legacy format) or TemplatePair object.
-     * When a string is provided, auto-derives the MRZ-only variant as `${name}-MRZOnly`.
-     */
-    private static normalizeTemplateName;
     initialize(): Promise<{
         resources: SharedResources;
         components: {
@@ -244,6 +239,7 @@ export declare class MRZScannerView {
     private consecutiveStablePortraitFrames;
     private static readonly PORTRAIT_STABLE_FRAMES_REQUIRED;
     private latestLocalizedTextLines;
+    private cvRouter;
     private mrzSideData;
     private ui;
     private scanSpinnerEl;
@@ -269,6 +265,7 @@ export declare class MRZScannerView {
     private getVisibleFormatButtons;
     private toggleFlash;
     private syncFlashIcon;
+    private setButtonAvailable;
     private probeFlashSupport;
     private switchCamera;
     private toggleSoundFeedback;
@@ -282,9 +279,12 @@ export declare class MRZScannerView {
     private static buildScanModeManager;
     private setFormatMode;
     private syncFormatButtons;
+    private landscapeQuery;
+    private handleOrientation;
     private setupPortraitOnlyMode;
     private updateScanRegion;
     private calculateScanRegion;
+    private preferMainRearCamera;
     openCamera(): Promise<void>;
     closeCamera(hideContainer?: boolean): Promise<void>;
     pauseCamera(): void;
@@ -296,6 +296,7 @@ export declare class MRZScannerView {
     private loadImageFile;
     private initializeScanModeManager;
     private getScanMode;
+    private get templates();
     private firstFrame;
     private startCapturing;
     private hasSwitchedToFullTemplate;
@@ -353,7 +354,7 @@ declare type TemplatePair = {
     mrzOnly: string;
 };
 
-declare interface ThemeConfig {
+export declare interface ThemeConfig {
     colors?: {
         primary?: string;
         accent?: string;
@@ -395,35 +396,19 @@ export declare interface ToolbarButton {
     isHidden?: boolean;
 }
 
-/**
- * Configuration for a single toolbar button
- */
-declare interface ToolbarButton_2 {
-    id: string;
-    icon?: string;
-    label?: string;
-    isHidden?: boolean;
-    className?: string;
-}
-
-export declare type ToolbarButtonConfig = Pick<ToolbarButton, "icon" | "label" | "className" | "isHidden">;
-
-/**
- * Partial configuration for toolbar buttons (id is required internally)
- */
-declare type ToolbarButtonConfig_2 = Partial<Omit<ToolbarButton_2, "id">>;
+export declare type ToolbarButtonConfig = Partial<Pick<ToolbarButton, "icon" | "label" | "className" | "isHidden">>;
 
 /**
  * Configuration for all toolbar buttons
  */
-declare interface ToolbarButtonsConfig {
-    close?: ToolbarButtonConfig_2;
-    loadImage?: ToolbarButtonConfig_2;
-    cameraSwitch?: ToolbarButtonConfig_2;
-    flash?: ToolbarButtonConfig_2;
-    flashOff?: ToolbarButtonConfig_2;
-    sound?: ToolbarButtonConfig_2;
-    soundOff?: ToolbarButtonConfig_2;
+export declare interface ToolbarButtonsConfig {
+    close?: ToolbarButtonConfig;
+    loadImage?: ToolbarButtonConfig;
+    cameraSwitch?: ToolbarButtonConfig;
+    flash?: ToolbarButtonConfig;
+    flashOff?: ToolbarButtonConfig;
+    sound?: ToolbarButtonConfig;
+    soundOff?: ToolbarButtonConfig;
 }
 
 export declare type UtilizedTemplateNames = Record<EnumMRZScanMode, string | TemplatePair>;
