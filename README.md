@@ -40,8 +40,8 @@ Start with a minimal HTML skeleton, pointing a `<script>` tag at the MRZ Scanner
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Dynamsoft MRZ Scanner</title>
-		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
-		<!-- Alternative CDN: <script src="https://unpkg.com/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script>
+		<!-- Alternative CDN: <script src="https://unpkg.com/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script> -->
 	</head>
 
 	<body>
@@ -126,8 +126,8 @@ if (!result?.data) {
 
 Key bits:
 
-- `result.data` — the parsed MRZ payload (names, document number, dates, etc.). Missing means the scan failed or was cancelled.
-- `result.getDocumentImage(side)` — deskewed crop of the document. `EnumDocumentSide.MRZ` is the side carrying the MRZ; `EnumDocumentSide.Opposite` is the other side, only populated when the portrait was found on the opposite side (multi-side scanning). The result also exposes `getOriginalImage(side)` for the raw uncropped frame.
+- `result.data` — the parsed MRZ payload (names, document number, dates, etc.). Missing means the scan failed or was cancelled; an image loaded with no MRZ in it comes back with an empty object, so check for the fields you need (for example `result.data.documentNumber`).
+- `result.getDocumentImage(side)` — deskewed crop of the document. `EnumDocumentSide.MRZ` is the side carrying the MRZ; `EnumDocumentSide.Opposite` is the other side, only populated when the portrait was found on the opposite side (multi-side scanning). The result also exposes `getOriginalImage(side)` for the raw uncropped frame; set `returnOriginalImage: false` on the scanner config to withhold it.
 - `result.getPortraitImage()` — cropped portrait, regardless of which side it was found on.
 - `toCanvas()` — returns an `HTMLCanvasElement` ready to append.
 
@@ -144,8 +144,8 @@ The finished file:
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Dynamsoft MRZ Scanner</title>
-		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
-		<!-- Alternative CDN: <script src="https://unpkg.com/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script>
+		<!-- Alternative CDN: <script src="https://unpkg.com/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script> -->
 	</head>
 
 	<body>

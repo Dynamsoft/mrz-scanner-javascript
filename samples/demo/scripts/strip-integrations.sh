@@ -30,6 +30,9 @@ strip_blocks() {
 
 strip_blocks index.html
 strip_blocks src/index.ts
+strip_blocks vite.config.ts
+strip_blocks css/index.css
+strip_blocks css/landing.css
 
-rm -f src/chrome.ts css/widgets.css
-echo "removed src/chrome.ts css/widgets.css"
+rm -f src/chrome.ts css/widgets.css web.config
+echo "removed src/chrome.ts css/widgets.css web.config"

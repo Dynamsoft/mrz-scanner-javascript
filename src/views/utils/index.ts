@@ -1,4 +1,4 @@
-import { ToolbarButton } from "./types";
+import { TemplatePair, ToolbarButton } from "./types";
 
 export function getElement(element: string | HTMLElement | undefined | null): HTMLElement | null {
 	if (element == null) return null;
@@ -226,4 +226,33 @@ export function findClosestResolutionLevel(selectedResolution: {
 	}
 
 	return closestLevel;
+}
+
+/**
+ * Normalizes template names to TemplatePair format.
+ * Accepts either a string (legacy format) or TemplatePair object.
+ * When a string is provided, auto-derives the MRZ-only variant as `${name}-MRZOnly`.
+ */
+export function normalizeTemplateName(value: string | TemplatePair): TemplatePair {
+	if (typeof value === "string") {
+		return {
+			full: value,
+			mrzOnly: `${value}-MRZOnly`,
+		};
+	}
+	return value;
+}
+
+/** Picks a camera by label, trying each group of names in priority order. */
+export function findMainRearCameraId(
+	cameras: Array<{ deviceId: string; label: string }>,
+	nameMatcher: string[][],
+): string | undefined {
+	for (const names of nameMatcher) {
+		for (const camera of cameras) {
+			const label = camera.label.toLowerCase();
+			if (names.some((name) => label.includes(name))) return camera.deviceId;
+		}
+	}
+	return undefined;
 }

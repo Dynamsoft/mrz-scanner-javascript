@@ -4,7 +4,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Dynamsoft MRZ Scanner - Use File Input</title>
-		<!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script> -->
+		<!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script> -->
 		<!-- To use locally: -->
 		<script src="../dist/mrz-scanner.bundle.js"></script>
 
@@ -111,8 +111,9 @@
 				if (result?.data) {
 					resultContainer.innerHTML = ""; // Clear placeholder content
 
-					if (result.originalImageResult?.toCanvas) {
-						const canvas = result.originalImageResult?.toCanvas();
+					const originalImage = result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ);
+					if (originalImage?.toCanvas) {
+						const canvas = originalImage.toCanvas();
 
 						canvas.style.objectFit = "contain";
 						canvas.style.width = "100%";
