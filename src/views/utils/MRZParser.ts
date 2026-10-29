@@ -206,7 +206,7 @@ export function processMRZData(mrzText: string, parsedResult: ParsedResultItem):
 	};
 
 	Object.keys(fields).forEach((key) => {
-		let invalid = false;
+		let invalid: boolean;
 		switch (key) {
 			case EnumMRZData.FirstName:
 				invalid = isFieldInvalid("secondaryIdentifier");

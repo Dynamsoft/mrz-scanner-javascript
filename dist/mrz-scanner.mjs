@@ -4,7 +4,7 @@
 * @website http://www.dynamsoft.com
 * @copyright Copyright 2026, Dynamsoft Corporation
 * @author Dynamsoft
-* @version 4.1.0-beta-202610280001
+* @version 4.1.0-beta-202610290001
 * @fileoverview Dynamsoft MRZ Scanner JavaScript Edition is a ready-to-use SDK for web applications that accurately recognizes and parses Machine-Readable Zones on Machine-Readable Travel Documents.
 * More info on Dynamsoft MRZ SCanner JS: https://www.dynamsoft.com/use-cases/mrz-scanner/
 */
@@ -212,7 +212,7 @@ function z(e, t) {
 		sex: T(t.getFieldValue("sex"))
 	};
 	Object.keys(l).forEach((e) => {
-		let t = !1;
+		let t;
 		switch (e) {
 			case "firstName":
 				t = r("secondaryIdentifier");
