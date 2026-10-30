@@ -27,7 +27,13 @@ export const DynamsoftMRZScanner = {
 };
 
 export type { MRZScannerConfig } from "../MRZScanner";
-export type { MRZScannerViewConfig } from "../views/MRZScannerView";
+export type {
+	MRZScannerViewConfig,
+	ToolbarButtonsConfig,
+	FormatSelectorConfig,
+	MessagesConfig,
+	ThemeConfig,
+} from "../views/MRZScannerView";
 export type { MRZImage } from "../views/utils/ImageProcessingHelper";
 export type {
 	MRZResult,

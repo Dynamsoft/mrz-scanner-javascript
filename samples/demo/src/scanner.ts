@@ -24,7 +24,13 @@ const CAPTURE_CONFIG: CaptureConfig = {
 let mrzScanner: MRZScanner | null = null;
 
 try {
-	mrzScanner = new MRZScanner({ license: LICENSE });
+	mrzScanner = new MRZScanner({
+		license: LICENSE,
+		engineResourcePaths: {
+			dcvBundle: `${import.meta.env.BASE_URL}dynamsoft-capture-vision-bundle/dist`,
+			dcvData: `${import.meta.env.BASE_URL}dynamsoft-capture-vision-data`,
+		},
+	});
 } catch (error) {
 	const message = error instanceof Error ? error.message : String(error);
 	console.error("Failed to initialize scanner:", error);
@@ -60,7 +66,14 @@ function pickImageFile(): Promise<File | null> {
 
 async function launchScanner(file: File | null): Promise<void> {
 	if (mrzScanner) mrzScanner.dispose();
-	mrzScanner = new MRZScanner({ license: LICENSE, ...CAPTURE_CONFIG });
+	mrzScanner = new MRZScanner({
+		license: LICENSE,
+		...CAPTURE_CONFIG,
+		engineResourcePaths: {
+			dcvBundle: `${import.meta.env.BASE_URL}dynamsoft-capture-vision-bundle/dist`,
+			dcvData: `${import.meta.env.BASE_URL}dynamsoft-capture-vision-data`,
+		},
+	});
 	showScanner();
 	try {
 		const result = await mrzScanner.launch(file ?? undefined);

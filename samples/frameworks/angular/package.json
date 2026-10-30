@@ -5,7 +5,7 @@
 	"dependencies": {
 		"@angular/core": "^21.2.7",
 		"@angular/platform-browser": "^21.2.7",
-		"dynamsoft-mrz-scanner": "4.0.0"
+		"dynamsoft-mrz-scanner": "4.1.0"
 	},
 	"devDependencies": {
 		"@angular-devkit/build-angular": "^21.2.6",

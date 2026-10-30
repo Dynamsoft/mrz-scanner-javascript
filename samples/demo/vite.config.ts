@@ -21,13 +21,14 @@ export default defineConfig({
 	// Emit relative paths in index.html so the demo also works under a
 	// non-root deploy base like /mrz-scanner/.
 	base: "./",
-	plugins: [basicSsl()],
+	plugins: [
+		basicSsl(),
+	],
 	server: {
 		host: "0.0.0.0",
 		headers: {
 			// crossOriginIsolated lets DCV use the multi-threaded (pthread) WASM
-			// variant via SharedArrayBuffer. COEP=credentialless (not require-corp)
-			// preserves isolation while still allowing no-CORP third-party scripts to load.
+			// variant via SharedArrayBuffer. COEP=credentialless (not require-corp) preserves isolation while
 			"Cross-Origin-Opener-Policy": "same-origin",
 			"Cross-Origin-Embedder-Policy": "credentialless",
 		},
