@@ -60,7 +60,9 @@ export type ResultStatus = {
 	message?: string;
 };
 
-export type ToolbarButtonConfig = Pick<ToolbarButton, "icon" | "label" | "className" | "isHidden">;
+export type ToolbarButtonConfig = Partial<
+	Pick<ToolbarButton, "icon" | "label" | "className" | "isHidden">
+>;
 
 export interface ToolbarButton {
 	id: string;

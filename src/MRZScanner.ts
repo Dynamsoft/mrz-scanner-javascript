@@ -19,9 +19,9 @@ import {
 	TemplatePair,
 	EnumMRZDocumentType,
 } from "./views/utils/types";
-import { createStyle, getElement, isEmptyObject } from "./views/utils";
+import { createStyle, getElement, isEmptyObject, normalizeTemplateName } from "./views/utils";
 import MRZScannerView, { MRZScannerViewConfig } from "./views/MRZScannerView";
-import { MRZResult, MRZResultImpl } from "./views/utils/MRZParser";
+import { MRZResult, createMRZResult } from "./views/utils/MRZParser";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./views/utils/LoadingScreen";
 import { processImageFromCapturedResult } from "./views/utils/ImageProcessingHelper";
 import DEFAULT_MRZ_SCANNER_TEMPLATE_PATH from "./dcv-config/mrz-scanner.template.json";
@@ -53,7 +53,7 @@ export interface MRZScannerConfig {
 
 	mrzFormatType?: Array<EnumMRZDocumentType>;
 
-	// Image extraction options (all default to false — no performance impact when not opted in)
+	// Image extraction options (all default to true; set false to opt out)
 	returnOriginalImage?: boolean;
 	returnDocumentImage?: boolean;
 	returnPortraitImage?: boolean;
@@ -76,6 +76,8 @@ class MRZScanner {
 
 	private resources: Partial<SharedResources> = {};
 	private isInitialized = false;
+	// Set once validateViewConfigs() passes; dispose() only cleans containers after that.
+	private containersValidated = false;
 	private isCapturing = false;
 
 	private loadingScreen: ReturnType<typeof showLoadingScreen> | null = null;
@@ -117,21 +119,6 @@ class MRZScanner {
 		}
 	}
 
-	/**
-	 * Normalizes template names to TemplatePair format.
-	 * Accepts either a string (legacy format) or TemplatePair object.
-	 * When a string is provided, auto-derives the MRZ-only variant as `${name}-MRZOnly`.
-	 */
-	private static normalizeTemplateName(value: string | TemplatePair): TemplatePair {
-		if (typeof value === "string") {
-			return {
-				full: value,
-				mrzOnly: `${value}-MRZOnly`,
-			};
-		}
-		return value;
-	}
-
 	async initialize(): Promise<{
 		resources: SharedResources;
 		components: {
@@ -165,8 +152,9 @@ class MRZScanner {
 			};
 
 			// Propagate image extraction flags to shared resources
-			// returnDocumentImage and returnPortraitImage default to true per API spec
-			this.resources.returnOriginalImage = this.config.returnOriginalImage ?? false;
+			// All three default to true per API spec. returnOriginalImage stays true so that
+			// consumers upgrading from 4.0.0, which always returned it, see no change.
+			this.resources.returnOriginalImage = this.config.returnOriginalImage ?? true;
 			this.resources.returnDocumentImage = this.config.returnDocumentImage ?? true;
 			this.resources.returnPortraitImage = this.config.returnPortraitImage ?? true;
 
@@ -355,6 +343,7 @@ class MRZScanner {
 		if (!validViewConfig) {
 			return false;
 		}
+		this.containersValidated = true;
 
 		if (this.shouldCreateDefaultContainer()) {
 			this.config.container = this.createDefaultMRZScannerContainer();
@@ -370,7 +359,7 @@ class MRZScanner {
 			utilizedTemplateNames: Object.fromEntries(
 				Object.values(EnumMRZScanMode).map((val) => [
 					val,
-					MRZScanner.normalizeTemplateName(
+					normalizeTemplateName(
 						this.config.utilizedTemplateNames?.[val] || DEFAULT_TEMPLATE_NAMES[val],
 					),
 				]),
@@ -448,16 +437,20 @@ class MRZScanner {
 		this.resources.onResultUpdated = undefined;
 
 		// Hide and clean containers
-		const cleanContainer = (container?: HTMLElement | string) => {
-			const element = getElement(container);
-			if (element) {
-				element.style.display = "none";
-				element.textContent = "";
+		const cleanContainer = (container?: HTMLElement | string | null) => {
+			if (container instanceof HTMLElement) {
+				container.style.display = "none";
+				container.textContent = "";
 			}
 		};
 
-		cleanContainer(this.config.container);
-		cleanContainer(this.config.scannerViewConfig?.container);
+		// Only clean containers the scanner used: if validation failed, both are still the
+		// integrator's, and an unmatched selector would make getElement() throw here.
+		if (this.containersValidated) {
+			cleanContainer(this.config.container);
+			cleanContainer(this.config.scannerViewConfig?.container);
+			this.containersValidated = false;
+		}
 
 		this.isInitialized = false;
 	}
@@ -511,9 +504,10 @@ class MRZScanner {
 			const result = await processImageFromCapturedResult(capturedResult, {
 				returnDocumentImage: this.resources.returnDocumentImage,
 				returnPortraitImage: this.resources.returnPortraitImage,
+				cvRouter,
 			});
 
-			const mrzResult = new MRZResultImpl({
+			const mrzResult = createMRZResult(this.resources, {
 				status: EnumResultStatus.RS_SUCCESS,
 				data: result.processedData,
 				primaryOriginalImage: result.imageData,
@@ -525,7 +519,7 @@ class MRZScanner {
 			return mrzResult;
 		} catch (error) {
 			console.error("Failed to process image source:", error);
-			return new MRZResultImpl({ status: EnumResultStatus.RS_FAILED });
+			return createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED });
 		} finally {
 			this.hideLoadingOverlay(false);
 		}
@@ -556,8 +550,8 @@ class MRZScanner {
 			}
 
 			if (this.isFileMode) {
-				await this.processImageSource(imageSource!);
-				return this.resources.result!;
+				// processImageSource() returns RS_FAILED itself on error, when resources.result is unset.
+				return await this.processImageSource(imageSource!);
 			}
 
 			// Use existing result if available
@@ -574,15 +568,16 @@ class MRZScanner {
 			const scanResult = await components.scannerView.launch();
 
 			if (scanResult?.status !== EnumResultStatus.RS_SUCCESS) {
-				return new MRZResultImpl({ status: scanResult?.status ?? EnumResultStatus.RS_FAILED });
+				return createMRZResult(this.resources, { status: scanResult?.status ?? EnumResultStatus.RS_FAILED });
 			}
 
-			return this.resources.result!;
+			// Return what the view resolved with: not every success path publishes to resources.result.
+			return scanResult;
 		} catch (error: unknown) {
 			const errMsg = error instanceof Error ? error.message : String(error);
 			alert(errMsg);
 			console.error(errMsg);
-			return new MRZResultImpl({ status: EnumResultStatus.RS_FAILED });
+			return createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED });
 		} finally {
 			this.isCapturing = false;
 			this.dispose();
@@ -591,12 +586,3 @@ class MRZScanner {
 }
 
 export default MRZScanner;
-
-// Export UI customization types
-export type {
-	ToolbarButtonConfig,
-	ToolbarButtonsConfig,
-	FormatSelectorConfig,
-	MessagesConfig,
-	ThemeConfig,
-} from "./views/MRZScannerView";

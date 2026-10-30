@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"dependencies": {
-		"dynamsoft-mrz-scanner": "4.0.0",
+		"dynamsoft-mrz-scanner": "4.1.0",
 		"vue": "^3.5.31"
 	},
 	"devDependencies": {

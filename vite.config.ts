@@ -102,6 +102,9 @@ export default defineConfig((env): UserConfig => {
 					banner,
 					exports: "named",
 					extend: true,
+					// Minify the CJS build the way Vite already minifies the ES build: names
+					// mangled, whitespace and semicolons kept (CodeQL flags the stripped ones).
+					...(bundle ? {} : { minify: { compress: true, mangle: true, codegen: false } }),
 				},
 			},
 		},

@@ -6,6 +6,7 @@ import {
 import { EnumDocumentSide, EnumMRZDocumentType, EnumResultStatus } from "./types";
 import { capitalize } from ".";
 import type { MRZImage } from "./ImageProcessingHelper";
+import type { SharedResources } from "../../MRZScanner";
 
 export enum EnumMRZData {
 	InvalidFields = "invalidFields",
@@ -205,7 +206,7 @@ export function processMRZData(mrzText: string, parsedResult: ParsedResultItem):
 	};
 
 	Object.keys(fields).forEach((key) => {
-		let invalid = false;
+		let invalid: boolean;
 		switch (key) {
 			case EnumMRZData.FirstName:
 				invalid = isFieldInvalid("secondaryIdentifier");
@@ -249,6 +250,33 @@ export function processMRZData(mrzText: string, parsedResult: ParsedResultItem):
 	return mrzData;
 }
 
+export interface MRZResultInit {
+	status?: EnumResultStatus;
+	data?: MRZData;
+	primaryOriginalImage?: MRZImage | null;
+	secondaryOriginalImage?: MRZImage | null;
+	primaryDocumentImage?: MRZImage | null;
+	secondaryDocumentImage?: MRZImage | null;
+	portraitImage?: MRZImage | null;
+}
+
+/**
+ * Builds a result with the scanner's returnOriginalImage setting applied. Going through
+ * here is what keeps the opt-out in one place, so no construction site can hand back the
+ * original frame by forgetting a flag. Only an explicit false opts out, matching the
+ * scanner's default of true.
+ */
+export function createMRZResult(
+	resources: Pick<SharedResources, "returnOriginalImage">,
+	init: MRZResultInit,
+): MRZResult {
+	return new MRZResultImpl(
+		resources.returnOriginalImage === false
+			? { ...init, primaryOriginalImage: null, secondaryOriginalImage: null }
+			: init,
+	);
+}
+
 /**
  * Internal implementation of the MRZResult interface.
  * Construction sites should use createMRZResult() rather than instantiating this directly.
@@ -263,15 +291,7 @@ export class MRZResultImpl implements MRZResult {
 	private _secondaryDocumentImage: MRZImage | null = null;
 	private _portraitImage: MRZImage | null = null;
 
-	constructor(init: {
-		status?: EnumResultStatus;
-		data?: MRZData;
-		primaryOriginalImage?: MRZImage | null;
-		secondaryOriginalImage?: MRZImage | null;
-		primaryDocumentImage?: MRZImage | null;
-		secondaryDocumentImage?: MRZImage | null;
-		portraitImage?: MRZImage | null;
-	}) {
+	constructor(init: MRZResultInit) {
 		this.status = init.status;
 		this.data = init.data;
 		this._primaryOriginalImage = init.primaryOriginalImage ?? null;

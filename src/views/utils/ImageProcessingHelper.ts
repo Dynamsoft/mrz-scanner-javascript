@@ -2,6 +2,7 @@ import {
 	_toBlob,
 	_toCanvas,
 	CapturedResult,
+	CaptureVisionRouter,
 	DSImageData,
 	EnumCapturedResultItemType,
 	IdentityProcessor,
@@ -157,6 +158,8 @@ export interface ProcessImageOptions {
 	returnPortraitImage?: boolean;
 	validatePortraitLocation?: boolean;
 	overrideDocumentResult?: CapturedResult["processedDocumentResult"] | null;
+	/** Required: every caller holds the router that produced `capturedResult`. */
+	cvRouter: CaptureVisionRouter;
 }
 
 export interface ProcessedImageResult {
@@ -168,13 +171,14 @@ export interface ProcessedImageResult {
 
 export async function processImageFromCapturedResult(
 	capturedResult: CapturedResult,
-	options: ProcessImageOptions = {},
+	options: ProcessImageOptions,
 ): Promise<ProcessedImageResult> {
 	const {
 		returnDocumentImage = false,
 		returnPortraitImage = false,
 		validatePortraitLocation: shouldValidatePortraitLocation = false,
 		overrideDocumentResult = null,
+		cvRouter,
 	} = options;
 
 	const originalImageItems = capturedResult.items.filter(
@@ -199,7 +203,7 @@ export async function processImageFromCapturedResult(
 	let portraitQuadEarly: Quadrilateral | null = null;
 	if (returnPortraitImage) {
 		try {
-			portraitQuadEarly = await IdentityProcessor.findPortraitZone();
+			portraitQuadEarly = await IdentityProcessor.findPortraitZone(cvRouter);
 		} catch {}
 	}
 

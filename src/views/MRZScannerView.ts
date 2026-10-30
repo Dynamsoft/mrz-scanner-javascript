@@ -11,6 +11,8 @@ import {
 	IntermediateResultReceiver,
 	LocalizedTextLinesUnit,
 	EnumCodeType,
+	CameraEnhancer,
+	CaptureVisionRouter,
 } from "dynamsoft-capture-vision-bundle";
 import { SharedResources } from "../MRZScanner";
 import {
@@ -18,10 +20,12 @@ import {
 	UtilizedTemplateNames,
 	EnumMRZScanMode,
 	EnumMRZDocumentType,
+	ToolbarButtonConfig,
+	TemplatePair,
 } from "./utils/types";
 import { DEFAULT_LOADING_SCREEN_STYLE, showLoadingScreen } from "./utils/LoadingScreen";
-import { createStyle, getElement, STANDARD_RESOLUTIONS } from "./utils";
-import { MRZData, MRZResult, MRZResultImpl } from "./utils/MRZParser";
+import { createStyle, getElement, STANDARD_RESOLUTIONS, findMainRearCameraId, normalizeTemplateName } from "./utils";
+import { MRZData, MRZResult, createMRZResult } from "./utils/MRZParser";
 import {
 	processImageFromCapturedResult,
 	expandQuad,
@@ -43,22 +47,6 @@ import {
 } from "./MRZScannerViewUI";
 
 // ─── UI Customization Configuration Interfaces ────────────────────────────────
-
-/**
- * Configuration for a single toolbar button
- */
-export interface ToolbarButton {
-	id: string;
-	icon?: string;
-	label?: string;
-	isHidden?: boolean;
-	className?: string;
-}
-
-/**
- * Partial configuration for toolbar buttons (id is required internally)
- */
-export type ToolbarButtonConfig = Partial<Omit<ToolbarButton, "id">>;
 
 /**
  * Configuration for all toolbar buttons
@@ -253,6 +241,10 @@ export default class MRZScannerView {
 	// gate the expensive findPortraitZone() call behind a confidence pre-check.
 	private latestLocalizedTextLines: LocalizedTextLinesUnit | null = null;
 
+	// Assigned in initialize(), which already fails when the router is missing, so the
+	// rest of the class can use it without re-checking.
+	private cvRouter!: CaptureVisionRouter;
+
 	// Stored data from first scan (MRZ side)
 	private mrzSideData: {
 		processedData: MRZData | null;
@@ -327,6 +319,7 @@ export default class MRZScannerView {
 			if (!cameraView || !cameraEnhancer || !cvRouter) {
 				throw new Error("Camera resources not initialized");
 			}
+			this.cvRouter = cvRouter;
 
 			try {
 				cameraView.setScanRegionMaskStyle({
@@ -367,7 +360,7 @@ export default class MRZScannerView {
 			console.error(errMsg);
 			alert(errMsg);
 			this.closeCamera();
-			const result = new MRZResultImpl({ status: EnumResultStatus.RS_FAILED });
+			const result = createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED });
 			this.currentScanResolver?.(result);
 		}
 	}
@@ -472,7 +465,7 @@ export default class MRZScannerView {
 		this.syncFormatButtons();
 
 		// Hide flash button — will be shown/hidden after camera opens based on capability
-		this.ui.flashBtn.classList.add("mrz-hidden");
+		this.setButtonAvailable("flash", false);
 
 		// Setup portrait-only mode for mobile devices
 		this.setupPortraitOnlyMode();
@@ -531,7 +524,7 @@ export default class MRZScannerView {
 			this.syncFlashIcon();
 		} catch {
 			// Device doesn't support flash; hide the button
-			this.ui?.flashBtn.classList.add("mrz-hidden");
+			this.setButtonAvailable("flash", false);
 		}
 	}
 
@@ -541,18 +534,23 @@ export default class MRZScannerView {
 		this.ui.flashOffIcon.style.display = this.isFlashOn ? "none" : "inline";
 	}
 
+	// Shows a button only when the device supports it and the integrator hasn't hidden it.
+	private setButtonAvailable(key: "flash" | "cameraSwitch", available: boolean) {
+		const btn = key === "flash" ? this.ui?.flashBtn : this.ui?.cameraSwitchBtn;
+		btn?.classList.toggle(
+			"mrz-hidden",
+			!available || !!this.config.toolbarButtonsConfig?.[key]?.isHidden,
+		);
+	}
+
 	private probeFlashSupport() {
 		try {
 			const { cameraEnhancer } = this.resources;
 			if (!cameraEnhancer) return;
 			const caps = cameraEnhancer.getCapabilities();
-			if (caps && (caps as any).torch) {
-				this.ui?.flashBtn.classList.remove("mrz-hidden");
-			} else {
-				this.ui?.flashBtn.classList.add("mrz-hidden");
-			}
+			this.setButtonAvailable("flash", !!(caps && (caps as any).torch));
 		} catch {
-			this.ui?.flashBtn.classList.add("mrz-hidden");
+			this.setButtonAvailable("flash", false);
 		}
 	}
 
@@ -570,7 +568,7 @@ export default class MRZScannerView {
 				.filter((d) => d.kind === "videoinput")
 				.map((d) => ({ deviceId: d.deviceId, label: d.label }));
 			if (cameras.length <= 1) {
-				this.ui?.cameraSwitchBtn.classList.add("mrz-hidden");
+				this.setButtonAvailable("cameraSwitch", false);
 				return;
 			}
 
@@ -727,7 +725,7 @@ export default class MRZScannerView {
 		} catch (ex: any) {
 			console.error("MRZ Scanner switch scan mode error:", ex?.message || ex);
 			this.closeCamera();
-			this.currentScanResolver?.(new MRZResultImpl({ status: EnumResultStatus.RS_FAILED }));
+			this.currentScanResolver?.(createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED }));
 		}
 	}
 
@@ -775,18 +773,22 @@ export default class MRZScannerView {
 
 	// ─── Portrait-only mode ───────────────────────────────────────────────────
 
+	// Kept on the view because matchMedia() returns a new list each call, and the listener
+	// must be removed from the same one in closeCamera().
+	private landscapeQuery: MediaQueryList | null = null;
+
+	private handleOrientation = (e: MediaQueryList | MediaQueryListEvent) => {
+		this.ui?.rotationOverlay.classList.toggle("mrz-rotation-visible", e.matches);
+	};
+
 	private setupPortraitOnlyMode() {
 		if (!this.ui) return;
 
-		const rotationOverlay = this.ui.rotationOverlay;
-		const landscapeQuery = window.matchMedia("(orientation: landscape) and (max-width: 1023px)");
-
-		const handleOrientation = (e: MediaQueryList | MediaQueryListEvent) => {
-			rotationOverlay.classList.toggle("mrz-rotation-visible", e.matches);
-		};
-
-		landscapeQuery.addEventListener("change", handleOrientation);
-		handleOrientation(landscapeQuery);
+		if (!this.landscapeQuery) {
+			this.landscapeQuery = window.matchMedia("(orientation: landscape) and (max-width: 1023px)");
+		}
+		this.landscapeQuery.addEventListener("change", this.handleOrientation);
+		this.handleOrientation(this.landscapeQuery);
 	}
 
 	// ─── Scan region ──────────────────────────────────────────────────────────
@@ -883,6 +885,28 @@ export default class MRZScannerView {
 
 	// ─── Camera lifecycle ─────────────────────────────────────────────────────
 
+	private async preferMainRearCamera(): Promise<void> {
+		const { cameraEnhancer } = this.resources;
+		if (!cameraEnhancer) return;
+		try {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const mainRearId = findMainRearCameraId(
+				devices.filter((d) => d.kind === "videoinput"),
+				CameraEnhancer._cameraNameMatcher, // DCE's rear camera label table
+			);
+			if (!mainRearId) return;
+
+			const currentId = cameraEnhancer.isOpen()
+				? cameraEnhancer.getCameraSettings().deviceId
+				: undefined;
+			if (mainRearId === currentId) return;
+
+			await cameraEnhancer.requestCamera({ deviceId: { exact: mainRearId } });
+		} catch (ex: any) {
+			console.warn("Main rear camera selection failed:", ex?.message || ex);
+		}
+	}
+
 	async openCamera(): Promise<void> {
 		try {
 			const { cameraEnhancer, cameraView } = this.resources;
@@ -906,7 +930,11 @@ export default class MRZScannerView {
 				// in the initial getUserMedia call, avoiding a later renegotiation.
 				await cameraEnhancer.setResolution(STANDARD_RESOLUTIONS["2k"]);
 
+				await this.preferMainRearCamera();
+
 				await cameraEnhancer.open();
+
+				await this.preferMainRearCamera();
 
 				const settings = cameraEnhancer.getCameraSettings();
 				if (settings?.deviceId) this.defaultBackCameraId = settings.deviceId;
@@ -934,12 +962,8 @@ export default class MRZScannerView {
 			const frontCamera = videoDevices.find((d) => /front|user|selfie/i.test(d.label));
 			const hasToggleTarget =
 				videoDevices.length > 1 &&
-				(frontCamera || videoDevices.some((d) => d.deviceId !== this.defaultBackCameraId));
-			if (hasToggleTarget) {
-				this.ui?.cameraSwitchBtn.classList.remove("mrz-hidden");
-			} else {
-				this.ui?.cameraSwitchBtn.classList.add("mrz-hidden");
-			}
+				(!!frontCamera || videoDevices.some((d) => d.deviceId !== this.defaultBackCameraId));
+			this.setButtonAvailable("cameraSwitch", hasToggleTarget);
 
 			// Probe torch support
 			this.probeFlashSupport();
@@ -960,13 +984,14 @@ export default class MRZScannerView {
 			}
 
 			this.closeCamera();
-			this.currentScanResolver?.(new MRZResultImpl({ status: EnumResultStatus.RS_FAILED }));
+			this.currentScanResolver?.(createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED }));
 		}
 	}
 
 	async closeCamera(hideContainer: boolean = true) {
 		try {
 			window.removeEventListener("resize", this.handleResize);
+			this.landscapeQuery?.removeEventListener("change", this.handleOrientation);
 			if (this.resizeTimer) {
 				window.clearTimeout(this.resizeTimer);
 				this.resizeTimer = null;
@@ -1003,9 +1028,9 @@ export default class MRZScannerView {
 	}
 
 	stopCapturing() {
-		const { cameraView, cvRouter } = this.resources;
-		if (!cvRouter || !cameraView) return;
-		cvRouter.stopCapturing();
+		const { cameraView } = this.resources;
+		if (!cameraView) return;
+		this.cvRouter.stopCapturing();
 		cameraView.clearAllInnerDrawingItems();
 	}
 
@@ -1016,7 +1041,7 @@ export default class MRZScannerView {
 
 		if (this.currentScanResolver) {
 			if (this.isMRZScanned && !this.isPortraitScanned && this.areSidesDifferent) {
-				const mrzResult = new MRZResultImpl({
+				const mrzResult = createMRZResult(this.resources, {
 					status: EnumResultStatus.RS_SUCCESS,
 					data: this.mrzSideData.processedData!,
 					primaryOriginalImage: this.mrzSideData.primaryOriginalImage,
@@ -1026,7 +1051,7 @@ export default class MRZScannerView {
 				this.currentScanResolver?.(mrzResult);
 				this.resetScanningState();
 			} else {
-				this.currentScanResolver(new MRZResultImpl({ status: EnumResultStatus.RS_CANCELLED }));
+				this.currentScanResolver(createMRZResult(this.resources, { status: EnumResultStatus.RS_CANCELLED }));
 				this.resetScanningState();
 			}
 		}
@@ -1054,7 +1079,7 @@ export default class MRZScannerView {
 		this.closeCamera();
 
 		if (this.currentScanResolver) {
-			const mrzResult = new MRZResultImpl({
+			const mrzResult = createMRZResult(this.resources, {
 				status: EnumResultStatus.RS_SUCCESS,
 				data: this.mrzSideData.processedData!,
 				primaryOriginalImage: this.mrzSideData.primaryOriginalImage,
@@ -1070,8 +1095,7 @@ export default class MRZScannerView {
 	// ─── Image file loader ────────────────────────────────────────────────────
 
 	private async loadImageFile() {
-		const { cvRouter } = this.resources;
-		if (!cvRouter) throw new Error("Router not initialized");
+		const cvRouter = this.cvRouter;
 
 		const input = document.createElement("input");
 		input.type = "file";
@@ -1083,7 +1107,7 @@ export default class MRZScannerView {
 			this.showScannerLoadingOverlay("Processing file...");
 			await this.closeCamera(false);
 
-			const file = await new Promise<File>((resolve, reject) => {
+			const file = await new Promise<File | null>((resolve, reject) => {
 				input.onchange = (e: Event) => {
 					const f = (e.target as HTMLInputElement).files?.[0];
 					if (!f) {
@@ -1093,13 +1117,18 @@ export default class MRZScannerView {
 					resolve(f);
 				};
 				input.addEventListener("cancel", async () => {
-					this.hideScannerLoadingOverlay(false);
-					this.showScannerLoadingOverlay("Initializing camera...");
-					await this.openCamera();
-					this.setGuideFrameVisible(this.config.enableScanRegion !== false);
-					this.updateScanRegion();
-					await this.startCapturing();
-					this.hideScannerLoadingOverlay();
+					try {
+						this.hideScannerLoadingOverlay(false);
+						this.showScannerLoadingOverlay("Initializing camera...");
+						await this.openCamera();
+						this.setGuideFrameVisible(this.config.enableScanRegion !== false);
+						this.updateScanRegion();
+						await this.startCapturing();
+						this.hideScannerLoadingOverlay();
+					} finally {
+						// Settle so the finally below removes the input; null returns early.
+						resolve(null);
+					}
 				});
 				input.click();
 			});
@@ -1123,18 +1152,17 @@ export default class MRZScannerView {
 				);
 			}
 
-			const templatePair = this.config.utilizedTemplateNames![this.currentScanMode];
-			const currentTemplate = typeof templatePair === "string" ? templatePair : templatePair.full;
-			const capturedResult = await cvRouter.capture(fileBlob, currentTemplate);
+			const capturedResult = await cvRouter.capture(fileBlob, this.templates.full);
 
 			const result = await processImageFromCapturedResult(capturedResult, {
 				returnDocumentImage: this.resources.returnDocumentImage,
 				returnPortraitImage: this.resources.returnPortraitImage,
+				cvRouter,
 			});
 
 			this.originalImageData = result.imageData;
 
-			const mrzResult = new MRZResultImpl({
+			const mrzResult = createMRZResult(this.resources, {
 				status: EnumResultStatus.RS_SUCCESS,
 				data: result.processedData,
 				primaryOriginalImage: result.imageData,
@@ -1149,7 +1177,7 @@ export default class MRZScannerView {
 			console.error(errMsg);
 			alert(errMsg);
 			this.closeCamera();
-			this.currentScanResolver?.(new MRZResultImpl({ status: EnumResultStatus.RS_FAILED }));
+			this.currentScanResolver?.(createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED }));
 		} finally {
 			this.hideScannerLoadingOverlay(true);
 			document.body.removeChild(input);
@@ -1218,21 +1246,26 @@ export default class MRZScannerView {
 
 	// ─── Capturing ────────────────────────────────────────────────────────────
 
+	// Templates for the current scan mode. utilizedTemplateNames may still hold a legacy
+	// string when the view is used directly, so normalize on read.
+	private get templates(): TemplatePair {
+		return normalizeTemplateName(this.config.utilizedTemplateNames![this.currentScanMode]);
+	}
+
 	private firstFrame = true;
 	private async startCapturing() {
-		const { cvRouter } = this.resources;
-		if (!cvRouter) throw new Error("Router not initialized");
-		const templatePair = this.config.utilizedTemplateNames![this.currentScanMode];
-		const mrzOnlyTemplate =
-			typeof templatePair === "string" ? `${templatePair}-MRZOnly` : templatePair.mrzOnly;
+		const cvRouter = this.cvRouter;
+		const { full, mrzOnly } = this.templates;
 		try {
 			this.firstFrame = true;
-			await cvRouter.startCapturing(mrzOnlyTemplate);
+			// A restart mid-flow (format change, file picker cancel) must stay on the full
+			// template once switched: the portrait side needs its document detection.
+			await cvRouter.startCapturing(this.hasSwitchedToFullTemplate ? full : mrzOnly);
 		} catch (ex: any) {
 			let errMsg = ex?.message || ex;
 			console.error("Failed to start capturing:", errMsg);
 			this.closeCamera();
-			this.currentScanResolver?.(new MRZResultImpl({ status: EnumResultStatus.RS_FAILED }));
+			this.currentScanResolver?.(createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED }));
 		}
 	}
 
@@ -1240,13 +1273,10 @@ export default class MRZScannerView {
 	private async switchToFullTemplate(): Promise<void> {
 		if (this.hasSwitchedToFullTemplate) return;
 		this.hasSwitchedToFullTemplate = true;
-		const { cvRouter } = this.resources;
-		if (!cvRouter) return;
-		const templatePair = this.config.utilizedTemplateNames![this.currentScanMode];
-		const fullTemplate = typeof templatePair === "string" ? templatePair : templatePair.full;
+		const cvRouter = this.cvRouter;
 		try {
 			cvRouter.stopCapturing();
-			await cvRouter.startCapturing(fullTemplate);
+			await cvRouter.startCapturing(this.templates.full);
 		} catch (ex) {
 			console.warn("Template switch failed:", ex);
 			this.hasSwitchedToFullTemplate = false;
@@ -1285,7 +1315,7 @@ export default class MRZScannerView {
 			let errMsg = ex?.message || ex;
 			console.error("MRZ Scanner launch error:", errMsg);
 			this.closeCamera();
-			this.currentScanResolver?.(new MRZResultImpl({ status: EnumResultStatus.RS_FAILED }));
+			this.currentScanResolver?.(createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED }));
 		}
 	}
 
@@ -1323,8 +1353,13 @@ export default class MRZScannerView {
 			// no timeout needed.
 			const hasMRZ = !!result?.parsedResult?.parsedResultItems?.length;
 			if (hasMRZ) {
+				// The MRZ side is still in view, so the opposite side's stable-frame run is broken.
+				this.consecutiveStablePortraitFrames = 0;
 				await this.tryPortraitOnSameSide(result, this.resources.onResultUpdated);
 			} else if (originalImages.length > 0) {
+				// A quick flip skips the same-side misses that would otherwise switch templates,
+				// and the MRZ-only template never yields the document quad this side needs.
+				void this.switchToFullTemplate();
 				await this.handlePortraitSideScan(result, this.resources.onResultUpdated);
 			}
 			return;
@@ -1369,16 +1404,13 @@ export default class MRZScannerView {
 				};
 
 				let overrideDocumentResult: CapturedResult["processedDocumentResult"] | null = null;
-				if (
-					(this.resources.returnDocumentImage || this.resources.returnPortraitImage) &&
-					this.resources.cvRouter
-				) {
+				if (this.resources.returnDocumentImage || this.resources.returnPortraitImage) {
 					const originalImageItem = result.items.find(
 						(it: any) => it.type === EnumCapturedResultItemType.CRIT_ORIGINAL_IMAGE,
 					) as OriginalImageResultItem | undefined;
 					if (originalImageItem) {
 						try {
-							const ddnResult = await this.resources.cvRouter.capture(
+							const ddnResult = await this.cvRouter.capture(
 								originalImageItem.imageData,
 								"DetectAndNormalizeDocument_Default",
 							);
@@ -1393,6 +1425,7 @@ export default class MRZScannerView {
 					returnDocumentImage: this.resources.returnDocumentImage,
 					returnPortraitImage: false, // Portrait handled separately in video mode
 					overrideDocumentResult,
+					cvRouter: this.cvRouter,
 				});
 
 				// Store original image for portrait extraction
@@ -1412,7 +1445,7 @@ export default class MRZScannerView {
 			console.error(errMsg);
 			alert(errMsg);
 			this.closeCamera();
-			this.currentScanResolver?.(new MRZResultImpl({ status: EnumResultStatus.RS_FAILED }));
+			this.currentScanResolver?.(createMRZResult(this.resources, { status: EnumResultStatus.RS_FAILED }));
 		}
 	}
 
@@ -1427,7 +1460,7 @@ export default class MRZScannerView {
 
 		if (this.resources.returnPortraitImage && this.originalImageData) {
 			try {
-				const portraitQuad = await IdentityProcessor.findPortraitZone();
+				const portraitQuad = await IdentityProcessor.findPortraitZone(this.cvRouter);
 
 				if (portraitQuad && !(portraitQuad as any).errorCode && portraitQuad.points?.length === 4) {
 					const isValid = documentQuad
@@ -1478,7 +1511,7 @@ export default class MRZScannerView {
 			setTimeout(() => {
 				this.closeCamera();
 
-				const mrzResult = new MRZResultImpl({
+				const mrzResult = createMRZResult(this.resources, {
 					status: EnumResultStatus.RS_SUCCESS,
 					data: processedData,
 					primaryOriginalImage: this.originalImageData,
@@ -1512,7 +1545,7 @@ export default class MRZScannerView {
 			if (!hasHighConfidencePortraitZone(this.latestLocalizedTextLines)) return;
 
 			// originalImageData is already updated by handleMRZResult before this call.
-			const portraitQuad = await IdentityProcessor.findPortraitZone();
+			const portraitQuad = await IdentityProcessor.findPortraitZone(this.cvRouter);
 			if (this.isPortraitScanned) return;
 
 			if (portraitQuad && !(portraitQuad as any).errorCode && portraitQuad.points?.length === 4) {
@@ -1549,7 +1582,7 @@ export default class MRZScannerView {
 					setTimeout(() => {
 						this.closeCamera();
 
-						const mrzResult = new MRZResultImpl({
+						const mrzResult = createMRZResult(this.resources, {
 							status: EnumResultStatus.RS_SUCCESS,
 							data: this.mrzSideData.processedData!,
 							primaryOriginalImage: this.mrzSideData.primaryOriginalImage,
@@ -1650,7 +1683,7 @@ export default class MRZScannerView {
 		let portraitFound = false;
 
 		try {
-			const portraitQuad = await IdentityProcessor.findPortraitZone();
+			const portraitQuad = await IdentityProcessor.findPortraitZone(this.cvRouter);
 
 			if (
 				portraitQuad &&
@@ -1698,7 +1731,7 @@ export default class MRZScannerView {
 				setTimeout(() => {
 					this.closeCamera();
 
-					const mrzResult = new MRZResultImpl({
+					const mrzResult = createMRZResult(this.resources, {
 						status: EnumResultStatus.RS_SUCCESS,
 						data: this.mrzSideData.processedData!,
 						primaryOriginalImage: this.mrzSideData.primaryOriginalImage,
