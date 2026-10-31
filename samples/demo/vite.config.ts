@@ -28,7 +28,7 @@ export default defineConfig({
 		host: "0.0.0.0",
 		headers: {
 			// crossOriginIsolated lets DCV use the multi-threaded (pthread) WASM
-			// variant via SharedArrayBuffer. COEP=credentialless (not require-corp) preserves isolation while
+			// variant via SharedArrayBuffer. COEP=credentialless (not require-corp) preserves isolation.
 			"Cross-Origin-Opener-Policy": "same-origin",
 			"Cross-Origin-Embedder-Policy": "credentialless",
 		},

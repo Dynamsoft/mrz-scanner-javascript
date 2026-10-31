@@ -81,7 +81,7 @@ The TypeScript imports the SDK as an ES module:
 import { MRZScanner, EnumDocumentSide } from "dynamsoft-mrz-scanner";
 ```
 
-There is also no `engineResourcePaths` override anywhere in the demo's TypeScript. The SDK's default points at jsDelivr (`{rootDirectory: "https://cdn.jsdelivr.net/npm/"}`), so DCV is fetched directly from the CDN. To self-host DCV instead, pass `engineResourcePaths` to the `MRZScanner` constructor pointing at wherever you've deployed the `dynamsoft-capture-vision-bundle` and `dynamsoft-capture-vision-data` folders.
+DCV is self-hosted rather than fetched from jsDelivr (the SDK's default). `vite.config.ts` copies the `dynamsoft-capture-vision-bundle` and `dynamsoft-capture-vision-data` packages from `node_modules` into `public/`, and `src/scanner.ts` passes `engineResourcePaths` to the `MRZScanner` constructor pointing at those copies under `import.meta.env.BASE_URL`. Vite copies `public/` into `dist/` on build, so the deployed demo serves DCV from its own origin.
 
 [self]: https://nodejs.org/api/packages.html#self-referencing-a-package-using-its-name
 
@@ -89,6 +89,6 @@ There is also no `engineResourcePaths` override anywhere in the demo's TypeScrip
 
 - [User guide](https://www.dynamsoft.com/mrz-scanner/docs/web/guides/mrz-scanner.html)
 - [Customisation guide](https://www.dynamsoft.com/mrz-scanner/docs/web/guides/mrz-scanner-customization.html)
-- [`MRZScanner`](https://www.dynamsoft.com/mrz-scanner/docs/web/api-reference/MRZScanner.html) /
-  [`MRZScannerConfig`](https://www.dynamsoft.com/mrz-scanner/docs/web/api-reference/MRZScannerConfig.html) /
-  [`MRZResult`](https://www.dynamsoft.com/mrz-scanner/docs/web/api-reference/MRZResult.html)
+- [`MRZScanner`](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscanner) /
+  [`MRZScannerConfig`](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscannerconfig) /
+  [`MRZResult`](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzresult)
