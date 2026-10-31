@@ -89,6 +89,6 @@ DCV is self-hosted rather than fetched from jsDelivr (the SDK's default). `vite.
 
 - [User guide](https://www.dynamsoft.com/mrz-scanner/docs/web/guides/mrz-scanner.html)
 - [Customisation guide](https://www.dynamsoft.com/mrz-scanner/docs/web/guides/mrz-scanner-customization.html)
-- [`MRZScanner`](https://www.dynamsoft.com/mrz-scanner/docs/web/api-reference/MRZScanner.html) /
-  [`MRZScannerConfig`](https://www.dynamsoft.com/mrz-scanner/docs/web/api-reference/MRZScannerConfig.html) /
-  [`MRZResult`](https://www.dynamsoft.com/mrz-scanner/docs/web/api-reference/MRZResult.html)
+- [`MRZScanner`](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscanner) /
+  [`MRZScannerConfig`](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzscannerconfig) /
+  [`MRZResult`](https://www.dynamsoft.com/mrz-scanner/docs/web/api/mrz-scanner.html#mrzresult)
